@@ -29,9 +29,21 @@ export function Header() {
           <Link href="/conta" className="hidden sm:inline transition-colors hover:text-accent">
             ENTRAR
           </Link>
-          <Link href="/sacola" className="flex items-center gap-2 transition-colors hover:text-accent">
-            SACOLA
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+          <Link
+            href="/sacola"
+            aria-label="Sacola, 0 itens"
+            className="flex items-center gap-2 border border-white/25 px-3 py-2 transition-colors hover:border-accent hover:text-accent"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M6 8h12l-1 12H7L6 8Z M9 8V6a3 3 0 0 1 6 0v2"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+            </svg>
             0
           </Link>
         </div>
