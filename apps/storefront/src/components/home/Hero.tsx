@@ -11,7 +11,7 @@ export function Hero() {
           O PADRÃO É <span className="text-accent">INCOMPARÁVEL</span>
         </h1>
         <p className="mt-9 max-w-lg text-[17px] leading-relaxed text-paper/70">
-          Peças desenhadas para quem entende moda como investimento — não como tendência. PIQUE
+          Peças desenhadas para quem entende moda como investimento, não como tendência. PIQUE
           une o corte impecável do alfaiate ao impulso das ruas.
         </p>
         <div className="mt-12 flex flex-wrap items-center gap-8">
