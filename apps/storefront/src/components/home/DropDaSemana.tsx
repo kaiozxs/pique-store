@@ -1,18 +1,6 @@
 import Link from "next/link";
-
-type DropItem = {
-  name: string;
-  category: string;
-  badge?: string;
-};
-
-// Dados de exemplo — no site real isso vem do módulo "Drop da Semana" do painel admin.
-const ITEMS: DropItem[] = [
-  { name: "MOLETOM STRUCTURAL", category: "Moletom", badge: "EDIÇÃO LIMITADA" },
-  { name: "JAQUETA IMPULSO", category: "Jaqueta" },
-  { name: "CAMISETA PADRÃO", category: "Camiseta" },
-  { name: "CALÇA INCOMPARÁVEL", category: "Calça" },
-];
+import { PRODUTOS } from "@/lib/sample-data";
+import { ProductCard } from "@/components/ProductCard";
 
 export function DropDaSemana() {
   return (
@@ -31,40 +19,8 @@ export function DropDaSemana() {
         </div>
 
         <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
-          {ITEMS.map((item) => (
-            <div key={item.name}>
-              <div className="relative flex aspect-[3/4] flex-col items-center justify-center gap-3.5 border border-dashed border-white/20 bg-[#161617]">
-                {item.badge && (
-                  <div className="absolute left-3.5 top-3.5 bg-accent px-2.5 py-1 text-[10px] font-bold tracking-[0.1em]">
-                    {item.badge}
-                  </div>
-                )}
-                <svg
-                  width="52"
-                  height="52"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="text-paper/35"
-                >
-                  <path
-                    d="M4 7.2 L8.2 4 L10 5.6 L14 5.6 L15.8 4 L20 7.2 L17.8 10.4 L16 9.3 L16 20 L8 20 L8 9.3 L6.2 10.4 Z"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.1"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <div className="text-[11px] tracking-[0.08em] text-paper/50">[FOTO DO PRODUTO]</div>
-              </div>
-              <div className="mt-4 flex items-baseline justify-between gap-3">
-                <div>
-                  <div className="text-[15px] font-bold">{item.name}</div>
-                  <div className="mt-1 text-xs text-paper/45">{item.category}</div>
-                </div>
-                <div className="whitespace-nowrap text-sm font-semibold">[R$ —]</div>
-              </div>
-            </div>
+          {PRODUTOS.map((produto) => (
+            <ProductCard key={produto.slug} produto={produto} />
           ))}
         </div>
 

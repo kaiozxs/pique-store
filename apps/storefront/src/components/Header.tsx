@@ -5,6 +5,7 @@ const NAV_LINKS = [
   { href: "/drops", label: "DROPS" },
   { href: "/wab", label: "WAB" },
   { href: "/dicas", label: "DICAS" },
+  { href: "/pedido", label: "PEDIDO" },
   { href: "/ajuda", label: "AJUDA" },
 ];
 

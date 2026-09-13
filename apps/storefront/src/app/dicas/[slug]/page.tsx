@@ -1,0 +1,32 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { TIPS } from "@/lib/sample-data";
+
+export function generateStaticParams() {
+  return TIPS.map((t) => ({ slug: t.slug }));
+}
+
+export async function generateMetadata(props: PageProps<"/dicas/[slug]">): Promise<Metadata> {
+  const { slug } = await props.params;
+  const tip = TIPS.find((t) => t.slug === slug);
+  return { title: tip ? `${tip.title} — PIQUE` : "Dica — PIQUE" };
+}
+
+export default async function DicaPage(props: PageProps<"/dicas/[slug]">) {
+  const { slug } = await props.params;
+  const tip = TIPS.find((t) => t.slug === slug);
+
+  if (!tip) {
+    notFound();
+  }
+
+  return (
+    <div className="bg-ink text-paper">
+      <article className="mx-auto max-w-3xl px-6 py-20 sm:px-8">
+        <div className="mb-6 aspect-video border border-dashed border-white/20 bg-[#161617]" />
+        <h1 className="font-display text-3xl tracking-tight sm:text-4xl">{tip.title}</h1>
+        <p className="mt-6 text-base leading-relaxed text-paper/70">{tip.body}</p>
+      </article>
+    </div>
+  );
+}

@@ -45,7 +45,9 @@ export function Footer() {
               <Link href="/drops">Drops</Link>
               <Link href="/wab">WAB</Link>
               <Link href="/dicas">Dicas</Link>
+              <Link href="/pedido">Acompanhe seu pedido</Link>
               <Link href="/ajuda">Ajuda</Link>
+              <Link href="/verifique">Verifique seu PIQUE</Link>
             </div>
           </div>
 
