@@ -116,7 +116,8 @@ O site é da PIQUE. O desenvolvedor entrega estrutura e funcionamento; a PIQUE a
 
 - **Base de e-commerce:** [Medusa.js](https://medusajs.com) (Node/TypeScript, open-source) — cobre produtos/variantes/estoque/pedidos/promoções/clientes e já entrega um painel admin **separado** da storefront nativamente.
 - **Pagamento:** a decidir depois — checkout com provedor mockado por enquanto.
+- **Banco de dados:** Postgres gerenciado via [Supabase](https://supabase.com) (conta/projeto do cliente) — evita depender de Docker local; a connection string entra em `apps/backend/.env` (nunca commitada).
 - **Estrutura:**
   - `apps/backend` — projeto Medusa (API + admin dashboard + módulos customizados da PIQUE)
-  - `apps/storefront` — loja pública (Next.js, a partir do starter da Medusa, com a identidade visual definida em `design/`)
+  - `apps/storefront` — loja pública (Next.js, com a identidade visual definida em `design/`) — Home, catálogo, produto, dicas, ajuda, WAB, acompanhamento de pedido e verificação de autenticidade já implementados com dados de exemplo
 - **Módulos customizados a construir sobre o Medusa** (não vêm prontos): Drop da Semana, WAB, Dicas, blocos configuráveis da Home, Pré-venda, FAQ, e **Verifique seu PIQUE** (autenticidade/titularidade de peça física).
