@@ -13,9 +13,8 @@ export function Header() {
   return (
     <header className="bg-ink text-paper">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5 sm:px-8">
-        <Link href="/" className="flex items-center gap-3">
-          <Image src="/logo.png" alt="PIQUE" width={36} height={36} className="rounded-sm" />
-          <span className="font-display text-lg tracking-wide">PIQUE</span>
+        <Link href="/" className="flex items-center">
+          <Image src="/logo.png" alt="PIQUE" width={44} height={44} className="rounded-sm" priority />
         </Link>
 
         <nav className="hidden items-center gap-9 text-[13px] font-semibold tracking-[0.14em] md:flex">
