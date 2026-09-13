@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.next/
+.env
+.env.*
+!.env.example
+*.log
+.turbo/
+.medusa/
+.DS_Store
+.claude/settings.local.json

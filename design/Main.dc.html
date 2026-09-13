@@ -1,0 +1,299 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=Archivo+Black&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    a:hover { color: var(--accent); }
+    ::selection { background: var(--accent); color: var(--white); }
+    input::placeholder { color: rgba(247,245,242,0.5); }
+
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .marquee-track { display: flex; gap: 56px; width: max-content; animation: marquee 20s linear infinite; }
+    @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+    .grain {
+      background-image: radial-gradient(circle, rgba(247,245,242,0.05) 1px, transparent 1px);
+      background-size: 4px 4px;
+    }
+
+    .btn-solid { transition: background 0.15s ease, color 0.15s ease; }
+    .btn-solid:hover { background: var(--white) !important; color: var(--black) !important; }
+    .btn-outline { transition: border-color 0.15s ease, color 0.15s ease; }
+    .btn-outline:hover { border-color: var(--accent) !important; color: var(--accent) !important; }
+
+    .card-hover { transition: transform 0.2s ease; }
+    .card-hover:hover { transform: translateY(-4px); }
+
+    @media (max-width: 860px) {
+      .nav-links { display: none !important; }
+      .hero-vertical-tag { display: none !important; }
+      .grid-4 { grid-template-columns: 1fr 1fr !important; }
+      .grid-3 { grid-template-columns: 1fr !important; }
+      .manifesto-grid { grid-template-columns: 1fr !important; }
+      .footer-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+      .footer-brand-row { flex-direction: column !important; align-items: flex-start !important; gap: 24px !important; }
+    }
+    @media (max-width: 540px) {
+      .grid-4 { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</helmet>
+
+<div style="--accent:{{accentRed}}; --black:#0b0b0c; --white:#f7f5f2; font-family:'Archivo',Helvetica,Arial,sans-serif; background:var(--white); color:var(--black); width:100%; overflow-x:hidden;">
+
+  <svg style="position:absolute; width:0; height:0; overflow:hidden;" aria-hidden="true">
+    <defs>
+      <symbol id="icon-garment" viewBox="0 0 24 24">
+        <path d="M4 7.2 L8.2 4 L10 5.6 L14 5.6 L15.8 4 L20 7.2 L17.8 10.4 L16 9.3 L16 20 L8 20 L8 9.3 L6.2 10.4 Z" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="icon-arrow" viewBox="0 0 24 24">
+        <path d="M4 12 H19 M13 6 L19 12 L13 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ANNOUNCEMENT MARQUEE -->
+  <div style="background:var(--black); color:var(--accent); overflow:hidden; padding:10px 0; border-bottom:1px solid rgba(247,245,242,0.1);">
+    <div class="marquee-track">
+      <span style="font-size:12px; letter-spacing:0.2em; font-weight:600; white-space:nowrap;">PRÉ-LANÇAMENTO — DROP 001 PIQUE — ACESSO ANTECIPADO EM BREVE — PRÉ-LANÇAMENTO — DROP 001 PIQUE — ACESSO ANTECIPADO EM BREVE</span>
+      <span style="font-size:12px; letter-spacing:0.2em; font-weight:600; white-space:nowrap;" aria-hidden="true">PRÉ-LANÇAMENTO — DROP 001 PIQUE — ACESSO ANTECIPADO EM BREVE — PRÉ-LANÇAMENTO — DROP 001 PIQUE — ACESSO ANTECIPADO EM BREVE</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="grain" style="background:var(--black); color:var(--white); position:relative;">
+    <div style="max-width:1280px; margin:0 auto; padding:28px 32px 0 32px; display:flex; align-items:center; justify-content:space-between; gap:24px;">
+      <div style="font-family:'Archivo Black',sans-serif; font-size:22px; letter-spacing:0.06em;">PIQUE</div>
+      <div class="nav-links" style="display:flex; gap:36px; font-size:13px; letter-spacing:0.14em; font-weight:600;">
+        <a href="#drop">DROPS</a>
+        <a href="#manifesto">MANIFESTO</a>
+        <a href="#valores">SOBRE</a>
+        <a href="#footer">CONTATO</a>
+      </div>
+      <div style="font-size:13px; letter-spacing:0.1em; font-weight:600; display:flex; align-items:center; gap:8px; white-space:nowrap;">
+        SACOLA
+        <span style="width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block;"></span>
+        0
+      </div>
+    </div>
+
+    <div style="max-width:1280px; margin:0 auto; padding:120px 32px 140px 32px; position:relative;">
+      <div style="font-size:13px; letter-spacing:0.32em; font-weight:600; color:rgba(247,245,242,0.6); margin-bottom:28px;">STREETWEAR DE ALTO PADRÃO</div>
+      <h1 style="font-family:'Archivo Black',sans-serif; font-size:clamp(2.6rem,8.4vw,7rem); line-height:0.98; letter-spacing:-0.015em; margin:0; max-width:16ch;">
+        O PADRÃO É<br><span style="color:var(--accent);">INCOMPARÁVEL</span>
+      </h1>
+      <p style="max-width:520px; font-size:17px; line-height:1.6; color:rgba(247,245,242,0.68); margin:36px 0 0 0; font-weight:400;">
+        Peças desenhadas para quem entende moda como investimento — não como tendência. PIQUE une o corte impecável do alfaiate ao impulso das ruas.
+      </p>
+      <div style="display:flex; align-items:center; gap:32px; margin-top:48px; flex-wrap:wrap;">
+        <a href="#drop" class="btn-solid" style="background:var(--accent); color:var(--white); font-size:13px; font-weight:700; letter-spacing:0.14em; padding:18px 32px; display:inline-block; border:1px solid var(--accent);">EXPLORAR O DROP 001</a>
+        <a href="#manifesto" style="font-size:13px; font-weight:700; letter-spacing:0.1em; display:inline-flex; align-items:center; gap:10px;">
+          LER O MANIFESTO
+          <svg width="16" height="16" style="color:var(--accent);" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+        </a>
+      </div>
+
+      <div class="hero-vertical-tag" style="position:absolute; right:0; bottom:0; writing-mode:vertical-rl; transform:rotate(180deg); font-size:12px; letter-spacing:0.22em; color:rgba(247,245,242,0.38); font-weight:600;">
+        PIQUE — COLEÇÃO Nº 001
+      </div>
+    </div>
+  </div>
+
+  <!-- MANIFESTO -->
+  <div id="manifesto" style="background:var(--white); color:var(--black);">
+    <div class="manifesto-grid" style="max-width:1280px; margin:0 auto; padding:140px 32px; display:grid; grid-template-columns:1.3fr 1fr; gap:80px; align-items:start;">
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px; color:var(--accent); margin-bottom:24px;">o propósito</div>
+        <h2 style="font-family:'Archivo Black',sans-serif; font-size:clamp(2rem,4.6vw,3.6rem); line-height:1.08; letter-spacing:-0.01em; margin:0;">
+          A COMPARAÇÃO É IRRELEVANTE.<br>O PADRÃO, INEGOCIÁVEL.
+        </h2>
+      </div>
+      <div style="padding-top:8px;">
+        <p style="font-size:16px; line-height:1.7; color:rgba(11,11,12,0.72); margin:0 0 32px 0;">
+          PIQUE nasce da fricção entre a elegância do alfaiate e a energia bruta da rua. Não seguimos o que já existe — impomos o que vem a seguir. Cada peça é pensada para durar além da estação, além da tendência, além da comparação.
+        </p>
+        <div style="border-left:2px solid var(--accent); padding-left:20px;">
+          <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:22px; line-height:1.5; margin:0; color:var(--black);">
+            "Não vestimos tendência. Vestimos padrão."
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURED DROP -->
+  <div id="drop" class="grain" style="background:var(--black); color:var(--white);">
+    <div style="max-width:1280px; margin:0 auto; padding:120px 32px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:64px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:13px; letter-spacing:0.28em; font-weight:600; color:rgba(247,245,242,0.55); margin-bottom:18px;">PRIMEIRA COLEÇÃO</div>
+          <h2 style="font-family:'Archivo Black',sans-serif; font-size:clamp(2rem,5vw,3.4rem); letter-spacing:-0.01em; margin:0;">DROP 001</h2>
+        </div>
+        <div style="font-size:12px; letter-spacing:0.08em; color:rgba(247,245,242,0.55); text-transform:uppercase; max-width:260px; text-align:right;">
+          peças ilustrativas — imagens e nomes finais em produção
+        </div>
+      </div>
+
+      <div class="grid-4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:28px;">
+
+        <div class="card-hover">
+          <div style="position:relative; aspect-ratio:3/4; border:1px dashed rgba(247,245,242,0.22); background:#161617; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;">
+            <div style="position:absolute; top:14px; left:14px; background:var(--accent); color:var(--white); font-size:10px; font-weight:700; letter-spacing:0.1em; padding:5px 10px;">EDIÇÃO LIMITADA</div>
+            <svg width="52" height="52" style="color:rgba(247,245,242,0.32);" aria-hidden="true"><use href="#icon-garment"></use></svg>
+            <div style="font-size:11px; letter-spacing:0.08em; color:rgba(247,245,242,0.48);">[FOTO DO PRODUTO]</div>
+          </div>
+          <div style="margin-top:18px; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <div>
+              <div style="font-size:15px; font-weight:700; letter-spacing:0.01em;">MOLETOM STRUCTURAL</div>
+              <div style="font-size:12px; color:rgba(247,245,242,0.45); margin-top:4px;">Moletom</div>
+            </div>
+            <div style="font-size:14px; font-weight:600; white-space:nowrap;">[R$ —]</div>
+          </div>
+        </div>
+
+        <div class="card-hover">
+          <div style="aspect-ratio:3/4; border:1px dashed rgba(247,245,242,0.22); background:#161617; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;">
+            <svg width="52" height="52" style="color:rgba(247,245,242,0.32);" aria-hidden="true"><use href="#icon-garment"></use></svg>
+            <div style="font-size:11px; letter-spacing:0.08em; color:rgba(247,245,242,0.48);">[FOTO DO PRODUTO]</div>
+          </div>
+          <div style="margin-top:18px; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <div>
+              <div style="font-size:15px; font-weight:700; letter-spacing:0.01em;">JAQUETA IMPULSO</div>
+              <div style="font-size:12px; color:rgba(247,245,242,0.45); margin-top:4px;">Jaqueta</div>
+            </div>
+            <div style="font-size:14px; font-weight:600; white-space:nowrap;">[R$ —]</div>
+          </div>
+        </div>
+
+        <div class="card-hover">
+          <div style="aspect-ratio:3/4; border:1px dashed rgba(247,245,242,0.22); background:#161617; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;">
+            <svg width="52" height="52" style="color:rgba(247,245,242,0.32);" aria-hidden="true"><use href="#icon-garment"></use></svg>
+            <div style="font-size:11px; letter-spacing:0.08em; color:rgba(247,245,242,0.48);">[FOTO DO PRODUTO]</div>
+          </div>
+          <div style="margin-top:18px; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <div>
+              <div style="font-size:15px; font-weight:700; letter-spacing:0.01em;">CAMISETA PADRÃO</div>
+              <div style="font-size:12px; color:rgba(247,245,242,0.45); margin-top:4px;">Camiseta</div>
+            </div>
+            <div style="font-size:14px; font-weight:600; white-space:nowrap;">[R$ —]</div>
+          </div>
+        </div>
+
+        <div class="card-hover">
+          <div style="aspect-ratio:3/4; border:1px dashed rgba(247,245,242,0.22); background:#161617; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;">
+            <svg width="52" height="52" style="color:rgba(247,245,242,0.32);" aria-hidden="true"><use href="#icon-garment"></use></svg>
+            <div style="font-size:11px; letter-spacing:0.08em; color:rgba(247,245,242,0.48);">[FOTO DO PRODUTO]</div>
+          </div>
+          <div style="margin-top:18px; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <div>
+              <div style="font-size:15px; font-weight:700; letter-spacing:0.01em;">CALÇA INCOMPARÁVEL</div>
+              <div style="font-size:12px; color:rgba(247,245,242,0.45); margin-top:4px;">Calça</div>
+            </div>
+            <div style="font-size:14px; font-weight:600; white-space:nowrap;">[R$ —]</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex; justify-content:center; margin-top:64px;">
+        <a href="#" class="btn-outline" style="border:1px solid rgba(247,245,242,0.35); color:var(--white); font-size:13px; font-weight:700; letter-spacing:0.14em; padding:18px 40px;">VER COLEÇÃO COMPLETA</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- VALUES -->
+  <div id="valores" style="background:var(--white); color:var(--black);">
+    <div style="max-width:1280px; margin:0 auto; padding:120px 32px;">
+      <div class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:56px;">
+
+        <div>
+          <div style="font-family:'Archivo Black',sans-serif; font-size:52px; line-height:1; color:transparent; -webkit-text-stroke:1.4px var(--black); margin-bottom:24px;">01</div>
+          <h3 style="font-size:19px; font-weight:800; letter-spacing:0.04em; margin:0 0 14px 0;">INOVAÇÃO</h3>
+          <p style="font-size:15px; line-height:1.65; color:rgba(11,11,12,0.66); margin:0;">Sempre à frente. Design e complexidade de produto que antecipam o próximo movimento.</p>
+        </div>
+
+        <div>
+          <div style="font-family:'Archivo Black',sans-serif; font-size:52px; line-height:1; color:transparent; -webkit-text-stroke:1.4px var(--black); margin-bottom:24px;">02</div>
+          <h3 style="font-size:19px; font-weight:800; letter-spacing:0.04em; margin:0 0 14px 0;">ATEMPORAL</h3>
+          <p style="font-size:15px; line-height:1.65; color:rgba(11,11,12,0.66); margin:0;">Peças pensadas para atravessar estações sem perder relevância — o oposto do descartável.</p>
+        </div>
+
+        <div>
+          <div style="font-family:'Archivo Black',sans-serif; font-size:52px; line-height:1; color:transparent; -webkit-text-stroke:1.4px var(--black); margin-bottom:24px;">03</div>
+          <h3 style="font-size:19px; font-weight:800; letter-spacing:0.04em; margin:0 0 14px 0;">QUALIDADE</h3>
+          <p style="font-size:15px; line-height:1.65; color:rgba(11,11,12,0.66); margin:0;">Conforto, corte e acabamento premium em cada costura. Sem atalho, sem meio-termo.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div id="footer" style="background:var(--black); color:var(--white);">
+    <div style="max-width:1280px; margin:0 auto; padding:100px 32px 40px 32px;">
+
+      <div class="footer-brand-row" style="display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding-bottom:64px; border-bottom:1px solid rgba(247,245,242,0.12);">
+        <div style="font-family:'Archivo Black',sans-serif; font-size:clamp(2.4rem,8vw,5.5rem); letter-spacing:-0.01em; line-height:1;">PIQUE</div>
+        <a href="#" class="btn-solid" style="background:var(--accent); color:var(--white); border:1px solid var(--accent); font-size:13px; font-weight:700; letter-spacing:0.12em; padding:16px 28px; white-space:nowrap;">VOLTAR AO TOPO</a>
+      </div>
+
+      <div class="footer-grid" style="display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:56px; padding:64px 0;">
+        <div>
+          <div style="font-size:14px; font-weight:800; letter-spacing:0.06em; margin-bottom:14px;">FIQUE À FRENTE</div>
+          <p style="font-size:14px; line-height:1.6; color:rgba(247,245,242,0.55); margin:0 0 22px 0; max-width:34ch;">Acesso antecipado aos próximos drops e à narrativa visual da marca.</p>
+          <label for="pique-newsletter-email" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap;">Seu e-mail para acesso antecipado</label>
+          <div style="display:flex; gap:0; border-bottom:1px solid rgba(247,245,242,0.3); max-width:340px;">
+            <input id="pique-newsletter-email" type="email" placeholder="seu@email.com" style="background:transparent; border:none; color:var(--white); font-size:14px; padding:12px 0; flex:1; outline:none; font-family:inherit;">
+            <button type="button" style="background:transparent; border:none; color:var(--accent); font-size:13px; font-weight:700; letter-spacing:0.08em; padding:12px 4px; cursor:pointer; font-family:inherit;">ENVIAR</button>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:14px; font-weight:800; letter-spacing:0.06em; margin-bottom:18px;">NAVEGAÇÃO</div>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:14px; color:rgba(247,245,242,0.7);">
+            <a href="#drop">Drops</a>
+            <a href="#manifesto">Manifesto</a>
+            <a href="#valores">Sobre</a>
+            <a href="#footer">Contato</a>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:14px; font-weight:800; letter-spacing:0.06em; margin-bottom:18px;">SOCIAL</div>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:14px; color:rgba(247,245,242,0.7);">
+            <a href="#">Instagram</a>
+            <a href="#">TikTok</a>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; padding-top:32px; border-top:1px solid rgba(247,245,242,0.12); flex-wrap:wrap;">
+        <div style="font-size:12px; color:rgba(247,245,242,0.4);">© PIQUE 2026 — Todos os direitos reservados</div>
+        <div style="font-size:12px; letter-spacing:0.1em; font-weight:700; color:var(--accent);">PROTÓTIPO V1</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accentRed":{"editor":"color","default":"#e21833","options":["#e21833","#c81d3f","#ff2d3c","#a8102b"],"section":"Marca"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accentRed: this.props.accentRed ?? '#e21833'
+    };
+  }
+}
+</script>
+</body>
+</html>

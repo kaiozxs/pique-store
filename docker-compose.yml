@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pique-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pique
+      POSTGRES_PASSWORD: pique_dev
+      POSTGRES_DB: pique_store
+    ports:
+      - "5432:5432"
+    volumes:
+      - pique_pgdata:/var/lib/postgresql/data
+
+volumes:
+  pique_pgdata:
