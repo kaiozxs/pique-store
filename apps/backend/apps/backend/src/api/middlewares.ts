@@ -4,6 +4,7 @@ import { pecasAdminMiddlewares } from "./admin/pecas/middlewares"
 import { dropSemanaAdminMiddlewares } from "./admin/drop-semana/middlewares"
 import { homeConfigAdminMiddlewares } from "./admin/home-config/middlewares"
 import { dicasAdminMiddlewares } from "./admin/dicas/middlewares"
+import { faqAdminMiddlewares } from "./admin/faq/middlewares"
 import { verifiqueStoreMiddlewares } from "./store/verifique/middlewares"
 import { pecasStoreMiddlewares } from "./store/pecas/middlewares"
 
@@ -14,6 +15,7 @@ export default defineMiddlewares({
     ...dropSemanaAdminMiddlewares,
     ...homeConfigAdminMiddlewares,
     ...dicasAdminMiddlewares,
+    ...faqAdminMiddlewares,
     ...verifiqueStoreMiddlewares,
     ...pecasStoreMiddlewares,
   ],

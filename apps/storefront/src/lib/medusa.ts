@@ -208,3 +208,23 @@ export async function getTipBySlug(slug: string): Promise<TipDetail | null> {
     return null;
   }
 }
+
+// --- Ajuda / FAQ ---
+
+export type FaqItem = { category: string; question: string; answer: string };
+export type FaqCategory = { title: string; items: { question: string; answer: string }[] };
+
+export async function getFaqCategories(): Promise<FaqCategory[]> {
+  const data = await sdk.client.fetch<{ faq_items: FaqItem[] }>("/store/faq", {
+    next: { revalidate: 30 },
+  });
+
+  const byCategory = new Map<string, FaqCategory>();
+  for (const item of data.faq_items) {
+    if (!byCategory.has(item.category)) {
+      byCategory.set(item.category, { title: item.category, items: [] });
+    }
+    byCategory.get(item.category)!.items.push({ question: item.question, answer: item.answer });
+  }
+  return Array.from(byCategory.values());
+}
