@@ -114,10 +114,11 @@ O site é da PIQUE. O desenvolvedor entrega estrutura e funcionamento; a PIQUE a
 
 ## Decisões técnicas (2026-09-13)
 
-- **Base de e-commerce:** [Medusa.js](https://medusajs.com) (Node/TypeScript, open-source) — cobre produtos/variantes/estoque/pedidos/promoções/clientes e já entrega um painel admin **separado** da storefront nativamente.
+- **Base de e-commerce:** [Medusa.js](https://medusajs.com) (Node/TypeScript, open-source) — cobre produtos/variantes/estoque/pedidos/promoções/clientes via API.
 - **Pagamento:** a decidir depois — checkout com provedor mockado por enquanto.
 - **Banco de dados:** Postgres gerenciado via [Supabase](https://supabase.com) (conta/projeto do cliente) — evita depender de Docker local; a connection string entra em `apps/backend/.env` (nunca commitada).
 - **Estrutura:**
-  - `apps/backend` — projeto Medusa (API + admin dashboard + módulos customizados da PIQUE)
-  - `apps/storefront` — loja pública (Next.js, com a identidade visual definida em `design/`) — Home, catálogo, produto, dicas, ajuda, WAB, acompanhamento de pedido e verificação de autenticidade já implementados com dados de exemplo
-- **Módulos customizados a construir sobre o Medusa** (não vêm prontos): Drop da Semana, WAB, Dicas, blocos configuráveis da Home, Pré-venda, FAQ, e **Verifique seu PIQUE** (autenticidade/titularidade de peça física).
+  - `apps/backend` — projeto Medusa (API + módulos customizados da PIQUE). O admin nativo do Medusa (`/app`) continua sendo usado só para cadastro de produto/variante/estoque/cliente/desconto.
+  - `apps/storefront` — loja pública (Next.js, com a identidade visual definida em `design/`) — Home, catálogo, produto, dicas, ajuda, WAB, acompanhamento de pedido e verificação de autenticidade já implementados com dados reais.
+  - `apps/admin` — **painel administrativo separado** (Next.js próprio, porta 3001), pedido explicitamente pelo cliente em vez de usar só o admin nativo do Medusa. Autentica como usuário admin do Medusa (login server-side, token guardado em cookie httpOnly — o navegador nunca fala direto com a API do Medusa). Cobre: dashboard de vendas, lista/detalhe de pedidos (com espaço reservado pra emissão de NF, ainda pausada até o cliente definir CNPJ/certificado/provedor), e os 6 módulos de conteúdo customizados (WAB, Drop da Semana, Home Configurável, Dicas, FAQ, Verifique seu PIQUE) — que por isso saíram do admin nativo do Medusa, pra não ter duas telas fazendo a mesma coisa.
+- **Módulos customizados a construir sobre o Medusa** (não vêm prontos): Drop da Semana, WAB, Dicas, blocos configuráveis da Home, Pré-venda, FAQ, e **Verifique seu PIQUE** (autenticidade/titularidade de peça física). Todos implementados — ver `docs/modelagem-dados.md`.
