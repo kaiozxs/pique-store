@@ -18,5 +18,6 @@ module.exports = defineConfig({
     { resolve: "./src/modules/verification" },
     { resolve: "./src/modules/drop-semana" },
     { resolve: "./src/modules/home-config" },
+    { resolve: "./src/modules/dicas" },
   ],
 })

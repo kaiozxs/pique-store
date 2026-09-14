@@ -178,3 +178,33 @@ export async function getHomeSections(): Promise<HomeSection[]> {
   });
   return data.sections;
 }
+
+// --- Dicas (conteúdo editorial) ---
+
+export type TipSummary = {
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  cover_image: string | null;
+  published_at: string | null;
+};
+
+export type TipDetail = TipSummary & { body: string };
+
+export async function listTips(): Promise<TipSummary[]> {
+  const data = await sdk.client.fetch<{ tip_posts: TipSummary[] }>("/store/dicas", {
+    next: { revalidate: 30 },
+  });
+  return data.tip_posts;
+}
+
+export async function getTipBySlug(slug: string): Promise<TipDetail | null> {
+  try {
+    const data = await sdk.client.fetch<{ tip_post: TipDetail }>(`/store/dicas/${slug}`, {
+      next: { revalidate: 30 },
+    });
+    return data.tip_post;
+  } catch {
+    return null;
+  }
+}
