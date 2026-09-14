@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { PRODUTOS } from "@/lib/sample-data";
+import { listProducts } from "@/lib/medusa";
 import { ProductCard } from "@/components/ProductCard";
 
 export const metadata: Metadata = {
   title: "Drops — PIQUE",
 };
 
-export default function DropsPage() {
+export default async function DropsPage() {
+  const { products, region } = await listProducts();
+
   return (
     <div className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-20 sm:px-8">
@@ -33,27 +35,24 @@ export default function DropsPage() {
           </label>
 
           <div className="flex flex-wrap gap-3 text-[12px] font-semibold tracking-[0.08em]">
-            {["TODOS", "MOLETOM", "JAQUETA", "CAMISETA", "CALÇA"].map((filtro, i) => (
-              <button
-                key={filtro}
-                type="button"
-                className={`border px-4 py-2 transition-colors ${
-                  i === 0
-                    ? "border-accent bg-accent text-paper"
-                    : "border-white/20 text-paper/70 hover:border-accent hover:text-accent"
-                }`}
-              >
-                {filtro}
-              </button>
-            ))}
+            <button type="button" className="border border-accent bg-accent px-4 py-2 text-paper">
+              TODOS
+            </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-7 pb-24 sm:grid-cols-2 lg:grid-cols-4">
-          {PRODUTOS.map((produto) => (
-            <ProductCard key={produto.slug} produto={produto} />
-          ))}
-        </div>
+        {products.length === 0 ? (
+          <div className="pb-24 text-sm text-paper/55">
+            Nenhum produto publicado ainda. Cadastre produtos no painel administrativo do Medusa
+            para eles aparecerem aqui.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-7 pb-24 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} region={region} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

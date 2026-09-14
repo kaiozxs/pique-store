@@ -1,29 +1,30 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PRODUTOS, getProduto } from "@/lib/sample-data";
+import { getProductByHandle, listProducts } from "@/lib/medusa";
 import { ProductDetail } from "@/components/product/ProductDetail";
 
-export function generateStaticParams() {
-  return PRODUTOS.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const { products } = await listProducts();
+  return products.map((p) => ({ slug: p.handle }));
 }
 
 export async function generateMetadata(props: PageProps<"/produtos/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
-  const produto = getProduto(slug);
-  return { title: produto ? `${produto.nome} — PIQUE` : "Produto — PIQUE" };
+  const { product } = await getProductByHandle(slug);
+  return { title: product ? `${product.title} — PIQUE` : "Produto — PIQUE" };
 }
 
 export default async function ProdutoPage(props: PageProps<"/produtos/[slug]">) {
   const { slug } = await props.params;
-  const produto = getProduto(slug);
+  const { product, region } = await getProductByHandle(slug);
 
-  if (!produto) {
+  if (!product) {
     notFound();
   }
 
   return (
     <div className="bg-ink text-paper">
-      <ProductDetail produto={produto} />
+      <ProductDetail product={product} region={region} />
     </div>
   );
 }

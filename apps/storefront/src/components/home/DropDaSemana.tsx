@@ -1,8 +1,11 @@
 import Link from "next/link";
-import { PRODUTOS } from "@/lib/sample-data";
+import { listProducts } from "@/lib/medusa";
 import { ProductCard } from "@/components/ProductCard";
 
-export function DropDaSemana() {
+export async function DropDaSemana() {
+  const { products, region } = await listProducts();
+  const destaques = products.slice(0, 4);
+
   return (
     <section id="drop" className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32">
@@ -13,16 +16,17 @@ export function DropDaSemana() {
             </div>
             <h2 className="font-display text-3xl tracking-tight sm:text-5xl">DROP DA SEMANA</h2>
           </div>
-          <div className="max-w-[260px] text-right text-xs uppercase tracking-[0.08em] text-paper/55">
-            peças ilustrativas — imagens e nomes finais em produção
-          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
-          {PRODUTOS.map((produto) => (
-            <ProductCard key={produto.slug} produto={produto} />
-          ))}
-        </div>
+        {destaques.length === 0 ? (
+          <div className="text-sm text-paper/55">Nenhum produto publicado ainda no painel.</div>
+        ) : (
+          <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
+            {destaques.map((product) => (
+              <ProductCard key={product.id} product={product} region={region} />
+            ))}
+          </div>
+        )}
 
         <div className="mt-16 flex justify-center">
           <Link
