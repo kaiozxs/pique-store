@@ -2,10 +2,11 @@ import "server-only";
 import { sdk } from "./sdk";
 import { authHeaders } from "./session";
 
-export type DashboardPeriod = "7d" | "30d" | "90d";
+export type DashboardPeriod = "1d" | "7d" | "30d";
 
 export type DashboardMetrics = {
-  period: DashboardPeriod;
+  start_date: string;
+  end_date: string;
   currency_code: string;
   total_revenue: number;
   order_count: number;
@@ -13,10 +14,12 @@ export type DashboardMetrics = {
   revenue_by_day: { date: string; total: number }[];
 };
 
-export async function getDashboardMetrics(period: DashboardPeriod = "30d"): Promise<DashboardMetrics> {
+export type DashboardRangeQuery = { period: DashboardPeriod } | { start_date: string; end_date: string };
+
+export async function getDashboardMetrics(range: DashboardRangeQuery): Promise<DashboardMetrics> {
   const headers = await authHeaders();
   return sdk.client.fetch<DashboardMetrics>("/admin/dashboard-metrics", {
-    query: { period },
+    query: range,
     headers,
     cache: "no-store",
   });
