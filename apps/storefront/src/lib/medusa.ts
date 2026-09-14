@@ -116,3 +116,18 @@ export async function getWabContent(): Promise<WabContent> {
   });
   return data.wab_content;
 }
+
+// --- Verifique seu PIQUE (autenticidade da peça física) ---
+
+export type PieceVerification = {
+  valid: boolean;
+  status?: "nao_registrado" | "registrado" | "revogado";
+  product?: { title: string | null; variant_title: string; thumbnail: string | null } | null;
+};
+
+export async function verifyPiece(code: string): Promise<PieceVerification> {
+  return sdk.client.fetch<PieceVerification>("/store/verifique", {
+    query: { code },
+    cache: "no-store",
+  });
+}

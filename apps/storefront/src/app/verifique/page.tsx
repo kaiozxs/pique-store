@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { VerifiqueForm } from "@/components/VerifiqueForm";
 
 export const metadata: Metadata = { title: "Verifique seu PIQUE — PIQUE" };
 
@@ -12,25 +13,9 @@ export default function VerifiquePage() {
           Cada peça PIQUE tem um identificador único. Digite o código da sua peça para confirmar a
           autenticidade.
         </p>
-        <form className="flex flex-col gap-4 sm:flex-row">
-          <label htmlFor="codigo-peca" className="sr-only">
-            Código da peça
-          </label>
-          <input
-            id="codigo-peca"
-            type="text"
-            placeholder="Código da peça"
-            className="flex-1 border border-white/20 bg-transparent px-4 py-3 text-sm uppercase tracking-widest outline-none placeholder:text-paper/35 placeholder:normal-case placeholder:tracking-normal"
-          />
-          <button
-            type="submit"
-            className="border border-accent bg-accent px-7 py-3 text-[13px] font-bold tracking-[0.12em] text-paper transition-colors hover:bg-paper hover:text-ink"
-          >
-            VERIFICAR
-          </button>
-        </form>
+        <VerifiqueForm />
         <p className="mt-4 text-xs text-paper/40">
-          Verificação em desenvolvimento. Nenhum dado pessoal é exibido publicamente nessa consulta.
+          Nenhum dado pessoal é exibido publicamente nessa consulta.
         </p>
       </div>
     </div>

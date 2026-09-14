@@ -15,5 +15,6 @@ module.exports = defineConfig({
   },
   modules: [
     { resolve: "./src/modules/wab" },
+    { resolve: "./src/modules/verification" },
   ],
 })
