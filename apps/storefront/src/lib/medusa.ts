@@ -45,6 +45,36 @@ export async function listProducts(): Promise<{ products: MedusaProduct[]; regio
   return { products, region };
 }
 
+export async function getCuratedDrop(): Promise<{
+  title: string | null;
+  products: MedusaProduct[];
+  region: MedusaRegion;
+}> {
+  const region = await getDefaultRegion();
+  const { title, product_ids } = await sdk.client.fetch<{ title: string | null; product_ids: string[] }>(
+    "/store/drop-semana",
+    { next: { revalidate: 30 } }
+  );
+
+  if (product_ids.length === 0) {
+    return { title, products: [], region };
+  }
+
+  const { products } = await sdk.store.product.list({
+    id: product_ids,
+    region_id: region.id,
+    fields: PRODUCT_FIELDS,
+    limit: product_ids.length,
+  });
+
+  // A Store API não garante a ordem do array `id` passado no filtro — a
+  // curadoria do painel admin define a ordem, então reordenamos aqui.
+  const byId = new Map(products.map((p) => [p.id, p]));
+  const ordered = product_ids.map((id) => byId.get(id)).filter((p): p is MedusaProduct => Boolean(p));
+
+  return { title, products: ordered, region };
+}
+
 export async function getProductByHandle(
   handle: string
 ): Promise<{ product: MedusaProduct | null; region: MedusaRegion }> {

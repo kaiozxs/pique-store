@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { listProducts } from "@/lib/medusa";
+import { getCuratedDrop } from "@/lib/medusa";
 import { ProductCard } from "@/components/ProductCard";
 
 export async function DropDaSemana() {
-  const { products, region } = await listProducts();
-  const destaques = products.slice(0, 4);
+  const { title, products, region } = await getCuratedDrop();
+
+  // Seção é curada pelo painel admin — sem produtos publicados, não mostramos
+  // conteúdo de preenchimento nenhum.
+  if (products.length === 0) return null;
 
   return (
     <section id="drop" className="bg-ink text-paper">
@@ -14,19 +17,17 @@ export async function DropDaSemana() {
             <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">
               PRIMEIRA COLEÇÃO
             </div>
-            <h2 className="font-display text-3xl tracking-tight sm:text-5xl">DROP DA SEMANA</h2>
+            <h2 className="font-display text-3xl tracking-tight sm:text-5xl">
+              {title ?? "DROP DA SEMANA"}
+            </h2>
           </div>
         </div>
 
-        {destaques.length === 0 ? (
-          <div className="text-sm text-paper/55">Nenhum produto publicado ainda no painel.</div>
-        ) : (
-          <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
-            {destaques.map((product) => (
-              <ProductCard key={product.id} product={product} region={region} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} region={region} />
+          ))}
+        </div>
 
         <div className="mt-16 flex justify-center">
           <Link
