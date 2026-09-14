@@ -115,6 +115,7 @@ O site é da PIQUE. O desenvolvedor entrega estrutura e funcionamento; a PIQUE a
 ## Decisões técnicas (2026-09-13)
 
 - **Base de e-commerce:** [Medusa.js](https://medusajs.com) (Node/TypeScript, open-source) — cobre produtos/variantes/estoque/pedidos/promoções/clientes via API.
+- **Moeda/região:** loja opera em BRL (região "Brasil", só país BR) — migrado do EUR/"Europe" que veio no seed inicial do Medusa. Preço dos produtos e do frete foi migrado com o **mesmo número** que estava em EUR (placeholder de câmbio 1:1, ajustável a qualquer momento no admin nativo do Medusa em Produtos > preços). Pedidos feitos antes da migração continuam mostrando € (registro histórico correto, não é retroativamente alterado).
 - **Pagamento:** a decidir depois — checkout funciona ponta a ponta usando o provider nativo `pp_system_default` do Medusa (sem gateway real ainda); trocar de provider é a única mudança quando o cliente decidir.
 - **Banco de dados:** Postgres gerenciado via [Supabase](https://supabase.com) (conta/projeto do cliente) — evita depender de Docker local; a connection string entra em `apps/backend/.env` (nunca commitada).
 - **Estrutura:**
