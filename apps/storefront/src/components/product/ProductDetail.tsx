@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
 import { findVariant, formatMoney, getPresaleInfo, isVariantAvailable } from "@/lib/medusa";
+import { addToCartAction } from "@/lib/cart-actions";
 
 const GARMENT_ICON_PATH =
   "M4 7.2 L8.2 4 L10 5.6 L14 5.6 L15.8 4 L20 7.2 L17.8 10.4 L16 9.3 L16 20 L8 20 L8 9.3 L6.2 10.4 Z";
@@ -18,12 +19,24 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
     return initial;
   });
   const [favorito, setFavorito] = useState(false);
+  const [quantidade, setQuantidade] = useState(1);
+  const [feedback, setFeedback] = useState<"ok" | "erro" | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const variante = useMemo(() => findVariant(product, selected), [product, selected]);
 
   const disponivel = variante ? isVariantAvailable(variante) : false;
   const image = product.thumbnail ?? product.images?.[0]?.url;
   const presale = getPresaleInfo(product);
+
+  function handleAddToCart() {
+    if (!variante) return;
+    setFeedback(null);
+    startTransition(async () => {
+      const result = await addToCartAction(variante.id, quantidade);
+      setFeedback(result.ok ? "ok" : "erro");
+    });
+  }
 
   return (
     <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-16 sm:px-8 lg:grid-cols-2 lg:gap-20">
@@ -95,13 +108,34 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
           </div>
         )}
 
-        <div className="mt-9 flex flex-wrap items-center gap-4">
+        {disponivel && (
+          <div className="mt-9 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setQuantidade((q) => Math.max(1, q - 1))}
+              className="h-11 w-11 border border-white/25 text-lg hover:border-white/50"
+            >
+              −
+            </button>
+            <span className="w-6 text-center text-sm font-semibold">{quantidade}</span>
+            <button
+              type="button"
+              onClick={() => setQuantidade((q) => q + 1)}
+              className="h-11 w-11 border border-white/25 text-lg hover:border-white/50"
+            >
+              +
+            </button>
+          </div>
+        )}
+
+        <div className="mt-4 flex flex-wrap items-center gap-4">
           <button
             type="button"
-            disabled={!disponivel}
+            disabled={!disponivel || isPending}
+            onClick={handleAddToCart}
             className="border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.12em] text-paper transition-colors hover:bg-paper hover:text-ink disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-transparent disabled:text-paper/40 disabled:hover:bg-transparent disabled:hover:text-paper/40"
           >
-            {disponivel ? "ADICIONAR À SACOLA" : "INDISPONÍVEL"}
+            {!disponivel ? "INDISPONÍVEL" : isPending ? "ADICIONANDO..." : "ADICIONAR À SACOLA"}
           </button>
           <button
             type="button"
@@ -114,6 +148,12 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
             {favorito ? "★ FAVORITADO" : "☆ FAVORITAR"}
           </button>
         </div>
+        {feedback === "ok" && (
+          <p className="mt-3 text-sm font-semibold text-accent">Adicionado à sacola.</p>
+        )}
+        {feedback === "erro" && (
+          <p className="mt-3 text-sm font-semibold text-red-400">Não foi possível adicionar à sacola.</p>
+        )}
       </div>
     </div>
   );

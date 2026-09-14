@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getCartItemCount } from "@/lib/cart";
 
 const NAV_LINKS = [
   { href: "/drops", label: "DROPS" },
@@ -9,7 +10,9 @@ const NAV_LINKS = [
   { href: "/ajuda", label: "AJUDA" },
 ];
 
-export function Header() {
+export async function Header() {
+  const itemCount = await getCartItemCount();
+
   return (
     <header className="bg-ink text-paper">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5 sm:px-8">
@@ -31,7 +34,7 @@ export function Header() {
           </Link>
           <Link
             href="/sacola"
-            aria-label="Sacola, 0 itens"
+            aria-label={`Sacola, ${itemCount} ${itemCount === 1 ? "item" : "itens"}`}
             className="flex items-center gap-2 border border-white/25 px-3 py-2 transition-colors hover:border-accent hover:text-accent"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -44,7 +47,7 @@ export function Header() {
                 strokeLinecap="round"
               />
             </svg>
-            0
+            {itemCount}
           </Link>
         </div>
       </div>
