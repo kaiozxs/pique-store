@@ -30,7 +30,7 @@ let cachedRegion: MedusaRegion | null = null;
 
 export async function getDefaultRegion(): Promise<MedusaRegion> {
   if (cachedRegion) return cachedRegion;
-  const { regions } = await sdk.store.region.list();
+  const { regions } = await sdk.store.region.list({ fields: "*countries" });
   const region = regions[0];
   if (!region) throw new Error("Nenhuma região configurada no Medusa.");
   cachedRegion = region;

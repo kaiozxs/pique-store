@@ -38,7 +38,7 @@ export async function getOrder(id: string): Promise<AdminOrder | null> {
       id,
       {
         fields:
-          "*items,*items.variant,*shipping_address,*billing_address,*customer,*summary,*payment_collections",
+          "+display_id,+email,+status,+payment_status,+fulfillment_status,+total,+currency_code,*items,*items.variant,*shipping_address,*billing_address,*customer,*summary,*payment_collections",
       },
       headers
     );
