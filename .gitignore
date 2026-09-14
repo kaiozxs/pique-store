@@ -1,12 +1,31 @@
+# Dependências e builds
 node_modules/
 dist/
 build/
 .next/
+.turbo/
+.medusa/
+
+# Segredos e configuração de ambiente
 .env
 .env.*
 !.env.example
-*.log
-.turbo/
-.medusa/
+
+# Configuração local do Claude Code (pessoal, não faz parte do projeto)
+.claude/
+
+# Editores e sistema operacional
+.vscode/
+.idea/
 .DS_Store
-.claude/settings.local.json
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Chaves e certificados
+*.pem
+*.key
+*.pfx
