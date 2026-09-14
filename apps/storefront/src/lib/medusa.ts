@@ -13,6 +13,7 @@ const PRODUCT_FIELDS = [
   "handle",
   "description",
   "thumbnail",
+  "metadata",
   "*images",
   "+options.title",
   "+options.values.value",
@@ -109,6 +110,20 @@ export function isVariantAvailable(variant: MedusaVariant): boolean {
   return Boolean(
     variant.allow_backorder || !variant.manage_inventory || (variant.inventory_quantity ?? 0) > 0
   );
+}
+
+// Pré-venda vive no metadata do produto (sem módulo/tabela própria) —
+// preenchida pelo widget "Pré-venda" na página do produto no admin.
+export type PresaleInfo = { message: string | null; estimatedShipDate: string | null };
+
+export function getPresaleInfo(product: MedusaProduct): PresaleInfo | null {
+  const metadata = product.metadata as Record<string, unknown> | null;
+  if (!metadata?.is_presale) return null;
+  return {
+    message: typeof metadata.presale_message === "string" ? metadata.presale_message : null,
+    estimatedShipDate:
+      typeof metadata.estimated_ship_date === "string" ? metadata.estimated_ship_date : null,
+  };
 }
 
 export function isProductAvailable(product: MedusaProduct): boolean {

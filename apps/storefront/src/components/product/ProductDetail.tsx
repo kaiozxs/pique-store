@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
-import { findVariant, formatMoney, isVariantAvailable } from "@/lib/medusa";
+import { findVariant, formatMoney, getPresaleInfo, isVariantAvailable } from "@/lib/medusa";
 
 const GARMENT_ICON_PATH =
   "M4 7.2 L8.2 4 L10 5.6 L14 5.6 L15.8 4 L20 7.2 L17.8 10.4 L16 9.3 L16 20 L8 20 L8 9.3 L6.2 10.4 Z";
@@ -23,6 +23,7 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
 
   const disponivel = variante ? isVariantAvailable(variante) : false;
   const image = product.thumbnail ?? product.images?.[0]?.url;
+  const presale = getPresaleInfo(product);
 
   return (
     <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-16 sm:px-8 lg:grid-cols-2 lg:gap-20">
@@ -49,6 +50,16 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
             ? formatMoney(variante.calculated_price.calculated_amount, variante.calculated_price.currency_code)
             : "[preço indisponível]"}
         </div>
+
+        {presale && (
+          <div className="mt-5 border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-paper/85">
+            <span className="font-bold text-accent">PRÉ-VENDA — </span>
+            {presale.message}
+            {presale.estimatedShipDate && (
+              <> Prazo estimado de envio: {new Date(presale.estimatedShipDate).toLocaleDateString("pt-BR")}.</>
+            )}
+          </div>
+        )}
 
         {product.description && (
           <p className="mt-7 text-sm leading-relaxed text-paper/70">{product.description}</p>

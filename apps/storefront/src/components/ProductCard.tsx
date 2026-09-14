@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
-import { cheapestPrice, formatMoney, isProductAvailable } from "@/lib/medusa";
+import { cheapestPrice, formatMoney, getPresaleInfo, isProductAvailable } from "@/lib/medusa";
 
 const GARMENT_ICON_PATH =
   "M4 7.2 L8.2 4 L10 5.6 L14 5.6 L15.8 4 L20 7.2 L17.8 10.4 L16 9.3 L16 20 L8 20 L8 9.3 L6.2 10.4 Z";
@@ -10,10 +10,16 @@ export function ProductCard({ product }: { product: MedusaProduct; region: Medus
   const available = isProductAvailable(product);
   const price = cheapestPrice(product);
   const image = product.thumbnail ?? product.images?.[0]?.url;
+  const presale = getPresaleInfo(product);
 
   return (
     <Link href={`/produtos/${product.handle}`} className="group block">
       <div className="relative flex aspect-[3/4] flex-col items-center justify-center gap-3.5 overflow-hidden border border-dashed border-white/20 bg-[#161617]">
+        {presale && (
+          <div className="absolute left-3.5 top-3.5 bg-accent px-2.5 py-1 text-[10px] font-bold tracking-[0.1em] text-paper">
+            PRÉ-VENDA
+          </div>
+        )}
         {!available && (
           <div className="absolute right-3.5 top-3.5 bg-paper/10 px-2.5 py-1 text-[10px] font-bold tracking-[0.1em] text-paper/70">
             INDISPONÍVEL
