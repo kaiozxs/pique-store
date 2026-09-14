@@ -161,3 +161,20 @@ export async function verifyPiece(code: string): Promise<PieceVerification> {
     cache: "no-store",
   });
 }
+
+// --- Home configurável (ordem, visibilidade e textos das seções) ---
+
+export type HomeSectionType = "hero" | "drop_destaque" | "wab_teaser" | "dicas_destaque" | "apresentacao";
+export type HomeSection = {
+  type: HomeSectionType;
+  position: number;
+  visible: boolean;
+  config: Record<string, string> | null;
+};
+
+export async function getHomeSections(): Promise<HomeSection[]> {
+  const data = await sdk.client.fetch<{ sections: HomeSection[] }>("/store/home-config", {
+    next: { revalidate: 30 },
+  });
+  return data.sections;
+}

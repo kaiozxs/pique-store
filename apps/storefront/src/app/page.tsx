@@ -4,16 +4,30 @@ import { DropDaSemana } from "@/components/home/DropDaSemana";
 import { WabTeaser } from "@/components/home/WabTeaser";
 import { DicasDestaque } from "@/components/home/DicasDestaque";
 import { Apresentacao } from "@/components/home/Apresentacao";
+import { getHomeSections, type HomeSectionType } from "@/lib/medusa";
 
-export default function Home() {
+export default async function Home() {
+  const sections = await getHomeSections();
+
   return (
     <>
       <Marquee />
-      <Hero />
-      <DropDaSemana />
-      <WabTeaser />
-      <DicasDestaque />
-      <Apresentacao />
+      {sections.map((section) => {
+        switch (section.type as HomeSectionType) {
+          case "hero":
+            return <Hero key={section.type} config={section.config} />;
+          case "drop_destaque":
+            return <DropDaSemana key={section.type} />;
+          case "wab_teaser":
+            return <WabTeaser key={section.type} />;
+          case "dicas_destaque":
+            return <DicasDestaque key={section.type} />;
+          case "apresentacao":
+            return <Apresentacao key={section.type} config={section.config} />;
+          default:
+            return null;
+        }
+      })}
     </>
   );
 }
