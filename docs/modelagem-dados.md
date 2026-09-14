@@ -5,102 +5,117 @@ clientes, pedidos, carrinho/checkout, promoções e regiões. Os módulos abaixo
 construídos por cima do Medusa (como *custom modules*, ligados às entidades do
 core via *module links*) para cobrir o que é específico da PIQUE.
 
-## Drop da Semana
+## Drop da Semana — ✅ implementado
 
-**`drop`**
+Implementado em `apps/backend/apps/backend/src/modules/drop-semana` (módulo `dropSemana`).
+Singleton (um único registro `drop_week` — não precisa de `type`/multiplicidade).
+
+**`drop_week`**
 | campo | tipo | obs |
 |---|---|---|
 | id | string (pk) | |
-| title | string | ex: "Drop da Semana #12" |
-| status | enum: `draft` \| `published` | |
-| starts_at / ends_at | datetime, nullable | agendamento opcional |
+| title | string, nullable | ex: "Drop da Semana #12" |
 | created_at / updated_at | datetime | |
 
-**`drop_item`** (liga um drop a produtos já cadastrados, com ordem)
+**`drop_week_item`** (liga o drop a produtos já cadastrados, com ordem)
 | campo | tipo | obs |
 |---|---|---|
 | id | string (pk) | |
-| drop_id | fk → drop | |
-| product_id | link → Product (core) | |
+| drop_week_id | fk → drop_week | |
+| product_id | string | id do produto (core) guardado como referência simples, não module link — só exibição, sem join |
 | position | int | ordem de exibição |
 
-## WAB
+Rotas: `GET/POST /admin/drop-semana` (curadoria, salva a lista inteira em ordem),
+`GET /store/drop-semana` (pública, devolve título + ids em ordem). O storefront
+busca os produtos completos via Store API e reordena no cliente, já que o
+filtro `id` da Store API não preserva ordem. Painel admin em `/app/drop-semana`.
 
-**`wab_content`** (conteúdo único, atualizado in-place — não é uma listagem)
+## WAB — ✅ implementado
+
+Implementado em `apps/backend/apps/backend/src/modules/wab` (módulo `wab`).
+Conteúdo único, atualizado in-place (singleton) — não é uma listagem.
+
+**`wab_content`**
 | campo | tipo | obs |
 |---|---|---|
 | id | string (pk) | |
 | status | enum: `em_construcao` \| `revelado` \| `oculto` | |
 | title | string, nullable | pode ficar vazio/misterioso |
 | body | text, nullable | |
+| media | json (`{ items: WabMedia[] }`) | lista de imagens/vídeos anexados, cada item `{ url, type }` |
 | updated_at | datetime | |
 
-**`wab_media`** (imagens/vídeos anexados)
-| campo | tipo | obs |
-|---|---|---|
-| id | string (pk) | |
-| wab_content_id | fk | |
-| media_url | string | |
-| media_type | enum: `image` \| `video` | |
-| position | int | |
+Rotas: `GET/POST /admin/wab` (upsert do conteúdo único), `GET /store/wab`
+(pública). Painel admin em `/app/wab`.
 
-## Dicas (conteúdo editorial)
+## Dicas (conteúdo editorial) — ✅ implementado
+
+Implementado em `apps/backend/apps/backend/src/modules/dicas` (módulo `dicas`).
 
 **`tip_post`**
 | campo | tipo | obs |
 |---|---|---|
 | id | string (pk) | |
 | title | string | |
-| slug | string, unique | |
-| body | text (rich text) | |
+| slug | string, unique | gerado automaticamente a partir do título no admin |
+| excerpt | string, nullable | resumo exibido na listagem |
+| body | text | |
 | cover_image | string, nullable | |
 | status | enum: `draft` \| `published` | |
-| featured_on_home | boolean | |
-| youtube_video_id | string, nullable | preparação p/ integração futura |
 | published_at | datetime, nullable | |
 | created_at / updated_at | datetime | |
 
-**`tip_media`** (imagens/vídeos adicionais dentro do post)
-| campo | tipo | obs |
-|---|---|---|
-| id | string (pk) | |
-| tip_post_id | fk | |
-| media_url | string | |
-| media_type | enum: `image` \| `video` | |
-| position | int | |
+Rotas: `POST/GET/DELETE /admin/dicas(+/:id)`, `GET /store/dicas` (só publicados)
+e `GET /store/dicas/:slug`. Painel admin em `/app/dicas`.
 
-## Home (blocos configuráveis)
+## Home (blocos configuráveis) — ✅ implementado
+
+Implementado em `apps/backend/apps/backend/src/modules/home-config` (módulo `homeConfig`).
 
 **`home_section`**
 | campo | tipo | obs |
 |---|---|---|
 | id | string (pk) | |
-| type | enum: `hero` \| `drop_destaque` \| `wab_teaser` \| `dicas_destaque` \| `apresentacao` \| `banner` | |
+| type | enum, unique: `hero` \| `drop_destaque` \| `wab_teaser` \| `dicas_destaque` \| `apresentacao` | uma linha por tipo (não é uma listagem livre) |
 | position | int | ordem na página |
 | visible | boolean | |
-| config | json | conteúdo flexível por tipo (imagem, vídeo, texto, botão/link) |
+| config | json, nullable | textos por seção (título, subtítulo etc.); a home cai em textos padrão quando ausente |
 
-## FAQ
+Rotas: `GET/POST /admin/home-config` (GET preenche defaults para tipos
+ausentes), `GET /store/home-config` (pública). A Home renderiza as seções
+dinamicamente, na ordem/visibilidade configuradas. Painel admin em `/app/home-config`.
 
-**`faq_category`**: id, name, position
-**`faq_item`**: id, category_id (fk), question, answer, position, published (boolean)
+## FAQ — ✅ implementado
 
-## Pré-venda
+Implementado em `apps/backend/apps/backend/src/modules/faq` (módulo `faq`).
+Modelo plano — sem tabela de categorias própria; a categoria é texto livre e o
+agrupamento é feito no storefront.
 
-Estende o produto via module link (não duplica o catálogo):
-
-**`presale_info`**
+**`faq_item`**
 | campo | tipo | obs |
 |---|---|---|
 | id | string (pk) | |
-| product_id | link → Product (core) | |
-| is_presale | boolean | |
-| starts_at / ends_at | datetime, nullable | |
-| message | text | texto exibido ao cliente |
-| estimated_ship_date | date, nullable | prazo estimado |
+| category | string | texto livre (ex: "Pedidos", "Trocas") |
+| question | string | |
+| answer | text | |
+| position | int | |
 
-Pedidos que incluem item em pré-venda marcam `is_presale_order` no pedido/linha
-(consultável pelo painel de Pedidos).
+Rotas: `POST/GET/DELETE /admin/faq(+/:id)`, `GET /store/faq` (pública).
+Painel admin em `/app/faq`.
+
+## Pré-venda — ✅ implementado
+
+Não usa módulo/tabela própria — reaproveita o `metadata` (json) nativo do
+produto core do Medusa, escrito via widget no admin
+(`src/admin/widgets/presale-widget.tsx`) e lido pela Store API
+(`fields=metadata`).
+
+**`product.metadata`** (campos usados)
+| campo | tipo | obs |
+|---|---|---|
+| is_presale | boolean | liga/desliga o selo e o banner |
+| presale_message | string, nullable | texto exibido ao cliente |
+| estimated_ship_date | string (ISO date), nullable | prazo estimado de envio |
 
 ## Verifique seu PIQUE (autenticidade + titularidade) — ✅ implementado
 
@@ -150,8 +165,13 @@ Rotas: `POST/GET/DELETE /admin/pecas(+/:id)` (gerar, listar, remover),
 |---|---|
 | WAB | ✅ implementado (backend + admin + storefront) |
 | Verifique seu PIQUE | ✅ implementado (backend + admin + storefront) |
-| Drop da Semana | 🔲 pendente |
-| Dicas | 🔲 pendente |
-| Home configurável | 🔲 pendente |
-| FAQ | 🔲 pendente |
-| Pré-venda | 🔲 pendente |
+| Drop da Semana | ✅ implementado (backend + admin + storefront) |
+| Home configurável | ✅ implementado (backend + admin + storefront) |
+| Dicas | ✅ implementado (backend + admin + storefront) |
+| FAQ | ✅ implementado (backend + admin + storefront) |
+| Pré-venda | ✅ implementado (widget admin + storefront, via `product.metadata`) |
+
+Todos os módulos customizados do escopo original estão implementados. Itens
+maiores ainda pendentes (fora do escopo de módulo customizado): carrinho/checkout
+real, conta do cliente (login/cadastro/pedidos/endereços), cálculo de frete,
+gateway de pagamento (decisão adiada), e-mails transacionais, região BRL e deploy.
