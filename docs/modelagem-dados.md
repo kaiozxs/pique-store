@@ -102,20 +102,21 @@ Estende o produto via module link (não duplica o catálogo):
 Pedidos que incluem item em pré-venda marcam `is_presale_order` no pedido/linha
 (consultável pelo painel de Pedidos).
 
-## Verifique seu PIQUE (autenticidade + titularidade)
+## Verifique seu PIQUE (autenticidade + titularidade) — ✅ implementado
 
 Módulo mais sensível do sistema — identidade física da peça e cadeia de posse.
+Implementado em `apps/backend/apps/backend/src/modules/verification`.
 
 **`piece_unit`** (uma unidade física de uma variante)
 | campo | tipo | obs |
 |---|---|---|
 | id | string (pk) | |
-| unique_code | string, unique, não sequencial | o que o cliente digita em "Verifique seu PIQUE" |
-| product_variant_id | link → Product Variant (core) | |
+| unique_code | string, unique, não sequencial | o que o cliente digita em "Verifique seu PIQUE" — gerado no backend (12 chars, sem 0/O/1/I) |
+| product_variant_id | string | id da variante (Medusa core) guardado como referência simples, não module link — só precisamos exibir, não fazer join |
 | serial_number | string, nullable | referência interna (ex: tag física/QR) |
 | status | enum: `nao_registrado` \| `registrado` \| `revogado` | |
-| current_owner_customer_id | link → Customer (core), nullable | null até o primeiro registro |
-| order_id | link → Order (core), nullable | pedido que originou a venda, se rastreado |
+| current_owner_customer_id | string, nullable | id do cliente (core); null até o primeiro registro |
+| order_id | string, nullable | pedido que originou a venda, se rastreado |
 | invoice_reference | string, nullable | apoio ao cadastro — nunca única prova de autenticidade |
 | created_at / updated_at | datetime | |
 
@@ -123,21 +124,34 @@ Módulo mais sensível do sistema — identidade física da peça e cadeia de po
 | campo | tipo | obs |
 |---|---|---|
 | id | string (pk) | |
-| piece_unit_id | fk → piece_unit | |
-| from_customer_id | link → Customer, nullable | nulo no primeiro registro |
-| to_customer_id | link → Customer | |
-| status | enum: `pendente` \| `autorizada` \| `rejeitada` \| `concluida` | |
-| requested_at | datetime | |
+| piece_unit_id | fk → piece_unit (relação dentro do módulo) | |
+| from_customer_id | string, nullable | nulo no primeiro registro |
+| to_customer_id | string | |
+| status | enum: `pendente` \| `rejeitada` \| `concluida` | simplificado — a autorização já aplica a mudança de titularidade na hora, sem estado intermediário |
 | authorized_at | datetime, nullable | |
 | notes | text, nullable | |
 
-Regra de negócio: uma transferência só sai de `pendente` para `autorizada` com
-ação explícita do `current_owner_customer_id` vigente em `piece_unit` — nunca
-automática. A verificação pública (`unique_code` → autenticidade) expõe apenas
-produto + status, nunca dados pessoais ou de nota fiscal.
+Regra de negócio (testada ponta a ponta com clientes reais): uma transferência
+só sai de `pendente` para `concluida` com ação explícita do
+`current_owner_customer_id` vigente — o backend rejeita qualquer outro cliente
+que tente autorizar. A verificação pública (`unique_code` → autenticidade)
+expõe apenas produto + status, nunca dados pessoais, pedido ou nota fiscal.
+
+Rotas: `POST/GET/DELETE /admin/pecas(+/:id)` (gerar, listar, remover),
+`GET /store/verifique?code=...` (pública), `POST /store/pecas/registrar`,
+`POST /store/pecas/transferencias` e `POST /store/pecas/transferencias/:id/autorizar`
+(autenticadas via cliente). Painel admin em `/app/pecas`.
 
 ---
 
-Próximo passo técnico: escaffoldar `apps/backend` (Medusa) e `apps/storefront`
-(Next.js), e implementar estes modelos como Medusa Modules reais
-(`defineModule` + MikroORM entities) assim que o Postgres local estiver de pé.
+## Status geral dos módulos
+
+| Módulo | Status |
+|---|---|
+| WAB | ✅ implementado (backend + admin + storefront) |
+| Verifique seu PIQUE | ✅ implementado (backend + admin + storefront) |
+| Drop da Semana | 🔲 pendente |
+| Dicas | 🔲 pendente |
+| Home configurável | 🔲 pendente |
+| FAQ | 🔲 pendente |
+| Pré-venda | 🔲 pendente |
