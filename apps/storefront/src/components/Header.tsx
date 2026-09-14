@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getCartItemCount } from "@/lib/cart";
+import { getCurrentCustomer } from "@/lib/customer";
 
 const NAV_LINKS = [
   { href: "/drops", label: "DROPS" },
@@ -11,7 +12,7 @@ const NAV_LINKS = [
 ];
 
 export async function Header() {
-  const itemCount = await getCartItemCount();
+  const [itemCount, customer] = await Promise.all([getCartItemCount(), getCurrentCustomer()]);
 
   return (
     <header className="bg-ink text-paper">
@@ -30,7 +31,7 @@ export async function Header() {
 
         <div className="flex items-center gap-6 text-[13px] font-semibold tracking-[0.1em]">
           <Link href="/conta" className="hidden sm:inline transition-colors hover:text-accent">
-            ENTRAR
+            {customer ? (customer.first_name ?? "CONTA").toUpperCase() : "ENTRAR"}
           </Link>
           <Link
             href="/sacola"

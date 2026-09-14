@@ -1,16 +1,25 @@
 import type { Metadata } from "next";
+import { getCurrentCustomer, listCustomerOrders } from "@/lib/customer";
+import { AuthForms } from "./AuthForms";
+import { AccountDashboard } from "./AccountDashboard";
 
-export const metadata: Metadata = { title: "Entrar — PIQUE" };
+export const metadata: Metadata = { title: "Conta — PIQUE" };
 
-export default function ContaPage() {
-  return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center bg-paper px-6 text-center text-ink">
-      <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-ink/50">CONTA</div>
-      <h1 className="font-display text-3xl tracking-tight sm:text-5xl">EM DESENVOLVIMENTO</h1>
-      <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-ink/60">
-        Criação de conta, login, pedidos, endereços e favoritos chegam junto com a integração do
-        painel administrativo.
-      </p>
-    </div>
-  );
+export default async function ContaPage() {
+  const customer = await getCurrentCustomer();
+
+  if (!customer) {
+    return (
+      <div className="bg-ink text-paper">
+        <div className="mx-auto max-w-3xl px-6 py-24 sm:px-8">
+          <div className="mb-2 text-center text-[13px] font-semibold tracking-[0.28em] text-paper/50">CONTA</div>
+          <h1 className="mb-12 text-center font-display text-3xl tracking-tight sm:text-5xl">ENTRAR</h1>
+          <AuthForms />
+        </div>
+      </div>
+    );
+  }
+
+  const orders = await listCustomerOrders();
+  return <AccountDashboard customer={customer} orders={orders} />;
 }
