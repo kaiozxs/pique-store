@@ -9,7 +9,7 @@ const GARMENT_ICON_PATH =
 export function ProductCard({ product }: { product: MedusaProduct; region: MedusaRegion }) {
   const available = isProductAvailable(product);
   const price = cheapestPrice(product);
-  const image = product.thumbnail ?? product.images[0]?.url;
+  const image = product.thumbnail ?? product.images?.[0]?.url;
 
   return (
     <Link href={`/produtos/${product.handle}`} className="group block">

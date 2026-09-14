@@ -11,8 +11,9 @@ const GARMENT_ICON_PATH =
 export function ProductDetail({ product, region }: { product: MedusaProduct; region: MedusaRegion }) {
   const [selected, setSelected] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
-    for (const option of product.options) {
-      if (option.values[0]) initial[option.title] = option.values[0].value;
+    for (const option of product.options ?? []) {
+      const firstValue = option.values?.[0];
+      if (firstValue) initial[option.title] = firstValue.value;
     }
     return initial;
   });
@@ -21,7 +22,7 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
   const variante = useMemo(() => findVariant(product, selected), [product, selected]);
 
   const disponivel = variante ? isVariantAvailable(variante) : false;
-  const image = product.thumbnail ?? product.images[0]?.url;
+  const image = product.thumbnail ?? product.images?.[0]?.url;
 
   return (
     <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-16 sm:px-8 lg:grid-cols-2 lg:gap-20">
@@ -44,7 +45,7 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
         <h1 className="font-display text-3xl tracking-tight sm:text-4xl">{product.title}</h1>
 
         <div className="mt-5 text-xl font-semibold">
-          {variante?.calculated_price
+          {variante?.calculated_price?.calculated_amount != null && variante.calculated_price.currency_code
             ? formatMoney(variante.calculated_price.calculated_amount, variante.calculated_price.currency_code)
             : "[preço indisponível]"}
         </div>
@@ -53,13 +54,13 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
           <p className="mt-7 text-sm leading-relaxed text-paper/70">{product.description}</p>
         )}
 
-        {product.options.map((option) => (
+        {(product.options ?? []).map((option) => (
           <div key={option.title} className="mt-8">
             <div className="mb-2 text-xs font-bold tracking-[0.1em] text-paper/60">
               {option.title.toUpperCase()}
             </div>
             <div className="flex flex-wrap gap-2">
-              {option.values.map((v) => (
+              {(option.values ?? []).map((v) => (
                 <button
                   key={v.value}
                   type="button"

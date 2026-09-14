@@ -1,47 +1,12 @@
-// Cliente da Store API do Medusa. Sem SDK — fetch direto, mesmo padrão usado
-// pelo storefront oficial da Medusa. Os campos pedidos em `fields` foram
-// confirmados contra a instância real (ver docs/modelagem-dados.md).
+// Camada de acesso à Store API do Medusa, via SDK oficial (@medusajs/js-sdk).
+// Os campos pedidos em PRODUCT_FIELDS foram confirmados contra a instância real.
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? "http://localhost:9000";
-const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY ?? "";
+import type { HttpTypes } from "@medusajs/types";
+import { sdk } from "./sdk";
 
-export type MedusaRegion = {
-  id: string;
-  name: string;
-  currency_code: string;
-};
-
-export type MedusaVariantOption = { value: string };
-
-export type MedusaVariant = {
-  id: string;
-  title: string;
-  sku: string | null;
-  manage_inventory: boolean;
-  allow_backorder: boolean;
-  inventory_quantity: number;
-  options: MedusaVariantOption[];
-  calculated_price: {
-    calculated_amount: number;
-    currency_code: string;
-  } | null;
-};
-
-export type MedusaProductOption = {
-  title: string;
-  values: { value: string }[];
-};
-
-export type MedusaProduct = {
-  id: string;
-  title: string;
-  handle: string;
-  description: string | null;
-  thumbnail: string | null;
-  images: { url: string }[];
-  options: MedusaProductOption[];
-  variants: MedusaVariant[];
-};
+export type MedusaRegion = HttpTypes.StoreRegion;
+export type MedusaProduct = HttpTypes.StoreProduct;
+export type MedusaVariant = HttpTypes.StoreProductVariant;
 
 const PRODUCT_FIELDS = [
   "title",
@@ -60,30 +25,12 @@ const PRODUCT_FIELDS = [
   "+variants.options.value",
 ].join(",");
 
-async function medusaFetch<T>(path: string, searchParams: Record<string, string> = {}): Promise<T> {
-  const url = new URL(path, BACKEND_URL);
-  for (const [key, value] of Object.entries(searchParams)) {
-    url.searchParams.set(key, value);
-  }
-
-  const res = await fetch(url.toString(), {
-    headers: { "x-publishable-api-key": PUBLISHABLE_KEY },
-    next: { revalidate: 60 },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Medusa request failed (${res.status}): ${path}`);
-  }
-
-  return res.json() as Promise<T>;
-}
-
 let cachedRegion: MedusaRegion | null = null;
 
 export async function getDefaultRegion(): Promise<MedusaRegion> {
   if (cachedRegion) return cachedRegion;
-  const data = await medusaFetch<{ regions: MedusaRegion[] }>("/store/regions");
-  const region = data.regions[0];
+  const { regions } = await sdk.store.region.list();
+  const region = regions[0];
   if (!region) throw new Error("Nenhuma região configurada no Medusa.");
   cachedRegion = region;
   return region;
@@ -91,23 +38,23 @@ export async function getDefaultRegion(): Promise<MedusaRegion> {
 
 export async function listProducts(): Promise<{ products: MedusaProduct[]; region: MedusaRegion }> {
   const region = await getDefaultRegion();
-  const data = await medusaFetch<{ products: MedusaProduct[] }>("/store/products", {
+  const { products } = await sdk.store.product.list({
     region_id: region.id,
     fields: PRODUCT_FIELDS,
   });
-  return { products: data.products, region };
+  return { products, region };
 }
 
 export async function getProductByHandle(
   handle: string
 ): Promise<{ product: MedusaProduct | null; region: MedusaRegion }> {
   const region = await getDefaultRegion();
-  const data = await medusaFetch<{ products: MedusaProduct[] }>("/store/products", {
+  const { products } = await sdk.store.product.list({
     handle,
     region_id: region.id,
     fields: PRODUCT_FIELDS,
   });
-  return { product: data.products[0] ?? null, region };
+  return { product: products[0] ?? null, region };
 }
 
 // A Store API não devolve o vínculo entre `variant.options[i]` e a opção do
@@ -117,20 +64,25 @@ export function findVariant(
   product: MedusaProduct,
   selectedValues: Record<string, string>
 ): MedusaVariant | undefined {
-  const orderedValues = product.options.map((option) => selectedValues[option.title]);
-  return product.variants.find(
-    (variant) =>
-      variant.options.length === orderedValues.length &&
-      variant.options.every((o, i) => o.value === orderedValues[i])
-  );
+  const productOptions = product.options ?? [];
+  const orderedValues = productOptions.map((option) => selectedValues[option.title]);
+  return product.variants?.find((variant) => {
+    const variantOptions = variant.options ?? [];
+    return (
+      variantOptions.length === orderedValues.length &&
+      variantOptions.every((o, i) => o.value === orderedValues[i])
+    );
+  });
 }
 
 export function isVariantAvailable(variant: MedusaVariant): boolean {
-  return variant.allow_backorder || !variant.manage_inventory || variant.inventory_quantity > 0;
+  return Boolean(
+    variant.allow_backorder || !variant.manage_inventory || (variant.inventory_quantity ?? 0) > 0
+  );
 }
 
 export function isProductAvailable(product: MedusaProduct): boolean {
-  return product.variants.some(isVariantAvailable);
+  return (product.variants ?? []).some(isVariantAvailable);
 }
 
 export function formatMoney(amount: number, currencyCode: string): string {
@@ -138,10 +90,29 @@ export function formatMoney(amount: number, currencyCode: string): string {
 }
 
 export function cheapestPrice(product: MedusaProduct): { amount: number; currencyCode: string } | null {
-  const prices = product.variants
+  const prices = (product.variants ?? [])
     .map((v) => v.calculated_price)
-    .filter((p): p is NonNullable<MedusaVariant["calculated_price"]> => p !== null);
+    .filter((p): p is NonNullable<MedusaVariant["calculated_price"]> => Boolean(p));
   if (prices.length === 0) return null;
-  const cheapest = prices.reduce((min, p) => (p.calculated_amount < min.calculated_amount ? p : min));
-  return { amount: cheapest.calculated_amount, currencyCode: cheapest.currency_code };
+  const cheapest = prices.reduce((min, p) =>
+    (p.calculated_amount ?? Infinity) < (min.calculated_amount ?? Infinity) ? p : min
+  );
+  return { amount: cheapest.calculated_amount ?? 0, currencyCode: cheapest.currency_code ?? "brl" };
+}
+
+// --- WAB (área de mistério/em construção) — rota própria, não vem do SDK ---
+
+export type WabMedia = { url: string; type: "image" | "video" };
+export type WabContent = {
+  status: "em_construcao" | "revelado" | "oculto";
+  title: string | null;
+  body: string | null;
+  media: { items: WabMedia[] } | null;
+};
+
+export async function getWabContent(): Promise<WabContent> {
+  const data = await sdk.client.fetch<{ wab_content: WabContent }>("/store/wab", {
+    next: { revalidate: 30 },
+  });
+  return data.wab_content;
 }
