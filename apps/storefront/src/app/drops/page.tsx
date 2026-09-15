@@ -1,19 +1,29 @@
 import type { Metadata } from "next";
-import { listProducts } from "@/lib/medusa";
+import Link from "next/link";
+import { listNavCategories, listProducts } from "@/lib/medusa";
 import { ProductCard } from "@/components/ProductCard";
 
 export const metadata: Metadata = {
   title: "Drops — PIQUE",
 };
 
-export default async function DropsPage() {
-  const { products, region } = await listProducts();
+export default async function DropsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoria?: string }>;
+}) {
+  const { categoria } = await searchParams;
+  const categories = await listNavCategories();
+  const activeCategory = categoria ? categories.find((c) => c.handle === categoria) : undefined;
+  const { products, region } = await listProducts({ categoryId: activeCategory?.id });
 
   return (
     <div className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-20 sm:px-8">
         <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">CATÁLOGO</div>
-        <h1 className="mb-10 font-display text-3xl tracking-tight sm:text-5xl">TODOS OS DROPS</h1>
+        <h1 className="mb-10 font-display text-3xl tracking-tight sm:text-5xl">
+          {activeCategory ? activeCategory.name.toUpperCase() : "TODOS OS DROPS"}
+        </h1>
 
         <div className="mb-14 flex flex-col gap-4 border-y border-white/10 py-5 sm:flex-row sm:items-center sm:justify-between">
           <label className="flex max-w-md flex-1 items-center gap-3 border border-white/20 px-4 py-3">
@@ -35,9 +45,29 @@ export default async function DropsPage() {
           </label>
 
           <div className="flex flex-wrap gap-3 text-[12px] font-semibold tracking-[0.08em]">
-            <button type="button" className="border border-accent bg-accent px-4 py-2 text-paper">
+            <Link
+              href="/drops"
+              className={`border px-4 py-2 transition-colors ${
+                !activeCategory ? "border-accent bg-accent text-paper" : "border-white/20 hover:border-white/50"
+              }`}
+            >
               TODOS
-            </button>
+            </Link>
+            {categories
+              .filter((c) => c.available)
+              .map((c) => (
+                <Link
+                  key={c.id}
+                  href={`/drops?categoria=${c.handle}`}
+                  className={`border px-4 py-2 uppercase transition-colors ${
+                    activeCategory?.id === c.id
+                      ? "border-accent bg-accent text-paper"
+                      : "border-white/20 hover:border-white/50"
+                  }`}
+                >
+                  {c.name}
+                </Link>
+              ))}
           </div>
         </div>
 

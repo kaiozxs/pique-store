@@ -2,17 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { getCartItemCount } from "@/lib/cart";
 import { getCurrentCustomer } from "@/lib/customer";
-
-const NAV_LINKS = [
-  { href: "/drops", label: "DROPS" },
-  { href: "/wab", label: "WAB" },
-  { href: "/dicas", label: "DICAS" },
-  { href: "/pedido", label: "PEDIDO" },
-  { href: "/ajuda", label: "AJUDA" },
-];
+import { listNavCategories } from "@/lib/medusa";
+import { MainNav } from "@/components/nav/MainNav";
 
 export async function Header() {
-  const [itemCount, customer] = await Promise.all([getCartItemCount(), getCurrentCustomer()]);
+  const [itemCount, customer, categories] = await Promise.all([
+    getCartItemCount(),
+    getCurrentCustomer(),
+    listNavCategories(),
+  ]);
 
   return (
     <header className="bg-ink text-paper">
@@ -21,13 +19,7 @@ export async function Header() {
           <Image src="/logo.png" alt="PIQUE" width={44} height={44} className="rounded-sm" priority />
         </Link>
 
-        <nav className="hidden items-center gap-9 text-[13px] font-semibold tracking-[0.14em] md:flex">
-          {NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} className="transition-colors hover:text-accent">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <MainNav categories={categories} />
 
         <div className="flex items-center gap-6 text-[13px] font-semibold tracking-[0.1em]">
           <Link href="/conta" className="hidden sm:inline transition-colors hover:text-accent">

@@ -1,5 +1,6 @@
 import { Marquee } from "@/components/home/Marquee";
 import { Hero } from "@/components/home/Hero";
+import { Collections } from "@/components/home/Collections";
 import { DropDaSemana } from "@/components/home/DropDaSemana";
 import { WabTeaser } from "@/components/home/WabTeaser";
 import { DicasDestaque } from "@/components/home/DicasDestaque";
@@ -15,7 +16,12 @@ export default async function Home() {
       {sections.map((section) => {
         switch (section.type as HomeSectionType) {
           case "hero":
-            return <Hero key={section.type} config={section.config} />;
+            return (
+              <div key={section.type}>
+                <Hero config={section.config} />
+                <Collections />
+              </div>
+            );
           case "drop_destaque":
             return <DropDaSemana key={section.type} />;
           case "wab_teaser":

@@ -15,6 +15,7 @@ const PRODUCT_FIELDS = [
   "thumbnail",
   "metadata",
   "*images",
+  "*categories",
   "+options.title",
   "+options.values.value",
   "+variants.title",
@@ -37,13 +38,35 @@ export async function getDefaultRegion(): Promise<MedusaRegion> {
   return region;
 }
 
-export async function listProducts(): Promise<{ products: MedusaProduct[]; region: MedusaRegion }> {
+export async function listProducts(options?: {
+  categoryId?: string;
+}): Promise<{ products: MedusaProduct[]; region: MedusaRegion }> {
   const region = await getDefaultRegion();
   const { products } = await sdk.store.product.list({
     region_id: region.id,
     fields: PRODUCT_FIELDS,
+    ...(options?.categoryId ? { category_id: [options.categoryId] } : {}),
   });
   return { products, region };
+}
+
+// --- Categorias do mega-menu ---
+// Inclui categorias inativas/sem produto ainda, marcadas como "em breve" —
+// a Store API nativa de categorias esconde inativas, por isso a rota própria.
+
+export type NavCategory = {
+  id: string;
+  name: string;
+  handle: string;
+  product_count: number;
+  available: boolean;
+};
+
+export async function listNavCategories(): Promise<NavCategory[]> {
+  const data = await sdk.client.fetch<{ nav_categories: NavCategory[] }>("/store/nav-categories", {
+    next: { revalidate: 30 },
+  });
+  return data.nav_categories;
 }
 
 export async function getCuratedDrop(): Promise<{
