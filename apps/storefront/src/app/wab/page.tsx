@@ -12,7 +12,7 @@ export default async function WabPage() {
       <div className="mb-6 font-accent text-xl italic text-accent">
         {revelado ? "revelado" : "em construção"}
       </div>
-      <h1 className="font-display text-4xl tracking-tight sm:text-6xl">
+      <h1 className="font-display text-4xl tracking-wide sm:text-6xl">
         {revelado && wab.title ? wab.title : "WAB"}
       </h1>
       <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-ink/60">

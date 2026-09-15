@@ -80,7 +80,7 @@ export function AccountDashboard({
         <div className="mb-10 flex items-center justify-between">
           <div>
             <div className="mb-2 text-[13px] font-semibold tracking-[0.28em] text-paper/50">CONTA</div>
-            <h1 className="font-display text-3xl tracking-tight sm:text-5xl">
+            <h1 className="font-display text-3xl tracking-wide sm:text-5xl">
               OLÁ, {(customer.first_name ?? customer.email).toUpperCase()}
             </h1>
           </div>

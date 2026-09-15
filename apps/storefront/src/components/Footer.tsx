@@ -5,7 +5,7 @@ export function Footer() {
     <footer id="footer" className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
         <div className="flex flex-col items-start justify-between gap-8 border-b border-white/10 pb-12 sm:flex-row sm:items-end">
-          <div className="font-display text-4xl leading-none tracking-tight sm:text-6xl">PIQUE</div>
+          <div className="font-display text-4xl leading-none tracking-wide sm:text-6xl">PIQUE</div>
           <a
             href="#top"
             className="border border-accent bg-accent px-7 py-4 text-[13px] font-bold tracking-[0.12em] transition-colors hover:bg-paper hover:text-ink"
@@ -45,7 +45,7 @@ export function Footer() {
               <Link href="/drops">Drops</Link>
               <Link href="/wab">WAB</Link>
               <Link href="/dicas">Dicas</Link>
-              <Link href="/pedido">Acompanhe seu pedido</Link>
+              <Link href="/conta">Meus pedidos</Link>
               <Link href="/ajuda">Ajuda</Link>
               <Link href="/verifique">Verifique seu PIQUE</Link>
             </div>

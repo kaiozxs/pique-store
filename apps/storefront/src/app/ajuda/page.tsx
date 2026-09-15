@@ -10,7 +10,7 @@ export default async function AjudaPage() {
     <div className="bg-ink text-paper">
       <div className="mx-auto max-w-3xl px-6 py-20 sm:px-8">
         <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">SUPORTE</div>
-        <h1 className="mb-14 font-display text-3xl tracking-tight sm:text-5xl">AJUDA</h1>
+        <h1 className="mb-14 font-display text-3xl tracking-wide sm:text-5xl">AJUDA</h1>
 
         {categorias.length === 0 ? (
           <div className="pb-24 text-sm text-paper/55">Nenhuma pergunta publicada ainda.</div>

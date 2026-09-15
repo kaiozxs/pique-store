@@ -7,7 +7,6 @@ import type { NavCategory } from "@/lib/medusa";
 const UTILITY_LINKS = [
   { href: "/wab", label: "WAB" },
   { href: "/dicas", label: "DICAS" },
-  { href: "/pedido", label: "PEDIDO" },
   { href: "/ajuda", label: "AJUDA" },
 ];
 
@@ -67,7 +66,7 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
                     onClick={(e) => {
                       if (!category.available) e.preventDefault();
                     }}
-                    className={`group flex items-baseline justify-between gap-3 border-b border-white/10 py-3.5 font-display text-2xl tracking-tight transition-colors ${
+                    className={`group flex items-baseline justify-between gap-3 border-b border-white/10 py-3.5 font-display text-2xl tracking-wide transition-colors ${
                       category.available ? "text-paper hover:text-accent" : "cursor-default text-paper/35"
                     }`}
                   >
@@ -83,7 +82,7 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
                   href="#"
                   aria-disabled="true"
                   onClick={(e) => e.preventDefault()}
-                  className="group flex items-baseline justify-between gap-3 border-b border-white/10 py-3.5 font-display text-2xl tracking-tight text-paper/35"
+                  className="group flex items-baseline justify-between gap-3 border-b border-white/10 py-3.5 font-display text-2xl tracking-wide text-paper/35"
                 >
                   <span>Promoção</span>
                   <span className="shrink-0 text-[10px] font-sans font-bold tracking-[0.14em] text-accent/70">

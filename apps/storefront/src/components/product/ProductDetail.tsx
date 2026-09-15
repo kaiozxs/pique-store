@@ -108,7 +108,7 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
       </div>
 
       <div>
-        <h1 className="font-display text-3xl tracking-tight sm:text-4xl">{product.title}</h1>
+        <h1 className="font-display text-3xl tracking-wide sm:text-4xl">{product.title}</h1>
 
         <div className="mt-5 text-xl font-semibold">
           {variante?.calculated_price?.calculated_amount != null && variante.calculated_price.currency_code

@@ -10,7 +10,7 @@ export async function WabTeaser() {
         <div className="mb-6 font-accent text-xl italic text-accent">
           {revelado ? "revelado" : "em construção"}
         </div>
-        <h2 className="font-display text-4xl tracking-tight sm:text-6xl">
+        <h2 className="font-display text-4xl tracking-wide sm:text-6xl">
           {revelado && wab.title ? wab.title : "WAB"}
         </h2>
         <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-ink/60">

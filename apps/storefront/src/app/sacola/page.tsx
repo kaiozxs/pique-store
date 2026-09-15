@@ -14,7 +14,7 @@ export default async function SacolaPage() {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center bg-ink px-6 text-center text-paper">
         <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/50">SACOLA</div>
-        <h1 className="font-display text-3xl tracking-tight sm:text-5xl">SUA SACOLA ESTÁ VAZIA</h1>
+        <h1 className="font-display text-3xl tracking-wide sm:text-5xl">SUA SACOLA ESTÁ VAZIA</h1>
         <Link
           href="/drops"
           className="mt-9 border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
@@ -31,7 +31,7 @@ export default async function SacolaPage() {
     <div className="bg-ink text-paper">
       <div className="mx-auto max-w-4xl px-6 py-16 sm:px-8">
         <div className="mb-2 text-[13px] font-semibold tracking-[0.28em] text-paper/50">SACOLA</div>
-        <h1 className="mb-10 font-display text-3xl tracking-tight sm:text-5xl">SUA SACOLA</h1>
+        <h1 className="mb-10 font-display text-3xl tracking-wide sm:text-5xl">SUA SACOLA</h1>
 
         <div>
           {items.map((item) => (

@@ -21,7 +21,7 @@ export default async function DropsPage({
     <div className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-20 sm:px-8">
         <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">CATÁLOGO</div>
-        <h1 className="mb-10 font-display text-3xl tracking-tight sm:text-5xl">
+        <h1 className="mb-10 font-display text-3xl tracking-wide sm:text-5xl">
           {activeCategory ? activeCategory.name.toUpperCase() : "TODOS OS DROPS"}
         </h1>
 

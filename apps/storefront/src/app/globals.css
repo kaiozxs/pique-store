@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=Archivo+Black&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=Anton&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -11,7 +11,7 @@
   --color-ink: var(--color-ink);
   --color-paper: var(--color-paper);
   --color-accent: var(--color-accent);
-  --font-display: "Archivo Black", "Arial Black", sans-serif;
+  --font-display: "Anton", "Arial Black", sans-serif;
   --font-sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-accent: "Cormorant Garamond", Georgia, serif;
 }

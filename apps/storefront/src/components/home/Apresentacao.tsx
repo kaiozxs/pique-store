@@ -13,7 +13,7 @@ export function Apresentacao({ config }: { config?: Record<string, string> | nul
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-24 sm:px-8 sm:py-32 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
         <div>
           <div className="mb-6 font-accent text-xl italic text-accent">{kicker}</div>
-          <h2 className="font-display text-3xl leading-[1.08] tracking-tight sm:text-5xl">
+          <h2 className="font-display text-3xl leading-[1.08] tracking-wide sm:text-5xl">
             {headlineLine1}
             <br />
             {headlineLine2}

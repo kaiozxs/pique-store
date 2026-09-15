@@ -17,7 +17,7 @@ export async function DropDaSemana() {
             <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">
               PRIMEIRA COLEÇÃO
             </div>
-            <h2 className="font-display text-3xl tracking-tight sm:text-5xl">
+            <h2 className="font-display text-3xl tracking-wide sm:text-5xl">
               {title ?? "DROP DA SEMANA"}
             </h2>
           </div>

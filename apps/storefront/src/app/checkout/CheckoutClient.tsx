@@ -130,7 +130,7 @@ export function CheckoutClient({
       <div className="bg-ink text-paper">
         <div className="mx-auto max-w-2xl px-6 py-24 text-center sm:px-8">
           <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-accent">PEDIDO CONFIRMADO</div>
-          <h1 className="font-display text-3xl tracking-tight sm:text-5xl">OBRIGADO, {(order.email ?? "").split("@")[0].toUpperCase()}</h1>
+          <h1 className="font-display text-3xl tracking-wide sm:text-5xl">OBRIGADO, {(order.email ?? "").split("@")[0].toUpperCase()}</h1>
           <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-paper/60">
             Pedido #{order.display_id} confirmado. Total de {formatMoney(order.total, order.currency_code)}.
           </p>
@@ -149,7 +149,7 @@ export function CheckoutClient({
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center bg-ink px-6 text-center text-paper">
         <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/50">CHECKOUT</div>
-        <h1 className="font-display text-3xl tracking-tight sm:text-5xl">SUA SACOLA ESTÁ VAZIA</h1>
+        <h1 className="font-display text-3xl tracking-wide sm:text-5xl">SUA SACOLA ESTÁ VAZIA</h1>
         <Link
           href="/drops"
           className="mt-9 border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
@@ -166,7 +166,7 @@ export function CheckoutClient({
     <div className="bg-ink text-paper">
       <div className="mx-auto max-w-3xl px-6 py-16 sm:px-8">
         <div className="mb-2 text-[13px] font-semibold tracking-[0.28em] text-paper/50">CHECKOUT</div>
-        <h1 className="mb-10 font-display text-3xl tracking-tight sm:text-5xl">FINALIZAR PEDIDO</h1>
+        <h1 className="mb-10 font-display text-3xl tracking-wide sm:text-5xl">FINALIZAR PEDIDO</h1>
 
         <div className="mb-8 flex gap-6 text-[12px] font-semibold tracking-[0.1em] text-paper/40">
           <span className={step === "endereco" ? "text-accent" : ""}>1. ENDEREÇO</span>

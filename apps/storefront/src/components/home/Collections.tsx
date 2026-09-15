@@ -31,7 +31,7 @@ function CollectionTile({ category, thumbnail }: { category: NavCategory; thumbn
 
   const label = (
     <div className="relative p-6">
-      <div className="font-display text-2xl leading-none tracking-tight sm:text-3xl">
+      <div className="font-display text-2xl leading-none tracking-wide sm:text-3xl">
         {category.name.toUpperCase()}
       </div>
       {category.available && (
@@ -84,7 +84,7 @@ export async function Collections() {
     <section className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32">
         <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
-          <h2 className="font-display text-4xl tracking-tight sm:text-6xl">COLEÇÕES</h2>
+          <h2 className="font-display text-4xl tracking-wide sm:text-6xl">COLEÇÕES</h2>
           <div className="max-w-xs text-sm text-paper/55">
             Cada peça carrega o mesmo padrão. Explore por categoria — o que ainda não chegou, chega.
           </div>

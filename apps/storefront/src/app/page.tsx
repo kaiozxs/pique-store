@@ -1,4 +1,3 @@
-import { Marquee } from "@/components/home/Marquee";
 import { Hero } from "@/components/home/Hero";
 import { Collections } from "@/components/home/Collections";
 import { DropDaSemana } from "@/components/home/DropDaSemana";
@@ -12,7 +11,6 @@ export default async function Home() {
 
   return (
     <>
-      <Marquee />
       {sections.map((section) => {
         switch (section.type as HomeSectionType) {
           case "hero":

@@ -35,7 +35,7 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
         <div className="mb-7 text-[13px] font-semibold tracking-[0.32em] text-paper/60">
           STREETWEAR DE ALTO PADRÃO
         </div>
-        <h1 className="max-w-[16ch] font-display text-[clamp(2.1rem,9vw,6.5rem)] leading-[0.98] tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
+        <h1 className="max-w-[16ch] font-display text-[clamp(2.1rem,9vw,6.5rem)] leading-[0.98] tracking-wide drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
           {headlineLine1} <span className="text-accent">{headlineHighlight}</span>
         </h1>
         <p className="mt-9 max-w-lg text-[17px] leading-relaxed text-paper/85">{subtext}</p>
