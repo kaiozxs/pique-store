@@ -1,33 +1,33 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { WAB_MODULE } from "../../modules/wab"
-import WabModuleService from "../../modules/wab/service"
+import { BOOK_MODULE } from "../../modules/book"
+import BookModuleService from "../../modules/book/service"
 
-type WabMedia = { url: string; type: "image" | "video" }
-type WabMediaJson = { items: WabMedia[] }
+type BookMedia = { url: string; type: "image" | "video" }
+type BookMediaJson = { items: BookMedia[] }
 
 type Input = {
   status?: "em_construcao" | "revelado" | "oculto"
   title?: string | null
   body?: string | null
-  media?: WabMediaJson | null
+  media?: BookMediaJson | null
 }
 
-export const upsertWabContentStep = createStep(
-  "upsert-wab-content",
+export const upsertBookContentStep = createStep(
+  "upsert-book-content",
   async (input: Input, { container }) => {
-    const wabService: WabModuleService = container.resolve(WAB_MODULE)
+    const bookService: BookModuleService = container.resolve(BOOK_MODULE)
 
-    const existing = await wabService.listWabContents({}, { take: 1 })
+    const existing = await bookService.listBookContents({}, { take: 1 })
     const previous = existing[0] ?? null
 
     let record
     if (previous) {
-      record = await wabService.updateWabContents({
+      record = await bookService.updateBookContents({
         id: previous.id,
         ...input,
       })
     } else {
-      record = await wabService.createWabContents({
+      record = await bookService.createBookContents({
         status: input.status ?? "em_construcao",
         title: input.title ?? null,
         body: input.body ?? null,
@@ -39,8 +39,8 @@ export const upsertWabContentStep = createStep(
   },
   async (previous, { container }) => {
     if (!previous) return
-    const wabService: WabModuleService = container.resolve(WAB_MODULE)
-    await wabService.updateWabContents({
+    const bookService: BookModuleService = container.resolve(BOOK_MODULE)
+    await bookService.updateBookContents({
       id: previous.id,
       status: previous.status,
       title: previous.title,

@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import type { NavCategory } from "@/lib/medusa";
 
 const UTILITY_LINKS = [
-  { href: "/wab", label: "WAB" },
+  { href: "/book", label: "BOOK" },
   { href: "/dicas", label: "DICAS" },
   { href: "/ajuda", label: "AJUDA" },
 ];

@@ -1,7 +1,7 @@
 import { Hero } from "@/components/home/Hero";
 import { Collections } from "@/components/home/Collections";
 import { DropDaSemana } from "@/components/home/DropDaSemana";
-import { WabTeaser } from "@/components/home/WabTeaser";
+import { BookTeaser } from "@/components/home/BookTeaser";
 import { DicasDestaque } from "@/components/home/DicasDestaque";
 import { Apresentacao } from "@/components/home/Apresentacao";
 import { getHomeSections, type HomeSectionType } from "@/lib/medusa";
@@ -23,7 +23,7 @@ export default async function Home() {
           case "drop_destaque":
             return <DropDaSemana key={section.type} />;
           case "wab_teaser":
-            return <WabTeaser key={section.type} />;
+            return <BookTeaser key={section.type} />;
           case "dicas_destaque":
             return <DicasDestaque key={section.type} />;
           case "apresentacao":

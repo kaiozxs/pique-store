@@ -9,7 +9,7 @@ const SECTION_TYPES = ["hero", "drop_destaque", "wab_teaser", "dicas_destaque", 
 const DEFAULT_LABELS: Record<(typeof SECTION_TYPES)[number], string> = {
   hero: "Hero (abertura)",
   drop_destaque: "Drop da Semana",
-  wab_teaser: "WAB",
+  wab_teaser: "Book",
   dicas_destaque: "Dicas",
   apresentacao: "Apresentação da PIQUE",
 }

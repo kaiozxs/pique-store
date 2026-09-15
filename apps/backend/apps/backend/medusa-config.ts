@@ -14,7 +14,7 @@ module.exports = defineConfig({
     }
   },
   modules: [
-    { resolve: "./src/modules/wab" },
+    { resolve: "./src/modules/book" },
     { resolve: "./src/modules/verification" },
     { resolve: "./src/modules/drop-semana" },
     { resolve: "./src/modules/home-config" },

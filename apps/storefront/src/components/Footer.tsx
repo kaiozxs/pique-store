@@ -43,7 +43,7 @@ export function Footer() {
             <div className="mb-4 text-sm font-extrabold tracking-[0.06em]">NAVEGAÇÃO</div>
             <div className="flex flex-col gap-3 text-sm text-paper/70">
               <Link href="/drops">Drops</Link>
-              <Link href="/wab">WAB</Link>
+              <Link href="/book">Book</Link>
               <Link href="/dicas">Dicas</Link>
               <Link href="/conta">Meus pedidos</Link>
               <Link href="/ajuda">Ajuda</Link>

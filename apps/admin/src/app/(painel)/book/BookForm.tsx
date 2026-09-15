@@ -1,20 +1,20 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { WabContent, WabMedia } from "@/lib/wab";
-import { saveWabAction } from "./actions";
+import type { BookContent, BookMedia } from "@/lib/book";
+import { saveBookAction } from "./actions";
 
-const STATUS_OPTIONS: { value: WabContent["status"]; label: string }[] = [
+const STATUS_OPTIONS: { value: BookContent["status"]; label: string }[] = [
   { value: "em_construcao", label: "Em construção" },
   { value: "revelado", label: "Revelado" },
   { value: "oculto", label: "Oculto" },
 ];
 
-export function WabForm({ initial }: { initial: WabContent }) {
+export function BookForm({ initial }: { initial: BookContent }) {
   const [status, setStatus] = useState(initial.status);
   const [title, setTitle] = useState(initial.title ?? "");
   const [body, setBody] = useState(initial.body ?? "");
-  const [media, setMedia] = useState<WabMedia[]>(initial.media?.items ?? []);
+  const [media, setMedia] = useState<BookMedia[]>(initial.media?.items ?? []);
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
 
@@ -22,7 +22,7 @@ export function WabForm({ initial }: { initial: WabContent }) {
     setMedia((prev) => [...prev, { url: "", type: "image" }]);
   }
 
-  function updateMedia(index: number, patch: Partial<WabMedia>) {
+  function updateMedia(index: number, patch: Partial<BookMedia>) {
     setMedia((prev) => prev.map((m, i) => (i === index ? { ...m, ...patch } : m)));
   }
 
@@ -33,7 +33,7 @@ export function WabForm({ initial }: { initial: WabContent }) {
   function handleSave() {
     setSaved(false);
     startTransition(async () => {
-      await saveWabAction({
+      await saveBookAction({
         status,
         title: title || null,
         body: body || null,
@@ -49,7 +49,7 @@ export function WabForm({ initial }: { initial: WabContent }) {
         <label className="text-sm font-medium text-ink">Status</label>
         <select
           value={status}
-          onChange={(e) => setStatus(e.target.value as WabContent["status"])}
+          onChange={(e) => setStatus(e.target.value as BookContent["status"])}
           className="rounded-md border border-border bg-surface px-3 py-2 text-sm"
         >
           {STATUS_OPTIONS.map((opt) => (
@@ -96,7 +96,7 @@ export function WabForm({ initial }: { initial: WabContent }) {
             />
             <select
               value={item.type}
-              onChange={(e) => updateMedia(index, { type: e.target.value as WabMedia["type"] })}
+              onChange={(e) => updateMedia(index, { type: e.target.value as BookMedia["type"] })}
               className="rounded-md border border-border bg-surface px-3 py-2 text-sm"
             >
               <option value="image">Imagem</option>

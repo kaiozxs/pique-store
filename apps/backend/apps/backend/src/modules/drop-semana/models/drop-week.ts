@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils"
 import DropWeekItem from "./drop-week-item"
 
-// Singleton, como o wab_content: representa o drop da semana atual.
+// Singleton, como o book_content: representa o drop da semana atual.
 const DropWeek = model.define("drop_week", {
   id: model.id().primaryKey(),
   title: model.text().nullable(),

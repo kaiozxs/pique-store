@@ -1,6 +1,9 @@
 import { model } from "@medusajs/framework/utils"
 
-const WabContent = model.define("wab_content", {
+// Tabela mantida como "wab_content" (nome antigo da feature, "WAB") pra não
+// precisar de uma migração de rename — o nome novo "BOOK" vive só no
+// código/UI a partir daqui.
+const BookContent = model.define("wab_content", {
   id: model.id().primaryKey(),
   status: model
     .enum(["em_construcao", "revelado", "oculto"])
@@ -10,4 +13,4 @@ const WabContent = model.define("wab_content", {
   media: model.json().nullable(),
 })
 
-export default WabContent
+export default BookContent

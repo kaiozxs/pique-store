@@ -1,7 +1,7 @@
 import { MiddlewareRoute, validateAndTransformBody } from "@medusajs/framework"
 import { z } from "@medusajs/framework/zod"
 
-export const UpsertWabContentSchema = z.object({
+export const UpsertBookContentSchema = z.object({
   status: z.enum(["em_construcao", "revelado", "oculto"]).optional(),
   title: z.string().nullable().optional(),
   body: z.string().nullable().optional(),
@@ -18,12 +18,12 @@ export const UpsertWabContentSchema = z.object({
     .optional(),
 })
 
-export type UpsertWabContentSchema = z.infer<typeof UpsertWabContentSchema>
+export type UpsertBookContentSchema = z.infer<typeof UpsertBookContentSchema>
 
-export const wabAdminMiddlewares: MiddlewareRoute[] = [
+export const bookAdminMiddlewares: MiddlewareRoute[] = [
   {
-    matcher: "/admin/wab",
+    matcher: "/admin/book",
     method: "POST",
-    middlewares: [validateAndTransformBody(UpsertWabContentSchema)],
+    middlewares: [validateAndTransformBody(UpsertBookContentSchema)],
   },
 ]
