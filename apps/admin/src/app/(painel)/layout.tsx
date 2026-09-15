@@ -1,10 +1,16 @@
 import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { Sidebar } from "@/components/Sidebar";
 import { logoutAction } from "./actions";
 
 export default async function PainelLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
+  // O middleware (proxy.ts) já barra requisição sem cookie de sessão, mas só
+  // checa a presença do cookie — essa checagem aqui valida a sessão de
+  // verdade (via getCurrentUser) como segunda camada, caso o matcher do
+  // middleware algum dia deixe de cobrir uma rota nova sob (painel).
+  if (!user) redirect("/login");
 
   return (
     <div className="flex min-h-screen">

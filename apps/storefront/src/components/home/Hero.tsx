@@ -9,6 +9,21 @@ type HeroConfig = {
   button_href?: string;
 };
 
+// O link do botão vem de um campo de texto livre no admin (Home Configurável)
+// sem validação de esquema — sem isso, um "javascript:" ou "data:" ali vira
+// XSS armazenado pra todo visitante que clicar no CTA. Só aceita caminho
+// relativo (rota interna) ou http(s) absoluto.
+function sanitizeHref(href: string): string {
+  if (href.startsWith("/") || href.startsWith("#")) return href;
+  try {
+    const url = new URL(href);
+    if (url.protocol === "http:" || url.protocol === "https:") return href;
+  } catch {
+    // href inválida — cai no fallback abaixo
+  }
+  return "/drops";
+}
+
 export function Hero({ config }: { config?: Record<string, string> | null }) {
   const c: HeroConfig = config ?? {};
   const headlineLine1 = c.headline_line1 || "O PADRÃO É";
@@ -17,7 +32,7 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
     c.subtext ||
     "Peças desenhadas para quem entende moda como investimento, não como tendência. PIQUE une o corte impecável do alfaiate ao impulso das ruas.";
   const buttonLabel = c.button_label || "EXPLORAR O DROP 001";
-  const buttonHref = c.button_href || "/drops";
+  const buttonHref = sanitizeHref(c.button_href || "/drops");
 
   return (
     <section className="relative overflow-hidden bg-ink text-paper">
