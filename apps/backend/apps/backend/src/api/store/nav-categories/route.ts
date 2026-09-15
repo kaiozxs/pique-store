@@ -23,6 +23,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const countByCategoryId = new Map<string, number>()
   for (const product of products) {
     for (const category of product.categories ?? []) {
+      if (!category) continue
       countByCategoryId.set(category.id, (countByCategoryId.get(category.id) ?? 0) + 1)
     }
   }

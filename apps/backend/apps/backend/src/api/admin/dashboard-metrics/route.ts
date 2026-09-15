@@ -12,6 +12,12 @@ const PERIOD_DAYS: Record<NonNullable<GetDashboardMetricsSchema["period"]>, numb
 const MAX_CUSTOM_RANGE_DAYS = 366
 const DAY_MS = 24 * 60 * 60 * 1000
 
+// O banco é um Postgres remoto (Supabase) — escanear até 1000 pedidos a cada
+// abertura do dashboard fica lento. Cache curtinho em memória evita repetir
+// a mesma consulta a cada refresh/navegação dentro da janela.
+const CACHE_TTL_MS = 20_000
+const metricsCache = new Map<string, { expiresAt: number; body: unknown }>()
+
 // Dias em UTC do início ao fim, pra bater exatamente com o dia (UTC) que
 // `created_at` cai — misturar aritmética de data local com toISOString()
 // desloca os buckets em ±1 dia dependendo do fuso do servidor.
@@ -43,6 +49,12 @@ export async function GET(
   const startDate = new Date(startMs)
   const endDate = new Date(startMs + days * DAY_MS)
 
+  const cacheKey = `${startMs}:${days}`
+  const cached = metricsCache.get(cacheKey)
+  if (cached && cached.expiresAt > Date.now()) {
+    return res.json(cached.body)
+  }
+
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { data: orders } = await query.graph({
     entity: "order",
@@ -69,7 +81,7 @@ export async function GET(
     revenueByDay.push({ date: key, total: revenueByDayMap.get(key) ?? 0 })
   }
 
-  return res.json({
+  const body = {
     start_date: revenueByDay[0]?.date,
     end_date: revenueByDay[revenueByDay.length - 1]?.date,
     currency_code: currencyCode,
@@ -77,5 +89,8 @@ export async function GET(
     order_count: orderCount,
     average_order_value: averageOrderValue,
     revenue_by_day: revenueByDay,
-  })
+  }
+  metricsCache.set(cacheKey, { expiresAt: Date.now() + CACHE_TTL_MS, body })
+
+  return res.json(body)
 }

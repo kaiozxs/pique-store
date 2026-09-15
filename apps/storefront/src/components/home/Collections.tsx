@@ -71,9 +71,13 @@ export async function Collections() {
 
   const thumbnailByCategory = new Map<string, string>();
   for (const product of products) {
+    // Prefere uma foto de lifestyle (modelo vestindo) às fotos de produto —
+    // ficam muito cortadas/zoom no card alto da vitrine de coleções.
+    const lifestylePhoto = (product.images ?? []).find((img) => img.url?.includes("lifestyle-"))?.url;
+    const photo = lifestylePhoto ?? product.thumbnail;
     for (const category of product.categories ?? []) {
-      if (!thumbnailByCategory.has(category.id) && product.thumbnail) {
-        thumbnailByCategory.set(category.id, product.thumbnail);
+      if (!thumbnailByCategory.has(category.id) && photo) {
+        thumbnailByCategory.set(category.id, photo);
       }
     }
   }

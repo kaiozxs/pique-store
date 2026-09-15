@@ -27,14 +27,20 @@ const PRODUCT_FIELDS = [
   "+variants.options.value",
 ].join(",");
 
-let cachedRegion: MedusaRegion | null = null;
-
+// O backend roda num Postgres remoto (Supabase) — cada ida ao banco custa uma
+// volta de rede considerável (~1-3s pra listagens com relations). Um `let`
+// module-level (ou `unstable_cache`) NÃO persiste de forma confiável entre
+// requisições aqui (Next dev/Turbopack reavalia o módulo por request) — só o
+// cache nativo de `fetch()` do Next (`next: {revalidate}`) realmente
+// persiste. Por isso essas chamadas usam `sdk.client.fetch` direto na Store
+// API em vez dos métodos tipados do SDK (que não expõem essa opção).
 export async function getDefaultRegion(): Promise<MedusaRegion> {
-  if (cachedRegion) return cachedRegion;
-  const { regions } = await sdk.store.region.list({ fields: "*countries" });
+  const { regions } = await sdk.client.fetch<{ regions: MedusaRegion[] }>("/store/regions", {
+    query: { fields: "*countries" },
+    next: { revalidate: 300 },
+  });
   const region = regions[0];
   if (!region) throw new Error("Nenhuma região configurada no Medusa.");
-  cachedRegion = region;
   return region;
 }
 
@@ -42,10 +48,13 @@ export async function listProducts(options?: {
   categoryId?: string;
 }): Promise<{ products: MedusaProduct[]; region: MedusaRegion }> {
   const region = await getDefaultRegion();
-  const { products } = await sdk.store.product.list({
-    region_id: region.id,
-    fields: PRODUCT_FIELDS,
-    ...(options?.categoryId ? { category_id: [options.categoryId] } : {}),
+  const { products } = await sdk.client.fetch<{ products: MedusaProduct[] }>("/store/products", {
+    query: {
+      region_id: region.id,
+      fields: PRODUCT_FIELDS,
+      ...(options?.categoryId ? { category_id: [options.categoryId] } : {}),
+    },
+    next: { revalidate: 30 },
   });
   return { products, region };
 }
@@ -84,11 +93,9 @@ export async function getCuratedDrop(): Promise<{
     return { title, products: [], region };
   }
 
-  const { products } = await sdk.store.product.list({
-    id: product_ids,
-    region_id: region.id,
-    fields: PRODUCT_FIELDS,
-    limit: product_ids.length,
+  const { products } = await sdk.client.fetch<{ products: MedusaProduct[] }>("/store/products", {
+    query: { id: product_ids, region_id: region.id, fields: PRODUCT_FIELDS, limit: product_ids.length },
+    next: { revalidate: 30 },
   });
 
   // A Store API não garante a ordem do array `id` passado no filtro — a
@@ -103,10 +110,9 @@ export async function getProductByHandle(
   handle: string
 ): Promise<{ product: MedusaProduct | null; region: MedusaRegion }> {
   const region = await getDefaultRegion();
-  const { products } = await sdk.store.product.list({
-    handle,
-    region_id: region.id,
-    fields: PRODUCT_FIELDS,
+  const { products } = await sdk.client.fetch<{ products: MedusaProduct[] }>("/store/products", {
+    query: { handle, region_id: region.id, fields: PRODUCT_FIELDS },
+    next: { revalidate: 30 },
   });
   return { product: products[0] ?? null, region };
 }
@@ -168,21 +174,21 @@ export function cheapestPrice(product: MedusaProduct): { amount: number; currenc
   return { amount: cheapest.calculated_amount ?? 0, currencyCode: cheapest.currency_code ?? "brl" };
 }
 
-// --- WAB (área de mistério/em construção) — rota própria, não vem do SDK ---
+// --- Book (área de mistério/em construção) — rota própria, não vem do SDK ---
 
-export type WabMedia = { url: string; type: "image" | "video" };
-export type WabContent = {
+export type BookMedia = { url: string; type: "image" | "video" };
+export type BookContent = {
   status: "em_construcao" | "revelado" | "oculto";
   title: string | null;
   body: string | null;
-  media: { items: WabMedia[] } | null;
+  media: { items: BookMedia[] } | null;
 };
 
-export async function getWabContent(): Promise<WabContent> {
-  const data = await sdk.client.fetch<{ wab_content: WabContent }>("/store/wab", {
+export async function getBookContent(): Promise<BookContent> {
+  const data = await sdk.client.fetch<{ book_content: BookContent }>("/store/book", {
     next: { revalidate: 30 },
   });
-  return data.wab_content;
+  return data.book_content;
 }
 
 // --- Verifique seu PIQUE (autenticidade da peça física) ---
