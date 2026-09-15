@@ -26,7 +26,7 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
         alt=""
         fill
         priority
-        className="object-cover object-[65%_30%]"
+        className="object-cover object-[65%_45%]"
         sizes="100vw"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
