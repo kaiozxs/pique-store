@@ -45,7 +45,34 @@ export function CheckoutClient({
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [order, setOrder] = useState<HttpTypes.StoreOrder | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cepLoading, setCepLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  // Preenche endereço/cidade/estado automaticamente a partir do CEP (ViaCEP —
+  // gratuito, sem chave, padrão em e-commerce brasileiro). Só dispara quando o
+  // país selecionado é Brasil e o CEP tem os 8 dígitos.
+  function handlePostalCodeChange(value: string) {
+    setAddress((prev) => ({ ...prev, postal_code: value }));
+    const digits = value.replace(/\D/g, "");
+    if (address.country_code !== "br" || digits.length !== 8) return;
+
+    setCepLoading(true);
+    fetch(`https://viacep.com.br/ws/${digits}/json/`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.erro) return;
+        setAddress((prev) => ({
+          ...prev,
+          address_1: data.logradouro || prev.address_1,
+          city: data.localidade || prev.city,
+          province: data.uf ? data.uf.toLowerCase() : prev.province,
+        }));
+      })
+      .catch(() => {
+        // CEP não encontrado ou API fora do ar — cliente preenche na mão.
+      })
+      .finally(() => setCepLoading(false));
+  }
 
   useEffect(() => {
     if (step !== "frete") return;
@@ -204,9 +231,9 @@ export function CheckoutClient({
               />
               <input
                 required
-                placeholder="CEP"
+                placeholder={cepLoading ? "Buscando..." : "CEP"}
                 value={address.postal_code}
-                onChange={(e) => setAddress({ ...address, postal_code: e.target.value })}
+                onChange={(e) => handlePostalCodeChange(e.target.value)}
                 className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
               />
             </div>

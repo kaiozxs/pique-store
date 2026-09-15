@@ -15,7 +15,7 @@ const EMPTY_ADDRESS: ShippingAddressInput = {
   city: "",
   province: "",
   postal_code: "",
-  country_code: "",
+  country_code: "br",
   phone: "",
 };
 
@@ -31,7 +31,31 @@ export function AccountDashboard({
   const router = useRouter();
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [address, setAddress] = useState<ShippingAddressInput>(EMPTY_ADDRESS);
+  const [cepLoading, setCepLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  // Mesmo autofill de CEP do checkout (ViaCEP) — aqui pra manter os dois
+  // formulários de endereço consistentes.
+  function handlePostalCodeChange(value: string) {
+    setAddress((prev) => ({ ...prev, postal_code: value }));
+    const digits = value.replace(/\D/g, "");
+    if (address.country_code !== "br" || digits.length !== 8) return;
+
+    setCepLoading(true);
+    fetch(`https://viacep.com.br/ws/${digits}/json/`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.erro) return;
+        setAddress((prev) => ({
+          ...prev,
+          address_1: data.logradouro || prev.address_1,
+          city: data.localidade || prev.city,
+          province: data.uf ? data.uf.toLowerCase() : prev.province,
+        }));
+      })
+      .catch(() => {})
+      .finally(() => setCepLoading(false));
+  }
 
   function handleAddAddress(e: React.FormEvent) {
     e.preventDefault();
@@ -145,14 +169,14 @@ export function AccountDashboard({
                 />
                 <input
                   required
-                  placeholder="CEP"
+                  placeholder={cepLoading ? "Buscando..." : "CEP"}
                   value={address.postal_code}
-                  onChange={(e) => setAddress({ ...address, postal_code: e.target.value })}
+                  onChange={(e) => handlePostalCodeChange(e.target.value)}
                   className={inputClass}
                 />
                 <input
                   required
-                  placeholder="País (ex: de)"
+                  placeholder="País (ex: br)"
                   value={address.country_code}
                   onChange={(e) => setAddress({ ...address, country_code: e.target.value })}
                   className={inputClass}
