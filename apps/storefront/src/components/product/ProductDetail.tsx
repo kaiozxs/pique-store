@@ -26,7 +26,13 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
   const variante = useMemo(() => findVariant(product, selected), [product, selected]);
 
   const disponivel = variante ? isVariantAvailable(variante) : false;
-  const image = product.thumbnail ?? product.images?.[0]?.url;
+  const gallery = useMemo(() => {
+    const urls = (product.images ?? []).map((img) => img.url).filter(Boolean) as string[];
+    if (urls.length > 0) return urls;
+    return product.thumbnail ? [product.thumbnail] : [];
+  }, [product]);
+  const [activeImage, setActiveImage] = useState(0);
+  const image = gallery[activeImage] ?? gallery[0];
   const presale = getPresaleInfo(product);
 
   function handleAddToCart() {
@@ -43,7 +49,15 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
       <div className="flex flex-col gap-4">
         <div className="relative flex aspect-[3/4] flex-col items-center justify-center gap-4 overflow-hidden border border-dashed border-white/20 bg-[#161617]">
           {image ? (
-            <Image src={image} alt={product.title} fill className="object-cover" sizes="(min-width: 1024px) 50vw, 100vw" />
+            <Image
+              key={image}
+              src={image}
+              alt={product.title}
+              fill
+              className="object-cover"
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              priority={activeImage === 0}
+            />
           ) : (
             <>
               <svg width="72" height="72" viewBox="0 0 24 24" aria-hidden="true" className="text-paper/30">
@@ -52,7 +66,45 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
               <div className="text-xs tracking-[0.08em] text-paper/45">[FOTOS DO PRODUTO]</div>
             </>
           )}
+
+          {gallery.length > 1 && (
+            <>
+              <button
+                type="button"
+                aria-label="Foto anterior"
+                onClick={() => setActiveImage((i) => (i - 1 + gallery.length) % gallery.length)}
+                className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center bg-ink/60 text-paper transition-colors hover:bg-accent"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                aria-label="Próxima foto"
+                onClick={() => setActiveImage((i) => (i + 1) % gallery.length)}
+                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center bg-ink/60 text-paper transition-colors hover:bg-accent"
+              >
+                ›
+              </button>
+            </>
+          )}
         </div>
+
+        {gallery.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto">
+            {gallery.map((url, i) => (
+              <button
+                key={url + i}
+                type="button"
+                onClick={() => setActiveImage(i)}
+                className={`relative h-16 w-16 shrink-0 overflow-hidden border transition-colors ${
+                  i === activeImage ? "border-accent" : "border-white/20 hover:border-white/50"
+                }`}
+              >
+                <Image src={url} alt={`${product.title} — foto ${i + 1}`} fill className="object-cover" sizes="64px" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div>
