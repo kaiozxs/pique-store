@@ -19,15 +19,23 @@ export function Sidebar() {
 
   return (
     <nav className="flex h-full w-60 shrink-0 flex-col gap-1 border-r border-border bg-surface p-4">
-      <div className="mb-4 px-2 text-lg font-bold tracking-tight text-ink">PIQUE Admin</div>
+      <div className="mb-6 flex items-center gap-2.5 px-2">
+        <span className="flex h-7 w-7 items-center justify-center bg-accent text-xs font-black text-white">P</span>
+        <div className="leading-tight">
+          <div className="font-display text-sm tracking-tight text-ink">PIQUE</div>
+          <div className="text-[10px] font-semibold tracking-[0.2em] text-muted">ADMIN</div>
+        </div>
+      </div>
       {NAV_ITEMS.map((item) => {
         const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              active ? "bg-accent/10 text-accent" : "text-muted hover:bg-bg hover:text-ink"
+            className={`border-l-2 px-3 py-2 text-sm font-medium transition-colors ${
+              active
+                ? "border-accent bg-accent/10 text-ink"
+                : "border-transparent text-muted hover:border-white/15 hover:bg-surface-raised hover:text-ink"
             }`}
           >
             {item.label}

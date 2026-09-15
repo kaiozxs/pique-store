@@ -151,7 +151,7 @@ export function DicasClient({ initial }: { initial: TipPost[] }) {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-ink">Dicas</h1>
+        <h1 className="font-display text-2xl uppercase tracking-tight text-ink">Dicas</h1>
         <button
           type="button"
           onClick={() => setCreateOpen(true)}

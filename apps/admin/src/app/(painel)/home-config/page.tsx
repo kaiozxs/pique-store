@@ -6,7 +6,7 @@ export default async function HomeConfigPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold text-ink">Home Configurável</h1>
+      <h1 className="mb-6 font-display text-2xl uppercase tracking-tight text-ink">Home Configurável</h1>
       <HomeConfigForm initial={sections} />
     </div>
   );

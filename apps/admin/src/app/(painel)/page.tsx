@@ -44,7 +44,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold text-ink">Dashboard</h1>
+      <h1 className="mb-6 font-display text-2xl uppercase tracking-tight text-ink">Dashboard</h1>
 
       <div className="mb-6 grid grid-cols-3 gap-4">
         <div className="rounded-lg border border-border bg-surface p-5">
@@ -79,13 +79,13 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
             {metrics.revenue_by_day.map((day) => (
               <div key={day.date} className="group relative flex h-48 flex-1 flex-col justify-end">
                 <div
-                  className="rounded-t transition-opacity group-hover:opacity-90"
+                  className="transition-opacity group-hover:opacity-90"
                   style={{
                     height: `${Math.max(2, (day.total / niceMax) * 100)}%`,
-                    background: "linear-gradient(180deg, rgba(37,99,235,0.35) 0%, rgba(37,99,235,0.95) 100%)",
+                    background: "linear-gradient(180deg, rgba(226,24,51,0.35) 0%, rgba(226,24,51,0.95) 100%)",
                   }}
                 />
-                <div className="pointer-events-none absolute -top-9 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-ink px-2 py-1 text-xs text-white opacity-0 shadow-lg group-hover:opacity-100">
+                <div className="pointer-events-none absolute -top-9 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white opacity-0 shadow-lg group-hover:opacity-100">
                   {formatDayLabel(day.date)} — {formatMoney(day.total, metrics.currency_code)}
                 </div>
                 {metrics.revenue_by_day.length <= 31 && (

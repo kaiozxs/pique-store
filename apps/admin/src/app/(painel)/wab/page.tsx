@@ -6,7 +6,7 @@ export default async function WabPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold text-ink">WAB</h1>
+      <h1 className="mb-6 font-display text-2xl uppercase tracking-tight text-ink">WAB</h1>
       <WabForm initial={content} />
     </div>
   );

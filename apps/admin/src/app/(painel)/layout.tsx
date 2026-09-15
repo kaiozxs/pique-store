@@ -13,7 +13,7 @@ export default async function PainelLayout({ children }: { children: ReactNode }
         <header className="flex items-center justify-between border-b border-border bg-surface px-6 py-3">
           <div className="text-sm text-muted">{user?.email ?? ""}</div>
           <form action={logoutAction}>
-            <button type="submit" className="text-sm font-medium text-muted hover:text-ink">
+            <button type="submit" className="text-sm font-medium text-muted hover:text-accent">
               Sair
             </button>
           </form>

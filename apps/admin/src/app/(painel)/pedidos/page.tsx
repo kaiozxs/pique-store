@@ -27,7 +27,7 @@ export default async function PedidosPage({ searchParams }: PageProps<"/pedidos"
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold text-ink">Pedidos</h1>
+      <h1 className="mb-6 font-display text-2xl uppercase tracking-tight text-ink">Pedidos</h1>
 
       <div className="overflow-hidden rounded-lg border border-border bg-surface">
         <table className="w-full text-sm">

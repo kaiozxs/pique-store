@@ -11,7 +11,7 @@ export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-ink">Pedido #{order.display_id}</h1>
+        <h1 className="font-display text-2xl uppercase tracking-tight text-ink">Pedido #{order.display_id}</h1>
         <button
           type="button"
           disabled

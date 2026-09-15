@@ -12,7 +12,7 @@ export default async function DropSemanaPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold text-ink">Drop da Semana</h1>
+      <h1 className="mb-6 font-display text-2xl uppercase tracking-tight text-ink">Drop da Semana</h1>
       <DropSemanaForm
         initialTitle={drop_week?.title ?? ""}
         initialStatus={(drop_week?.status as "draft" | "published") ?? "draft"}

@@ -46,7 +46,7 @@ export function PecasClient({
 
   return (
     <div>
-      <h1 className="mb-2 text-xl font-bold text-ink">Verifique seu PIQUE</h1>
+      <h1 className="mb-2 font-display text-2xl uppercase tracking-tight text-ink">Verifique seu PIQUE</h1>
       <p className="mb-6 text-sm text-muted">
         Gere identificadores únicos por unidade física e acompanhe titularidade.
       </p>

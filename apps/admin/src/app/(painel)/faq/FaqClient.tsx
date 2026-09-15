@@ -98,7 +98,7 @@ export function FaqClient({ initial }: { initial: FaqItem[] }) {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-ink">FAQ</h1>
+        <h1 className="font-display text-2xl uppercase tracking-tight text-ink">FAQ</h1>
         <button
           type="button"
           onClick={() => setCreateOpen(true)}

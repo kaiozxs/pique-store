@@ -1,19 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
+/* Painel administrativo — tema escuro corporativo com a identidade da
+   PIQUE (preto + vermelho), em vez do azul/claro genérico de SaaS. */
 :root {
-  --color-bg: #f5f6f8;
-  --color-surface: #ffffff;
-  --color-border: #e2e4e9;
-  --color-ink: #14161a;
-  --color-muted: #6b7280;
-  --color-accent: #2563eb;
+  --color-bg: #0c0c0d;
+  --color-surface: #1a1a1d;
+  --color-surface-raised: #212226;
+  --color-border: #2c2d31;
+  --color-ink: #f3f2ef;
+  --color-muted: #94959c;
+  --color-accent: #e21833;
   --color-danger: #dc2626;
-  --color-success: #16a34a;
+  --color-success: #22c55e;
 }
 
 @theme inline {
   --color-bg: var(--color-bg);
   --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
   --color-border: var(--color-border);
   --color-ink: var(--color-ink);
   --color-muted: var(--color-muted);
@@ -21,6 +26,7 @@
   --color-danger: var(--color-danger);
   --color-success: var(--color-success);
   --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Archivo Black", "Arial Black", sans-serif;
 }
 
 body {
