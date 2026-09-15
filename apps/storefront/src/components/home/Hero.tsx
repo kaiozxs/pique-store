@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 type HeroConfig = {
@@ -19,15 +20,25 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
   const buttonHref = c.button_href || "/drops";
 
   return (
-    <section className="relative bg-ink text-paper">
-      <div className="mx-auto max-w-7xl px-6 py-28 sm:px-8 sm:py-36">
+    <section className="relative overflow-hidden bg-ink text-paper">
+      <Image
+        src="/images/hero-rio.png"
+        alt=""
+        fill
+        priority
+        className="object-cover object-[65%_30%]"
+        sizes="100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
+
+      <div className="relative mx-auto max-w-7xl px-6 py-28 sm:px-8 sm:py-36">
         <div className="mb-7 text-[13px] font-semibold tracking-[0.32em] text-paper/60">
           STREETWEAR DE ALTO PADRÃO
         </div>
-        <h1 className="max-w-[16ch] font-display text-[clamp(2.1rem,9vw,6.5rem)] leading-[0.98] tracking-tight">
+        <h1 className="max-w-[16ch] font-display text-[clamp(2.1rem,9vw,6.5rem)] leading-[0.98] tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
           {headlineLine1} <span className="text-accent">{headlineHighlight}</span>
         </h1>
-        <p className="mt-9 max-w-lg text-[17px] leading-relaxed text-paper/70">{subtext}</p>
+        <p className="mt-9 max-w-lg text-[17px] leading-relaxed text-paper/85">{subtext}</p>
         <div className="mt-12 flex flex-wrap items-center gap-8">
           <Link
             href={buttonHref}
