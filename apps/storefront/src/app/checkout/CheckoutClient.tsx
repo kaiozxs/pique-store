@@ -9,11 +9,13 @@ import type { ShippingAddressInput, ShippingOption } from "@/lib/checkout";
 import {
   completeCheckoutAction,
   getShippingOptionsAction,
+  initiateMercadoPagoSessionAction,
   saveAddressAction,
   selectShippingOptionAction,
 } from "@/lib/checkout-actions";
+import { MercadoPagoPaymentBrick } from "@/components/checkout/MercadoPagoPaymentBrick";
 
-type Step = "endereco" | "frete" | "revisao" | "confirmado";
+type Step = "endereco" | "frete" | "pagamento" | "revisao" | "confirmado";
 
 const EMPTY_ADDRESS: ShippingAddressInput = {
   first_name: "",
@@ -46,6 +48,7 @@ export function CheckoutClient({
   const [order, setOrder] = useState<HttpTypes.StoreOrder | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cepLoading, setCepLoading] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Preenche endereço/cidade/estado automaticamente a partir do CEP (ViaCEP —
@@ -84,6 +87,15 @@ export function CheckoutClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
+  useEffect(() => {
+    if (step !== "pagamento") return;
+    startTransition(async () => {
+      const amount = await initiateMercadoPagoSessionAction();
+      setPaymentAmount(amount);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
   function handleAddressSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -105,7 +117,7 @@ export function CheckoutClient({
       try {
         const updated = await selectShippingOptionAction(selectedOptionId);
         setCart(updated);
-        setStep("revisao");
+        setStep("pagamento");
       } catch {
         setError("Não foi possível selecionar o frete.");
       }
@@ -171,7 +183,8 @@ export function CheckoutClient({
         <div className="mb-8 flex gap-6 text-[12px] font-semibold tracking-[0.1em] text-paper/40">
           <span className={step === "endereco" ? "text-accent" : ""}>1. ENDEREÇO</span>
           <span className={step === "frete" ? "text-accent" : ""}>2. FRETE</span>
-          <span className={step === "revisao" ? "text-accent" : ""}>3. REVISÃO</span>
+          <span className={step === "pagamento" ? "text-accent" : ""}>3. PAGAMENTO</span>
+          <span className={step === "revisao" ? "text-accent" : ""}>4. REVISÃO</span>
         </div>
 
         {error && <p className="mb-6 text-sm font-semibold text-red-400">{error}</p>}
@@ -299,6 +312,20 @@ export function CheckoutClient({
             >
               {isPending ? "SALVANDO..." : "CONTINUAR PARA REVISÃO"}
             </button>
+          </div>
+        )}
+
+        {step === "pagamento" && (
+          <div className="flex flex-col gap-4">
+            {paymentAmount === null ? (
+              <p className="text-sm text-paper/60">Carregando pagamento...</p>
+            ) : (
+              <MercadoPagoPaymentBrick
+                amount={paymentAmount}
+                email={email}
+                onSuccess={() => setStep("revisao")}
+              />
+            )}
           </div>
         )}
 

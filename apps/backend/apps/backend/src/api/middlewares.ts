@@ -8,6 +8,7 @@ import { faqAdminMiddlewares } from "./admin/faq/middlewares"
 import { dashboardMetricsAdminMiddlewares } from "./admin/dashboard-metrics/middlewares"
 import { verifiqueStoreMiddlewares } from "./store/verifique/middlewares"
 import { pecasStoreMiddlewares } from "./store/pecas/middlewares"
+import { mercadoPagoStoreMiddlewares } from "./store/checkout/mercadopago/middlewares"
 
 export default defineMiddlewares({
   routes: [
@@ -20,5 +21,6 @@ export default defineMiddlewares({
     ...dashboardMetricsAdminMiddlewares,
     ...verifiqueStoreMiddlewares,
     ...pecasStoreMiddlewares,
+    ...mercadoPagoStoreMiddlewares,
   ],
 })
