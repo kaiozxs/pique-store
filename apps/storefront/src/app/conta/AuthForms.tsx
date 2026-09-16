@@ -8,6 +8,81 @@ import { startGoogleLogin } from "@/lib/google-auth";
 const inputClass =
   "border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent";
 
+// Mesma regra cobrada no servidor (registerAction) — mantém as duas em sync
+// manualmente já que são arquivos "use client"/"use server" separados.
+const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+function EyeIcon({ open }: { open: boolean }) {
+  return open ? (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  ) : (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M6.5 6.7C3.9 8.3 2 12 2 12s4 7 11 7c2 0 3.7-.55 5.1-1.35M9.9 5.2A10.7 10.7 0 0 1 12 5c7 0 11 7 11 7a15.6 15.6 0 0 1-3.1 3.8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function PasswordField({
+  name,
+  placeholder,
+  value,
+  onChange,
+  minLength,
+  hasError,
+}: {
+  name: string;
+  placeholder: string;
+  value?: string;
+  onChange?: (value: string) => void;
+  minLength?: number;
+  hasError?: boolean;
+}) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div
+      className={`flex items-center border bg-transparent focus-within:border-accent ${
+        hasError ? "border-red-400" : "border-white/20"
+      }`}
+    >
+      <input
+        type={visible ? "text" : "password"}
+        name={name}
+        placeholder={placeholder}
+        required
+        minLength={minLength}
+        value={value}
+        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
+        className="flex-1 bg-transparent px-4 py-3 text-sm outline-none"
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? "Esconder senha" : "Mostrar senha"}
+        className="px-3 text-paper/45 transition-colors hover:text-paper"
+      >
+        <EyeIcon open={visible} />
+      </button>
+    </div>
+  );
+}
+
 function GoogleButton({ postLoginRedirect }: { postLoginRedirect: string }) {
   const [isPending, setIsPending] = useState(false);
 
@@ -52,7 +127,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form action={formAction} className="flex flex-col gap-3">
       <input type="email" name="email" placeholder="E-mail" required className={inputClass} />
-      <input type="password" name="password" placeholder="Senha" required className={inputClass} />
+      <PasswordField name="password" placeholder="Senha" />
       {state?.error && <p className="text-sm font-semibold text-red-400">{state.error}</p>}
       <button
         type="submit"
@@ -67,21 +142,61 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
 
 function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
   const [state, formAction, isPending] = useActionState(registerAction, undefined);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [clientError, setClientError] = useState<string | null>(null);
 
   useEffect(() => {
     if (state?.ok) onSuccess();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!STRONG_PASSWORD_RE.test(password)) {
+      e.preventDefault();
+      setClientError("A senha precisa ter pelo menos 8 caracteres, com letra maiúscula, minúscula e número.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      e.preventDefault();
+      setClientError("As senhas não coincidem.");
+      return;
+    }
+    setClientError(null);
+  }
+
+  const error = clientError ?? state?.error;
+
   return (
-    <form action={formAction} className="flex flex-col gap-3">
+    <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-3">
         <input name="first_name" placeholder="Nome" required className={inputClass} />
         <input name="last_name" placeholder="Sobrenome" required className={inputClass} />
       </div>
       <input type="email" name="email" placeholder="E-mail" required className={inputClass} />
-      <input type="password" name="password" placeholder="Senha" required minLength={8} className={inputClass} />
-      {state?.error && <p className="text-sm font-semibold text-red-400">{state.error}</p>}
+      <PasswordField
+        name="password"
+        placeholder="Senha"
+        value={password}
+        onChange={(v) => {
+          setPassword(v);
+          setClientError(null);
+        }}
+        minLength={8}
+        hasError={!!clientError}
+      />
+      <p className="text-xs text-paper/45">Mínimo 8 caracteres, com letra maiúscula, minúscula e número.</p>
+      <PasswordField
+        name="password_confirmation"
+        placeholder="Confirme a senha"
+        value={confirmPassword}
+        onChange={(v) => {
+          setConfirmPassword(v);
+          setClientError(null);
+        }}
+        hasError={!!clientError}
+      />
+      {error && <p className="text-sm font-semibold text-red-400">{error}</p>}
       <button
         type="submit"
         disabled={isPending}

@@ -31,9 +31,9 @@ export async function Header() {
 
   return (
     <header className="bg-ink text-paper">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5 sm:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-7 py-5 sm:px-8">
         <Link href="/" className="flex items-center">
-          <Image src="/logo.png" alt="PIQUE" width={76} height={57} style={{ height: "auto" }} priority />
+          <Image src="/logo.png" alt="PIQUE" width={66} height={50} style={{ height: "auto" }} priority />
         </Link>
 
         <MainNav categories={categories} />

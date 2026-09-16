@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { formatMoney } from "@/lib/medusa";
@@ -191,6 +192,13 @@ export function AccountDashboard({
               </button>
             </form>
           )}
+        </section>
+
+        <section className="mb-12">
+          <h2 className="mb-4 text-sm font-bold tracking-[0.1em] text-paper/70">AUTENTICIDADE</h2>
+          <Link href="/verifique" className="text-sm font-semibold text-accent hover:underline">
+            Verifique seu PIQUE →
+          </Link>
         </section>
 
         <section>

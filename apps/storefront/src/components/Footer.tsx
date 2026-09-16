@@ -1,15 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
   return (
     <footer id="footer" className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
-        <div className="border-b border-white/10 pb-12">
-          <Image src="/logo.png" alt="PIQUE" width={220} height={166} style={{ height: "auto" }} />
-        </div>
-
-        <div className="grid grid-cols-1 gap-12 py-14 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-12 border-b border-white/10 py-14 sm:grid-cols-3">
           <div>
             <div className="mb-3 text-sm font-extrabold tracking-[0.06em]">FIQUE À FRENTE</div>
             <p className="mb-5 max-w-[34ch] text-sm leading-relaxed text-paper/55">
@@ -42,7 +37,6 @@ export function Footer() {
               <Link href="/dicas">Dicas</Link>
               <Link href="/conta">Meus pedidos</Link>
               <Link href="/ajuda">Ajuda</Link>
-              <Link href="/verifique">Verifique seu PIQUE</Link>
             </div>
           </div>
 
