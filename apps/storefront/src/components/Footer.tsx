@@ -1,17 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
   return (
     <footer id="footer" className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
-        <div className="flex flex-col items-start justify-between gap-8 border-b border-white/10 pb-12 sm:flex-row sm:items-end">
-          <div className="font-display text-4xl leading-none tracking-wide sm:text-6xl">PIQUE</div>
-          <a
-            href="#top"
-            className="border border-accent bg-accent px-7 py-4 text-[13px] font-bold tracking-[0.12em] transition-colors hover:bg-paper hover:text-ink"
-          >
-            VOLTAR AO TOPO
-          </a>
+        <div className="border-b border-white/10 pb-12">
+          <Image src="/logo.png" alt="PIQUE" width={220} height={166} style={{ height: "auto" }} />
         </div>
 
         <div className="grid grid-cols-1 gap-12 py-14 sm:grid-cols-3">
