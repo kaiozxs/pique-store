@@ -46,6 +46,7 @@ export async function getDefaultRegion(): Promise<MedusaRegion> {
 
 export async function listProducts(options?: {
   categoryId?: string;
+  q?: string;
 }): Promise<{ products: MedusaProduct[]; region: MedusaRegion }> {
   const region = await getDefaultRegion();
   const { products } = await sdk.client.fetch<{ products: MedusaProduct[] }>("/store/products", {
@@ -53,8 +54,12 @@ export async function listProducts(options?: {
       region_id: region.id,
       fields: PRODUCT_FIELDS,
       ...(options?.categoryId ? { category_id: [options.categoryId] } : {}),
+      ...(options?.q ? { q: options.q } : {}),
     },
-    next: { revalidate: 30 },
+    // Busca não usa o cache de 30s das listagens normais — o resultado
+    // muda por cada letra digitada, cachear encheria a store toda de
+    // entradas inúteis.
+    next: options?.q ? undefined : { revalidate: 30 },
   });
   return { products, region };
 }

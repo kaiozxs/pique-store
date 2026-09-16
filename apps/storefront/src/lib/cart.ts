@@ -45,12 +45,6 @@ export async function getOrCreateCart(): Promise<MedusaCart> {
   return createCart();
 }
 
-export async function getCartItemCount(): Promise<number> {
-  const cart = await getCart();
-  if (!cart) return 0;
-  return (cart.items ?? []).reduce((sum, item) => sum + item.quantity, 0);
-}
-
 export async function addLineItem(variantId: string, quantity: number): Promise<MedusaCart> {
   const cart = await getOrCreateCart();
   const { cart: updated } = await sdk.store.cart.createLineItem(cart.id, {
