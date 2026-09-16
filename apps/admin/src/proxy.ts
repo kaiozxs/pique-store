@@ -22,5 +22,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Exclui também arquivos estáticos da pasta public/ (ex: logo.png) — sem
+  // isso, o próprio otimizador de imagem do Next (que busca o arquivo sem
+  // enviar o cookie de sessão) era redirecionado pro /login e a imagem
+  // quebrava com "not a valid image".
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico)$).*)"],
 };
