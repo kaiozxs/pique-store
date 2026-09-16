@@ -33,6 +33,21 @@ module.exports = defineConfig({
         ],
       },
     },
+    // "pp_system_default" continua registrado automaticamente pelo módulo
+    // de pagamento mesmo com isso aqui — não precisa redeclarar ele.
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/mercadopago",
+            options: {
+              accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
+            },
+          },
+        ],
+      },
+    },
     { resolve: "./src/modules/book" },
     { resolve: "./src/modules/verification" },
     { resolve: "./src/modules/drop-semana" },
