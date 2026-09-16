@@ -2,6 +2,32 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+// Diferente do provider de pagamento (que só falha quando alguém tenta usar
+// pp_mercadopago sem token), o módulo de Auth valida TODOS os providers
+// registrados já na inicialização do servidor — se faltar clientId/secret
+// do Google, o backend inteiro nem sobe (login por e-mail/senha incluso).
+// Por isso o provider "google" só entra na lista quando a credencial existe.
+const authProviders = [
+  { resolve: "@medusajs/medusa/auth-emailpass", id: "emailpass" },
+  ...(process.env.GOOGLE_CLIENT_ID
+    ? [
+        {
+          resolve: "@medusajs/medusa/auth-google",
+          id: "google",
+          options: {
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            // Só serve de valor-padrão: o storefront manda o callback_url
+            // dele mesmo em cada tentativa de login (necessário pra
+            // funcionar tanto local quanto em produção com o mesmo
+            // backend) — ver GoogleAuthService.authenticate.
+            callbackUrl: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback",
+          },
+        },
+      ]
+    : []),
+]
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -32,6 +58,15 @@ module.exports = defineConfig({
           },
         ],
       },
+    },
+    // Diferente do pagamento, o módulo de auth NÃO registra "emailpass"
+    // sozinho por baixo dos panos — configurar esse módulo aqui SUBSTITUI
+    // a lista de providers inteira. Por isso "emailpass" tem que ficar
+    // redeclarado junto do "google", senão o login por e-mail/senha
+    // (inclusive do admin, que usa o mesmo módulo) para de funcionar.
+    {
+      resolve: "@medusajs/medusa/auth",
+      options: { providers: authProviders },
     },
     // "pp_system_default" continua registrado automaticamente pelo módulo
     // de pagamento mesmo com isso aqui — não precisa redeclarar ele.

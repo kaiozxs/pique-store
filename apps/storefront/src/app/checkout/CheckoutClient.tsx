@@ -14,8 +14,9 @@ import {
   selectShippingOptionAction,
 } from "@/lib/checkout-actions";
 import { MercadoPagoPaymentBrick } from "@/components/checkout/MercadoPagoPaymentBrick";
+import { AuthForms } from "@/app/conta/AuthForms";
 
-type Step = "endereco" | "frete" | "pagamento" | "revisao" | "confirmado";
+type Step = "endereco" | "frete" | "login" | "pagamento" | "revisao" | "confirmado";
 
 const EMPTY_ADDRESS: ShippingAddressInput = {
   first_name: "",
@@ -32,11 +33,19 @@ const EMPTY_ADDRESS: ShippingAddressInput = {
 export function CheckoutClient({
   initialCart,
   countries,
+  hasAccount,
+  initialStep = "endereco",
 }: {
   initialCart: MedusaCart | null;
   countries: { code: string; label: string }[];
+  hasAccount: boolean;
+  initialStep?: "endereco" | "pagamento";
 }) {
-  const [step, setStep] = useState<Step>("endereco");
+  const [step, setStep] = useState<Step>(initialStep === "pagamento" && hasAccount ? "pagamento" : "endereco");
+  // Some se a pessoa logar durante o checkout (Google ou e-mail/senha) sem
+  // precisar recarregar a página inteira — hasAccount só reflete o cookie no
+  // momento em que o servidor renderizou.
+  const [loggedIn, setLoggedIn] = useState(hasAccount);
   const [cart, setCart] = useState(initialCart);
   const [email, setEmail] = useState(initialCart?.email ?? "");
   const [address, setAddress] = useState<ShippingAddressInput>({
@@ -117,7 +126,10 @@ export function CheckoutClient({
       try {
         const updated = await selectShippingOptionAction(selectedOptionId);
         setCart(updated);
-        setStep("pagamento");
+        // Antes de pagar, precisa ter conta — sem isso não tem como emitir
+        // nota, avisar sobre o pedido nem o cliente acompanhar depois em
+        // "meus pedidos".
+        setStep(loggedIn ? "pagamento" : "login");
       } catch {
         setError("Não foi possível selecionar o frete.");
       }
@@ -183,7 +195,7 @@ export function CheckoutClient({
         <div className="mb-8 flex gap-6 text-[12px] font-semibold tracking-[0.1em] text-paper/40">
           <span className={step === "endereco" ? "text-accent" : ""}>1. ENDEREÇO</span>
           <span className={step === "frete" ? "text-accent" : ""}>2. FRETE</span>
-          <span className={step === "pagamento" ? "text-accent" : ""}>3. PAGAMENTO</span>
+          <span className={step === "login" || step === "pagamento" ? "text-accent" : ""}>3. PAGAMENTO</span>
           <span className={step === "revisao" ? "text-accent" : ""}>4. REVISÃO</span>
         </div>
 
@@ -312,6 +324,22 @@ export function CheckoutClient({
             >
               {isPending ? "SALVANDO..." : "CONTINUAR PARA REVISÃO"}
             </button>
+          </div>
+        )}
+
+        {step === "login" && (
+          <div className="flex flex-col gap-6">
+            <p className="text-sm text-paper/70">
+              Entre ou crie sua conta pra continuar pro pagamento — é o que garante que você consiga
+              acompanhar esse pedido depois em &ldquo;meus pedidos&rdquo;.
+            </p>
+            <AuthForms
+              onSuccess={() => {
+                setLoggedIn(true);
+                setStep("pagamento");
+              }}
+              postLoginRedirect="/checkout?step=pagamento"
+            />
           </div>
         )}
 

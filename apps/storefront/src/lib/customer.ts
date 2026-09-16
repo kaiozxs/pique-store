@@ -70,6 +70,74 @@ export async function logout(): Promise<void> {
   await clearCustomerToken();
 }
 
+// O JWT do Medusa não é criptografado, só assinado — decodificar o payload
+// aqui é só pra ler o nome/e-mail que o Google devolveu (usados pra criar o
+// cliente na primeira vez). Não serve pra autorizar nada: toda requisição
+// autenticada de verdade valida a assinatura no próprio backend.
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const payload = token.split(".")[1];
+    const json = Buffer.from(payload, "base64url").toString("utf-8");
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+// Fecha o login/registro via Google depois do redirect de volta pro site:
+// troca o `code`/`state` por um token (sdk.auth.callback), e ou o cliente já
+// existe (só associa a sessão) ou é a primeira vez com essa conta Google —
+// nesse caso cria o cliente com os dados do perfil do Google e pega um novo
+// token já com o cliente vinculado (sdk.auth.refresh).
+export async function completeGoogleLogin(query: { code: string; state: string }): Promise<ActionResult> {
+  let token: string;
+  try {
+    const result = await sdk.auth.callback("customer", "google", query);
+    if (typeof result !== "string") {
+      return { ok: false, error: "Esse login precisa de uma etapa adicional não suportada aqui." };
+    }
+    token = result;
+  } catch {
+    return { ok: false, error: "Não foi possível confirmar o login com o Google." };
+  }
+
+  const bearer = { Authorization: `Bearer ${token}` };
+  try {
+    await sdk.store.customer.retrieve({}, bearer);
+  } catch {
+    const profile = decodeJwtPayload(token)?.user_metadata as
+      | { email?: string; given_name?: string; family_name?: string }
+      | undefined;
+    if (!profile?.email) {
+      return { ok: false, error: "O Google não retornou um e-mail pra essa conta." };
+    }
+    try {
+      await sdk.store.customer.create(
+        { email: profile.email, first_name: profile.given_name, last_name: profile.family_name },
+        {},
+        bearer
+      );
+      const refreshed = await sdk.auth.refresh(bearer);
+      token = refreshed.token;
+    } catch {
+      return { ok: false, error: "Não foi possível criar sua conta com o Google." };
+    }
+  }
+
+  await setCustomerToken(token);
+
+  const cartId = await getCartId();
+  if (cartId) {
+    try {
+      await sdk.store.cart.transferCart(cartId, {}, { Authorization: `Bearer ${token}` });
+    } catch {
+      // segue sem transferir
+    }
+  }
+
+  return { ok: true };
+}
+
 export async function getCurrentCustomer(): Promise<MedusaCustomer | null> {
   const headers = await authHeaders();
   if (!headers.Authorization) return null;

@@ -5,6 +5,7 @@ import { useMemo, useState, useTransition } from "react";
 import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
 import { findVariant, formatMoney, getPresaleInfo, isVariantAvailable } from "@/lib/medusa";
 import { addToCartAction } from "@/lib/cart-actions";
+import { ShippingEstimate } from "./ShippingEstimate";
 
 const GARMENT_ICON_PATH =
   "M4 7.2 L8.2 4 L10 5.6 L14 5.6 L15.8 4 L20 7.2 L17.8 10.4 L16 9.3 L16 20 L8 20 L8 9.3 L6.2 10.4 Z";
@@ -153,6 +154,8 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
             </div>
           </div>
         ))}
+
+        <ShippingEstimate currencyCode={region.currency_code} />
 
         {!disponivel && (
           <div className="mt-4 text-xs font-semibold tracking-[0.05em] text-paper/50">
