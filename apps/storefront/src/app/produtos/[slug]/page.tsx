@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProductByHandle, listProducts } from "@/lib/medusa";
+import { getProductByHandle } from "@/lib/medusa";
 import { ProductDetail } from "@/components/product/ProductDetail";
 
-export async function generateStaticParams() {
-  const { products } = await listProducts();
-  return products.map((p) => ({ slug: p.handle }));
-}
+// Sem generateStaticParams de propósito: isso obrigaria o build a bater no
+// backend pra pré-gerar cada página de produto — quebra o build da Vercel
+// se o backend não estiver no ar (ou mudar de endereço) naquele momento.
+// A página já renderiza dinamicamente por requisição, então funciona igual.
 
 export async function generateMetadata(props: PageProps<"/produtos/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
