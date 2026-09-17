@@ -224,14 +224,6 @@ export function AuthForms({
 
   return (
     <div className="mx-auto max-w-sm">
-      <GoogleButton postLoginRedirect={postLoginRedirect} />
-
-      <div className="my-6 flex items-center gap-3 text-[11px] font-semibold tracking-[0.1em] text-paper/40">
-        <div className="h-px flex-1 bg-white/15" />
-        OU
-        <div className="h-px flex-1 bg-white/15" />
-      </div>
-
       <div className="mb-8 flex gap-6 text-[12px] font-semibold tracking-[0.1em]">
         <button
           type="button"
@@ -249,6 +241,14 @@ export function AuthForms({
         </button>
       </div>
       {tab === "login" ? <LoginForm onSuccess={handleSuccess} /> : <RegisterForm onSuccess={handleSuccess} />}
+
+      <div className="my-6 flex items-center gap-3 text-[11px] font-semibold tracking-[0.1em] text-paper/40">
+        <div className="h-px flex-1 bg-white/15" />
+        OU
+        <div className="h-px flex-1 bg-white/15" />
+      </div>
+
+      <GoogleButton postLoginRedirect={postLoginRedirect} />
     </div>
   );
 }

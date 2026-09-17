@@ -61,9 +61,16 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
           >
             {buttonLabel}
           </Link>
-          <Link href="#apresentacao" className="inline-flex items-center gap-2.5 text-[13px] font-bold tracking-[0.1em]">
+          <Link
+            href="#apresentacao"
+            className="group inline-flex items-center gap-2.5 text-[13px] font-bold tracking-[0.1em] transition-transform duration-300 ease-out hover:translate-x-1.5 hover:-rotate-2"
+            style={{ WebkitBoxReflect: "below 2px linear-gradient(transparent, transparent, rgba(0,0,0,0.35))" } as React.CSSProperties}
+          >
             LER O MANIFESTO
-            <span aria-hidden="true" className="text-accent">
+            <span
+              aria-hidden="true"
+              className="text-accent transition-transform duration-300 ease-out group-hover:translate-x-1"
+            >
               →
             </span>
           </Link>

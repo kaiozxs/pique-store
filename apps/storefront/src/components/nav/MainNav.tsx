@@ -101,14 +101,14 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
           </button>
 
           {open && (
-            <div className="absolute left-1/2 top-full z-40 w-[560px] -translate-x-1/2 pt-4">
+            <div className="absolute left-1/2 top-full z-40 w-[min(420px,90vw)] -translate-x-1/2 pt-4">
               <div className="border border-white/15 bg-ink shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-1 p-7">
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1 p-5">
                   <CategoryLinks categories={categories} />
                 </div>
                 <Link
                   href="/drops"
-                  className="block border-t border-white/15 px-7 py-4 text-center text-[12px] font-bold tracking-[0.18em] text-paper/70 transition-colors hover:bg-accent hover:text-paper"
+                  className="block border-t border-white/15 px-5 py-3 text-center text-[11px] font-bold tracking-[0.16em] text-paper/70 transition-colors hover:bg-accent hover:text-paper"
                 >
                   VER TODOS OS DROPS →
                 </Link>

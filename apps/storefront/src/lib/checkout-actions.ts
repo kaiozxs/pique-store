@@ -8,12 +8,17 @@ import {
   selectShippingOption,
   setCheckoutAddress,
   submitMercadoPagoPaymentData,
+  type CheckoutDocumentInput,
   type MercadoPagoBrickData,
   type ShippingAddressInput,
 } from "./checkout";
 
-export async function saveAddressAction(email: string, address: ShippingAddressInput) {
-  const cart = await setCheckoutAddress(email, address);
+export async function saveAddressAction(
+  email: string,
+  address: ShippingAddressInput,
+  document: CheckoutDocumentInput
+) {
+  const cart = await setCheckoutAddress(email, address, document);
   return cart;
 }
 

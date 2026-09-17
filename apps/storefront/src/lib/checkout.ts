@@ -21,12 +21,23 @@ export type ShippingOption = HttpTypes.StoreCartShippingOption;
 const SYSTEM_PAYMENT_PROVIDER_ID = "pp_system_default";
 const MERCADOPAGO_PROVIDER_ID = "pp_mercadopago";
 
-export async function setCheckoutAddress(email: string, address: ShippingAddressInput): Promise<MedusaCart> {
+export type CheckoutDocumentInput = { cpf: string; birth_date: string };
+
+export async function setCheckoutAddress(
+  email: string,
+  address: ShippingAddressInput,
+  document: CheckoutDocumentInput
+): Promise<MedusaCart> {
   const cart = await getOrCreateCart();
   const { cart: updated } = await sdk.store.cart.update(cart.id, {
     email,
     shipping_address: address,
     billing_address: address,
+    // CPF/data de nascimento não são campos nativos do endereço do Medusa —
+    // guardados no metadata do carrinho (preservando o que já existir nele)
+    // pra não sumir com outras chaves que alguma outra parte do sistema
+    // tenha guardado ali.
+    metadata: { ...cart.metadata, cpf: document.cpf, birth_date: document.birth_date },
   });
   return updated;
 }

@@ -52,6 +52,8 @@ export function CheckoutClient({
     ...EMPTY_ADDRESS,
     country_code: countries[0]?.code ?? "",
   });
+  const [cpf, setCpf] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [order, setOrder] = useState<HttpTypes.StoreOrder | null>(null);
@@ -86,6 +88,16 @@ export function CheckoutClient({
       .finally(() => setCepLoading(false));
   }
 
+  // Máscara simples de CPF (000.000.000-00) enquanto digita.
+  function handleCpfChange(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    const masked = digits
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    setCpf(masked);
+  }
+
   useEffect(() => {
     if (step !== "frete") return;
     startTransition(async () => {
@@ -110,7 +122,7 @@ export function CheckoutClient({
     setError(null);
     startTransition(async () => {
       try {
-        const updated = await saveAddressAction(email, address);
+        const updated = await saveAddressAction(email, address, { cpf, birth_date: birthDate });
         setCart(updated);
         setStep("frete");
       } catch {
@@ -282,6 +294,29 @@ export function CheckoutClient({
                 onChange={(e) => setAddress({ ...address, phone: e.target.value })}
                 className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
               />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                required
+                placeholder="CPF"
+                inputMode="numeric"
+                value={cpf}
+                onChange={(e) => handleCpfChange(e.target.value)}
+                className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
+              />
+              <label className="flex flex-col gap-1 text-xs text-paper/50">
+                <input
+                  required
+                  type="date"
+                  aria-label="Data de nascimento"
+                  max={new Date().toISOString().split("T")[0]}
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  // Navegadores já mostram o calendário nesse input nativamente
+                  // (ícone à direita) — não precisa de um date-picker à parte.
+                  className="border border-white/20 bg-transparent px-4 py-3 text-sm text-paper outline-none [color-scheme:dark] focus:border-accent"
+                />
+              </label>
             </div>
             <button
               type="submit"
