@@ -52,7 +52,9 @@ export function Footer() {
           <div>
             <div className="mb-4 text-sm font-extrabold tracking-[0.06em]">SOCIAL</div>
             <div className="flex flex-col gap-3 text-sm text-paper/70">
-              <a href="#">Instagram</a>
+              <a href="https://www.instagram.com/qgdapique/" target="_blank" rel="noopener noreferrer">
+                Instagram
+              </a>
               <a href="https://www.tiktok.com/@piquecompanysupor" target="_blank" rel="noopener noreferrer">
                 TikTok
               </a>
@@ -63,13 +65,26 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex justify-center gap-6 border-t border-white/10 py-8">
+        <div className="flex justify-center gap-4 border-t border-white/10 py-8">
+          <a
+            href="https://www.instagram.com/qgdapique/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="PIQUE no Instagram"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black text-paper transition-colors hover:border-accent hover:text-accent"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4.2" />
+              <circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" />
+            </svg>
+          </a>
           <a
             href="https://www.tiktok.com/@piquecompanysupor"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="PIQUE no TikTok"
-            className="flex h-10 w-10 items-center justify-center border border-white/15 text-paper/70 transition-colors hover:border-accent hover:text-accent"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black text-paper transition-colors hover:border-accent hover:text-accent"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M16.6 5.82a4.28 4.28 0 0 1-3.14-1.4V15.4a5.4 5.4 0 1 1-4.65-5.35v2.6a2.9 2.9 0 1 0 2.05 2.77V2h2.6a4.28 4.28 0 0 0 1.86 3.53 4.25 4.25 0 0 0 2.71 1.02V9.2a6.8 6.8 0 0 1-1.43-.16Z" />
@@ -80,7 +95,7 @@ export function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="PIQUE no X"
-            className="flex h-10 w-10 items-center justify-center border border-white/15 text-paper/70 transition-colors hover:border-accent hover:text-accent"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black text-paper transition-colors hover:border-accent hover:text-accent"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M18.9 2.25h3.07l-6.71 7.67 7.9 10.83h-6.19l-4.84-6.62-5.54 6.62H3.51l7.18-8.2L3.1 2.25h6.35l4.37 6.05Zm-1.08 16.7h1.7L7.28 3.98H5.44Z" />
