@@ -10,6 +10,35 @@ import { ShippingEstimate } from "./ShippingEstimate";
 const GARMENT_ICON_PATH =
   "M4 7.2 L8.2 4 L10 5.6 L14 5.6 L15.8 4 L20 7.2 L17.8 10.4 L16 9.3 L16 20 L8 20 L8 9.3 L6.2 10.4 Z";
 
+// As variantes ficam cadastradas em S/M/L/XL (padrão do catálogo/SKU) — aqui
+// só troca como aparece pro cliente brasileiro (P/M/G/GG) e ordena do menor
+// pro maior. O valor real (v.value) não muda, então seleção de variante,
+// estoque e SKU continuam intactos.
+const SIZE_ORDER = ["S", "M", "L", "XL"];
+const SIZE_LABELS: Record<string, string> = { S: "P", M: "M", L: "G", XL: "GG" };
+
+function isSizeOption(optionTitle: string): boolean {
+  const t = optionTitle.toLowerCase();
+  return t === "size" || t === "tamanho";
+}
+
+function sortOptionValues<T extends { value: string }>(optionTitle: string, values: T[]): T[] {
+  if (!isSizeOption(optionTitle)) return values;
+  return [...values].sort((a, b) => {
+    const ai = SIZE_ORDER.indexOf(a.value.toUpperCase());
+    const bi = SIZE_ORDER.indexOf(b.value.toUpperCase());
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+}
+
+function optionValueLabel(optionTitle: string, value: string): string {
+  if (!isSizeOption(optionTitle)) return value;
+  return SIZE_LABELS[value.toUpperCase()] ?? value;
+}
+
 export function ProductDetail({ product, region }: { product: MedusaProduct; region: MedusaRegion }) {
   const [selected, setSelected] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
@@ -137,7 +166,7 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
               {option.title.toUpperCase()}
             </div>
             <div className="flex flex-wrap gap-2">
-              {(option.values ?? []).map((v) => (
+              {sortOptionValues(option.title, option.values ?? []).map((v) => (
                 <button
                   key={v.value}
                   type="button"
@@ -148,7 +177,7 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
                       : "border-white/25 hover:border-white/50"
                   }`}
                 >
-                  {v.value}
+                  {optionValueLabel(option.title, v.value)}
                 </button>
               ))}
             </div>

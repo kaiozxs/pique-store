@@ -276,7 +276,8 @@ export function CheckoutClient({
                 ))}
               </select>
               <input
-                placeholder="Telefone (opcional)"
+                required
+                placeholder="Telefone"
                 value={address.phone}
                 onChange={(e) => setAddress({ ...address, phone: e.target.value })}
                 className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
