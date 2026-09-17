@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer id="footer" className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
-        <div className="grid grid-cols-1 gap-12 border-b border-white/10 py-14 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-12 border-b border-white/10 py-14 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="mb-3 text-sm font-extrabold tracking-[0.06em]">FIQUE À FRENTE</div>
             <p className="mb-5 max-w-[34ch] text-sm leading-relaxed text-paper/55">
@@ -37,6 +37,15 @@ export function Footer() {
               <Link href="/dicas">Dicas</Link>
               <Link href="/conta">Meus pedidos</Link>
               <Link href="/ajuda">Ajuda</Link>
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-4 text-sm font-extrabold tracking-[0.06em]">INSTITUCIONAL</div>
+            <div className="flex flex-col gap-3 text-sm text-paper/70">
+              <a href="mailto:piquecompanysuporte@gmail.com">Fale conosco</a>
+              <a href="mailto:piquecompanysuporte@gmail.com">Atendimento ao cliente</a>
+              <Link href="/ajuda">Institucional</Link>
             </div>
           </div>
 

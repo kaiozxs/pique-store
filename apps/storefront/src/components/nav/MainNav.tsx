@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import type { NavCategory } from "@/lib/medusa";
 
@@ -11,6 +12,15 @@ const UTILITY_LINKS = [
 ];
 
 const CLOSE_DELAY_MS = 150;
+
+// Deslocamento + zoom + inversão de cor (mesma linguagem visual dos botões
+// de call-to-action do site, tipo "EXPLORAR O DROP 001") — fica assim tanto
+// no hover quanto "selecionado" (rota atual), e some sozinho ao navegar pra
+// outra seção ou voltar pra home, já que a ativação segue a URL.
+const NAV_ITEM_BASE =
+  "inline-block px-3 py-1.5 transition-all duration-200 ease-out";
+const NAV_ITEM_INACTIVE = "text-paper hover:-translate-y-0.5 hover:scale-105 hover:bg-accent hover:text-ink";
+const NAV_ITEM_ACTIVE = "-translate-y-0.5 scale-105 bg-accent text-ink";
 
 function CategoryLinks({ categories, onNavigate }: { categories: NavCategory[]; onNavigate?: () => void }) {
   return (
@@ -50,9 +60,12 @@ function CategoryLinks({ categories, onNavigate }: { categories: NavCategory[]; 
 }
 
 export function MainNav({ categories }: { categories: NavCategory[] }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const vestuarioActive = pathname.startsWith("/drops");
 
   function cancelClose() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -65,7 +78,7 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
 
   return (
     <>
-      <nav className="hidden items-center gap-9 text-[13px] font-semibold tracking-[0.14em] md:flex">
+      <nav className="hidden items-center gap-3 text-[13px] font-semibold tracking-[0.14em] md:flex">
         <div
           className="relative"
           onMouseEnter={() => {
@@ -76,7 +89,7 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
         >
           <button
             type="button"
-            className="flex items-center gap-1.5 transition-colors hover:text-accent"
+            className={`flex items-center gap-1.5 ${NAV_ITEM_BASE} ${vestuarioActive ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE}`}
             aria-haspopup="true"
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
@@ -110,11 +123,18 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
           )}
         </div>
 
-        {UTILITY_LINKS.map((link) => (
-          <Link key={link.href} href={link.href} className="transition-colors hover:text-accent">
-            {link.label}
-          </Link>
-        ))}
+        {UTILITY_LINKS.map((link) => {
+          const active = pathname.startsWith(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`${NAV_ITEM_BASE} ${active ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE}`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
       </nav>
 
       <button
@@ -158,7 +178,9 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="border-b border-white/10 py-3.5 font-display text-2xl tracking-wide text-paper transition-colors hover:text-accent"
+                className={`border-b border-white/10 py-3.5 font-display text-2xl tracking-wide transition-colors ${
+                  pathname.startsWith(link.href) ? "text-accent" : "text-paper hover:text-accent"
+                }`}
               >
                 {link.label}
               </Link>
