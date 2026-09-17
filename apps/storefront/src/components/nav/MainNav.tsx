@@ -17,8 +17,11 @@ const CLOSE_DELAY_MS = 150;
 // de call-to-action do site, tipo "EXPLORAR O DROP 001") — fica assim tanto
 // no hover quanto "selecionado" (rota atual), e some sozinho ao navegar pra
 // outra seção ou voltar pra home, já que a ativação segue a URL.
-const NAV_ITEM_BASE =
-  "inline-block px-3 py-1.5 transition-all duration-200 ease-out";
+// Sem "display" aqui de propósito — cada uso declara o próprio (inline-block
+// nos links de texto puro, flex no botão VESTUÁRIO que tem ícone ao lado);
+// misturar os dois na mesma classe faz um vencer o outro na cascata e quebra
+// o layout de um dos dois usos.
+const NAV_ITEM_BASE = "px-3 py-1.5 transition-all duration-200 ease-out";
 const NAV_ITEM_INACTIVE = "text-paper hover:-translate-y-0.5 hover:scale-105 hover:bg-accent hover:text-ink";
 const NAV_ITEM_ACTIVE = "-translate-y-0.5 scale-105 bg-accent text-ink";
 
@@ -129,7 +132,7 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
             <Link
               key={link.href}
               href={link.href}
-              className={`${NAV_ITEM_BASE} ${active ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE}`}
+              className={`inline-block ${NAV_ITEM_BASE} ${active ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE}`}
             >
               {link.label}
             </Link>
