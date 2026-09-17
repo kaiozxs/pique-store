@@ -155,8 +155,6 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
           </div>
         ))}
 
-        <ShippingEstimate currencyCode={region.currency_code} />
-
         {!disponivel && (
           <div className="mt-4 text-xs font-semibold tracking-[0.05em] text-paper/50">
             INDISPONÍVEL nesta combinação.
@@ -209,6 +207,8 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
         {feedback === "erro" && (
           <p className="mt-3 text-sm font-semibold text-red-400">Não foi possível adicionar à sacola.</p>
         )}
+
+        <ShippingEstimate currencyCode={region.currency_code} />
       </div>
     </div>
   );

@@ -98,15 +98,6 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
             onClick={() => setOpen((v) => !v)}
           >
             VESTUÁRIO
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className={`transition-transform ${open ? "rotate-180" : ""}`}
-            >
-              <path d="M4 8l8 8 8-8" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
           </button>
 
           {open && (
