@@ -78,7 +78,11 @@ export type NavCategory = {
 
 export async function listNavCategories(): Promise<NavCategory[]> {
   const data = await sdk.client.fetch<{ nav_categories: NavCategory[] }>("/store/nav-categories", {
-    next: { revalidate: 30 },
+    // Conteúdo curado no admin, muda raramente — cache mais longo tira essa
+    // chamada do caminho crítico de quase toda navegação no site (o menu
+    // aparece em todo header) sem deixar o admin esperando muito pra ver
+    // uma mudança de categoria refletida.
+    next: { revalidate: 300 },
   });
   return data.nav_categories;
 }
@@ -191,7 +195,7 @@ export type BookContent = {
 
 export async function getBookContent(): Promise<BookContent> {
   const data = await sdk.client.fetch<{ book_content: BookContent }>("/store/book", {
-    next: { revalidate: 30 },
+    next: { revalidate: 300 },
   });
   return data.book_content;
 }
@@ -223,7 +227,7 @@ export type HomeSection = {
 
 export async function getHomeSections(): Promise<HomeSection[]> {
   const data = await sdk.client.fetch<{ sections: HomeSection[] }>("/store/home-config", {
-    next: { revalidate: 30 },
+    next: { revalidate: 300 },
   });
   return data.sections;
 }
@@ -242,7 +246,7 @@ export type TipDetail = TipSummary & { body: string };
 
 export async function listTips(): Promise<TipSummary[]> {
   const data = await sdk.client.fetch<{ tip_posts: TipSummary[] }>("/store/dicas", {
-    next: { revalidate: 30 },
+    next: { revalidate: 300 },
   });
   return data.tip_posts;
 }
@@ -250,7 +254,7 @@ export async function listTips(): Promise<TipSummary[]> {
 export async function getTipBySlug(slug: string): Promise<TipDetail | null> {
   try {
     const data = await sdk.client.fetch<{ tip_post: TipDetail }>(`/store/dicas/${slug}`, {
-      next: { revalidate: 30 },
+      next: { revalidate: 300 },
     });
     return data.tip_post;
   } catch {
@@ -265,7 +269,7 @@ export type FaqCategory = { title: string; items: { question: string; answer: st
 
 export async function getFaqCategories(): Promise<FaqCategory[]> {
   const data = await sdk.client.fetch<{ faq_items: FaqItem[] }>("/store/faq", {
-    next: { revalidate: 30 },
+    next: { revalidate: 300 },
   });
 
   const byCategory = new Map<string, FaqCategory>();
