@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getBookContent } from "@/lib/medusa";
 
-export const metadata: Metadata = { title: "Book — PIQUE" };
+export const metadata: Metadata = { title: "WAB — PIQUE" };
 
 export default async function BookPage() {
   const book = await getBookContent();
@@ -13,7 +13,7 @@ export default async function BookPage() {
         {revelado ? "revelado" : "em construção"}
       </div>
       <h1 className="font-display text-4xl tracking-wide sm:text-6xl">
-        {revelado && book.title ? book.title : "BOOK"}
+        {revelado && book.title ? book.title : "WAB"}
       </h1>
       <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-ink/60">
         {revelado && book.body ? book.body : "Alguma coisa está sendo desenhada. Quando estiver pronta, você vai saber."}

@@ -11,7 +11,7 @@ export async function BookTeaser() {
           {revelado ? "revelado" : "em construção"}
         </div>
         <h2 className="font-display text-4xl tracking-wide sm:text-6xl">
-          {revelado && book.title ? book.title : "BOOK"}
+          {revelado && book.title ? book.title : "WAB"}
         </h2>
         <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-ink/60">
           {revelado && book.body ? book.body : "Alguma coisa está sendo desenhada. Quando estiver pronta, você vai saber."}
