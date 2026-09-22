@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PaymentBrands } from "@/components/PaymentBrands";
 
 const SUPPORT_EMAIL = "piquecompanysuporte@gmail.com";
 
@@ -44,11 +45,6 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] 
     ],
   },
 ];
-
-// Só as bandeiras que o checkout realmente aceita hoje (cartão via Mercado
-// Pago). Pix e boleto ficam de fora de propósito: ainda não estão habilitados
-// no Brick, e exibir o selo seria prometer o que a loja não faz.
-const CARD_BRANDS = ["VISA", "MASTERCARD", "ELO", "AMEX"];
 
 const SOCIAL = [
   {
@@ -157,16 +153,7 @@ export function Footer() {
 
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-5">
             <span className="text-[11px] font-bold tracking-[0.14em] text-paper/70">FORMAS DE PAGAMENTO</span>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {CARD_BRANDS.map((brand) => (
-                <span
-                  key={brand}
-                  className="border border-white/20 px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-paper/75"
-                >
-                  {brand}
-                </span>
-              ))}
-            </div>
+            <PaymentBrands />
           </div>
 
           <div className="flex items-center gap-3 lg:border-l lg:border-white/10 lg:pl-8">
