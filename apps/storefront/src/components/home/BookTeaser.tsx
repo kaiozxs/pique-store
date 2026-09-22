@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getBookContent } from "@/lib/medusa";
-import { Reveal } from "@/components/motion/Reveal";
 
 export async function BookTeaser() {
   const book = await getBookContent();
@@ -27,12 +26,15 @@ export async function BookTeaser() {
       <div className="absolute inset-0 hidden bg-gradient-to-r from-ink from-28% via-ink/55 via-48% to-transparent to-72% sm:block" />
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/20 sm:via-ink/15 sm:to-transparent" />
 
-      <Reveal className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-36">
-        <div className="mb-6 font-accent text-xl italic text-accent">
+      <div className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-36">
+        <div className="mb-5 font-accent text-xl italic text-accent">
           {revelado ? "revelado" : "em construção"}
         </div>
         {/* A logo é a assinatura da linha — o <h2> continua existindo pra
             leitor de tela e pro SEO, só que visualmente quem fala é a marca. */}
+        {/* A logo entra dimensionada pela ALTURA, não pela largura: assim ela
+            fica na mesma escala do título de texto que aparece quando a linha
+            é revelada, e a troca de um pelo outro não muda o ritmo da seção. */}
         <h2 className="font-display text-4xl tracking-wide sm:text-6xl">
           {revelado && book.title ? (
             book.title
@@ -42,14 +44,15 @@ export async function BookTeaser() {
               <Image
                 src="/images/wab-logo.png"
                 alt=""
-                width={240}
-                height={131}
-                className="h-auto w-[160px] sm:w-[240px]"
+                width={338}
+                height={172}
+                priority
+                className="h-[48px] w-auto sm:h-[76px]"
               />
             </>
           )}
         </h2>
-        <p className="mt-6 max-w-md text-sm leading-relaxed text-paper/70">
+        <p className="mt-7 max-w-md text-sm leading-relaxed text-paper/70">
           {revelado && book.body
             ? book.body
             : "Alguma coisa está sendo desenhada. Quando estiver pronta, você vai saber."}
@@ -68,7 +71,7 @@ export async function BookTeaser() {
             →
           </span>
         </Link>
-      </Reveal>
+      </div>
     </section>
   );
 }

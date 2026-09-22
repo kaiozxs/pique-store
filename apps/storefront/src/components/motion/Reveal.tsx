@@ -108,7 +108,13 @@ export function Reveal({
     el.dataset.reveal = "hidden";
     watch(el);
 
-    return () => unwatch(el);
+    return () => {
+      unwatch(el);
+      // Devolve o elemento ao estado visível ao desmontar: se o efeito parar no
+      // meio (troca de página, recarga de componente), nada pode ficar preso
+      // escondido no DOM.
+      if (el.dataset.reveal === "hidden") delete el.dataset.reveal;
+    };
   }, []);
 
   return (

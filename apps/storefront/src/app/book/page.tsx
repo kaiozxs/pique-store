@@ -25,7 +25,7 @@ export default async function BookPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-ink/10" />
 
         <div className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32">
-          <div className="mb-6 font-accent text-xl italic text-accent">
+          <div className="mb-5 font-accent text-xl italic text-accent">
             {revelado ? "revelado" : "em construção"}
           </div>
           <h1 className="font-display text-4xl tracking-wide sm:text-6xl">
@@ -37,14 +37,15 @@ export default async function BookPage() {
                 <Image
                   src="/images/wab-logo.png"
                   alt=""
-                  width={260}
-                  height={142}
-                  className="h-auto w-[180px] sm:w-[260px]"
+                  width={338}
+                  height={172}
+                  priority
+                  className="h-[52px] w-auto sm:h-[84px]"
                 />
               </>
             )}
           </h1>
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-paper/70">
+          <p className="mt-7 max-w-md text-sm leading-relaxed text-paper/70">
             {revelado && book.body
               ? book.body
               : "Alguma coisa está sendo desenhada. Quando estiver pronta, você vai saber."}
