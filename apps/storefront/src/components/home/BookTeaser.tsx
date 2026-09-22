@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getBookContent } from "@/lib/medusa";
+import { Reveal } from "@/components/motion/Reveal";
 
 export async function BookTeaser() {
   const book = await getBookContent();
@@ -26,7 +27,7 @@ export async function BookTeaser() {
       <div className="absolute inset-0 hidden bg-gradient-to-r from-ink from-28% via-ink/55 via-48% to-transparent to-72% sm:block" />
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/20 sm:via-ink/15 sm:to-transparent" />
 
-      <div className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-36">
+      <Reveal className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-36">
         <div className="mb-6 font-accent text-xl italic text-accent">
           {revelado ? "revelado" : "em construção"}
         </div>
@@ -67,7 +68,7 @@ export async function BookTeaser() {
             →
           </span>
         </Link>
-      </div>
+      </Reveal>
     </section>
   );
 }

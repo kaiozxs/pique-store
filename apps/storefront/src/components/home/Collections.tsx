@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { NavCategory } from "@/lib/medusa";
+import { Reveal } from "@/components/motion/Reveal";
 import { listNavCategories, listProducts } from "@/lib/medusa";
 
 function CollectionTile({ category, thumbnail }: { category: NavCategory; thumbnail?: string }) {
@@ -87,16 +88,18 @@ export async function Collections() {
   return (
     <section className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32">
-        <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
+        <Reveal className="mb-14 flex flex-wrap items-end justify-between gap-6">
           <h2 className="font-display text-4xl tracking-wide sm:text-6xl">COLEÇÕES</h2>
           <div className="max-w-xs text-sm text-paper/55">
             Cada peça carrega o mesmo padrão. Explore por categoria — o que ainda não chegou, chega.
           </div>
-        </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((category) => (
-            <CollectionTile key={category.id} category={category} thumbnail={thumbnailByCategory.get(category.id)} />
+          {categories.map((category, index) => (
+            <Reveal key={category.id} delay={index * 90}>
+              <CollectionTile category={category} thumbnail={thumbnailByCategory.get(category.id)} />
+            </Reveal>
           ))}
         </div>
       </div>

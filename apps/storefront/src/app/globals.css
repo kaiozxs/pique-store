@@ -45,3 +45,27 @@ body {
     animation: none;
   }
 }
+
+/* Entrada das seções conforme a página rola — ver components/motion/Reveal.tsx.
+   Os atributos só existem depois que o JS decide animar, então nada aqui
+   consegue deixar conteúdo escondido por acidente. */
+[data-reveal="hidden"] {
+  opacity: 0;
+  translate: 0 22px;
+}
+
+[data-reveal="shown"] {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    translate 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+}
