@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getBookContent } from "@/lib/medusa";
 
 export const metadata: Metadata = { title: "WAB — PIQUE" };
@@ -8,18 +9,51 @@ export default async function BookPage() {
   const revelado = book.status === "revelado";
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center bg-paper px-6 text-center text-ink">
-      <div className="mb-6 font-accent text-xl italic text-accent">
-        {revelado ? "revelado" : "em construção"}
-      </div>
-      <h1 className="font-display text-4xl tracking-wide sm:text-6xl">
-        {revelado && book.title ? book.title : "WAB"}
-      </h1>
-      <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-ink/60">
-        {revelado && book.body ? book.body : "Alguma coisa está sendo desenhada. Quando estiver pronta, você vai saber."}
-      </p>
+    <div className="bg-ink text-paper">
+      {/* Banner da linha: a foto do modelo tem o fundo escuro do lado esquerdo,
+          então o texto cai justamente na parte vazia da imagem — sem véu pesado
+          por cima do rosto. */}
+      <section className="relative isolate overflow-hidden">
+        <Image
+          src="/images/wab-modelo.jpg"
+          alt=""
+          fill
+          priority
+          className="object-cover object-[70%_center]"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-ink/10" />
+
+        <div className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32">
+          <div className="mb-6 font-accent text-xl italic text-accent">
+            {revelado ? "revelado" : "em construção"}
+          </div>
+          <h1 className="font-display text-4xl tracking-wide sm:text-6xl">
+            {revelado && book.title ? (
+              book.title
+            ) : (
+              <>
+                <span className="sr-only">WAB</span>
+                <Image
+                  src="/images/wab-logo.png"
+                  alt=""
+                  width={260}
+                  height={142}
+                  className="h-auto w-[180px] sm:w-[260px]"
+                />
+              </>
+            )}
+          </h1>
+          <p className="mt-6 max-w-md text-sm leading-relaxed text-paper/70">
+            {revelado && book.body
+              ? book.body
+              : "Alguma coisa está sendo desenhada. Quando estiver pronta, você vai saber."}
+          </p>
+        </div>
+      </section>
+
       {revelado && book.media?.items?.length ? (
-        <div className="mt-10 grid w-full max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-4 px-6 py-16 sm:grid-cols-2">
           {book.media.items.map((item) =>
             item.type === "image" ? (
               // eslint-disable-next-line @next/next/no-img-element

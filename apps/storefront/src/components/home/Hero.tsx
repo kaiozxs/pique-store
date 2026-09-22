@@ -37,14 +37,23 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
   return (
     <section className="relative overflow-hidden bg-ink text-paper">
       <Image
-        src="/images/hero-rio.png"
+        src="/images/hero-praia.jpg"
         alt=""
         fill
         priority
-        className="object-cover object-[38%_40%]"
+        className="object-cover object-[42%_center]"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
+      {/* A foto é clara e cheia de cor — texto branco em cima dela sem
+          tratamento fica ilegível. Véu leve geral + duas rampas que trocam de
+          direção conforme a largura: no desktop o texto ocupa só a coluna da
+          esquerda, então a rampa é horizontal e o lado direito (areia, coco,
+          chinelo) fica intacto; no celular o texto atravessa a tela inteira,
+          aí quem escurece é a rampa vertical — a horizontal ali apagaria a
+          foto toda. */}
+      <div className="absolute inset-0 bg-ink/25" />
+      <div className="absolute inset-0 hidden bg-gradient-to-r from-ink via-ink/75 to-transparent sm:block" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/10 sm:via-ink/20 sm:to-transparent" />
 
       <div className="relative mx-auto max-w-7xl px-6 py-28 sm:px-8 sm:py-36">
         <div className="mb-7 text-[13px] font-semibold tracking-[0.32em] text-paper/60">
