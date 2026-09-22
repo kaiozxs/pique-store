@@ -19,12 +19,24 @@ export async function BookTeaser() {
         className="object-cover object-[68%_center] sm:object-[62%_center]"
         sizes="100vw"
       />
-      {/* As paradas são explícitas de propósito: preto chapado só até onde o
+      {/* Gradientes escritos à mão em vez das classes from-/via-/to- do Tailwind:
+          elas interpolam em oklab, e nessa faixa quase preta a conversão gera
+          degraus visíveis (aquelas faixas verticais no escuro). Em sRGB o
+          degradê é liso.
+
+          As paradas são explícitas de propósito: preto chapado só até onde o
           texto chega, o esfumado acontece no miolo, e do meio pra direita a
-          foto fica limpa. Sem isso o gradiente padrão do Tailwind (0/50/100%)
-          escurece o rosto junto. */}
-      <div className="absolute inset-0 hidden bg-gradient-to-r from-ink from-28% via-ink/55 via-48% to-transparent to-72% sm:block" />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/20 sm:via-ink/15 sm:to-transparent" />
+          foto fica limpa. */}
+      <div className="absolute inset-0 hidden bg-[linear-gradient(to_right,#0b0b0c_0%,#0b0b0c_28%,rgba(11,11,12,0.55)_48%,rgba(11,11,12,0)_72%)] sm:block" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_top,#0b0b0c_0%,rgba(11,11,12,0.6)_50%,rgba(11,11,12,0.2)_100%)] sm:bg-[linear-gradient(to_top,#0b0b0c_0%,rgba(11,11,12,0.15)_50%,rgba(11,11,12,0)_100%)]" />
+
+      {/* Grão quase imperceptível por cima de tudo. Mesmo em sRGB, tom escuro
+          espalhado por centenas de pixels ainda cria faixa; o ruído embaralha a
+          fronteira entre um tom e o seguinte e ela some. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[url(/images/noise.png)] opacity-[0.045] mix-blend-overlay"
+      />
 
       <div className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-36">
         <div className="mb-5 font-accent text-xl italic text-accent">

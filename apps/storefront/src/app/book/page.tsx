@@ -22,7 +22,11 @@ export default async function BookPage() {
           className="object-cover object-[70%_center]"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-ink/10" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0b0b0c_0%,#0b0b0c_26%,rgba(11,11,12,0.6)_50%,rgba(11,11,12,0.1)_78%)]" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[url(/images/noise.png)] opacity-[0.045] mix-blend-overlay"
+        />
 
         <div className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32">
           <div className="mb-5 font-accent text-xl italic text-accent">
