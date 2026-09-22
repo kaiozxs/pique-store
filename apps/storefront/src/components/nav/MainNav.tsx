@@ -25,7 +25,24 @@ const NAV_ITEM_BASE = "px-3 py-1.5 transition-all duration-200 ease-out";
 const NAV_ITEM_INACTIVE = "text-paper hover:-translate-y-0.5 hover:scale-105 hover:bg-accent hover:text-ink";
 const NAV_ITEM_ACTIVE = "-translate-y-0.5 scale-105 bg-accent text-ink";
 
-function CategoryLinks({ categories, onNavigate }: { categories: NavCategory[]; onNavigate?: () => void }) {
+function CategoryLinks({
+  categories,
+  onNavigate,
+  // O menu suspenso do desktop é um card pequeno; o menu do celular ocupa a
+  // tela toda e pede o display grande. Mesma lista, dois tamanhos.
+  compact = false,
+}: {
+  categories: NavCategory[];
+  onNavigate?: () => void;
+  compact?: boolean;
+}) {
+  const rowClass = compact
+    ? "py-1.5 text-sm font-semibold tracking-wide"
+    : "py-3.5 font-display text-2xl tracking-wide";
+  const badgeClass = compact
+    ? "shrink-0 text-[9px] font-sans font-bold tracking-[0.12em] text-accent/70"
+    : "shrink-0 text-[10px] font-sans font-bold tracking-[0.14em] text-accent/70";
+
   return (
     <>
       {categories.map((category) => (
@@ -37,26 +54,22 @@ function CategoryLinks({ categories, onNavigate }: { categories: NavCategory[]; 
             if (!category.available) e.preventDefault();
             else onNavigate?.();
           }}
-          className={`group flex items-baseline justify-between gap-3 border-b border-white/10 py-3.5 font-display text-2xl tracking-wide transition-colors ${
+          className={`group flex items-baseline justify-between gap-3 border-b border-white/10 transition-colors ${rowClass} ${
             category.available ? "text-paper hover:text-accent" : "cursor-default text-paper/35"
           }`}
         >
           <span>{category.name}</span>
-          {!category.available && (
-            <span className="shrink-0 text-[10px] font-sans font-bold tracking-[0.14em] text-accent/70">
-              EM BREVE
-            </span>
-          )}
+          {!category.available && <span className={badgeClass}>EM BREVE</span>}
         </Link>
       ))}
       <Link
         href="#"
         aria-disabled="true"
         onClick={(e) => e.preventDefault()}
-        className="group flex items-baseline justify-between gap-3 border-b border-white/10 py-3.5 font-display text-2xl tracking-wide text-paper/35"
+        className={`group flex items-baseline justify-between gap-3 border-b border-white/10 text-paper/35 ${rowClass}`}
       >
         <span>Promoção</span>
-        <span className="shrink-0 text-[10px] font-sans font-bold tracking-[0.14em] text-accent/70">EM BREVE</span>
+        <span className={badgeClass}>EM BREVE</span>
       </Link>
     </>
   );
@@ -101,14 +114,14 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
           </button>
 
           {open && (
-            <div className="absolute left-1/2 top-full z-40 w-[min(420px,90vw)] -translate-x-1/2 pt-4">
-              <div className="border border-white/15 bg-ink shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-1 p-5">
-                  <CategoryLinks categories={categories} />
+            <div className="absolute left-1/2 top-full z-40 w-[min(320px,90vw)] -translate-x-1/2 pt-3">
+              <div className="border border-white/15 bg-ink shadow-[0_18px_44px_rgba(0,0,0,0.55)]">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 p-3.5">
+                  <CategoryLinks categories={categories} compact />
                 </div>
                 <Link
                   href="/drops"
-                  className="block border-t border-white/15 px-5 py-3 text-center text-[11px] font-bold tracking-[0.16em] text-paper/70 transition-colors hover:bg-accent hover:text-paper"
+                  className="block border-t border-white/15 px-4 py-2.5 text-center text-[10px] font-bold tracking-[0.14em] text-paper/70 transition-colors hover:bg-accent hover:text-paper"
                 >
                   VER TODOS OS DROPS →
                 </Link>

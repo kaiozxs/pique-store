@@ -63,16 +63,24 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
           </Link>
           <Link
             href="#apresentacao"
-            className="group inline-flex items-center gap-2.5 text-[13px] font-bold tracking-[0.1em] transition-transform duration-300 ease-out hover:translate-x-1.5 hover:-rotate-2"
-            style={{ WebkitBoxReflect: "below 2px linear-gradient(transparent, transparent, rgba(0,0,0,0.35))" } as React.CSSProperties}
+            className="group relative inline-flex items-center gap-2.5 py-1 text-[13px] font-bold tracking-[0.1em]"
           >
-            LER O MANIFESTO
+            <span className="transition-colors duration-300 ease-out group-hover:text-accent">
+              LER O MANIFESTO
+            </span>
             <span
               aria-hidden="true"
-              className="text-accent transition-transform duration-300 ease-out group-hover:translate-x-1"
+              className="text-accent transition-transform duration-300 ease-out group-hover:translate-x-1.5"
             >
               →
             </span>
+            {/* Traço que se desenha da esquerda pra direita no hover — o
+                origin-left é o que dá a sensação de "riscado a mão" em vez de
+                simplesmente aparecer. */}
+            <span
+              aria-hidden="true"
+              className="absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-300 ease-out group-hover:scale-x-100"
+            />
           </Link>
         </div>
       </div>
