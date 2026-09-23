@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { formatMoney } from "@/lib/medusa";
+import { statusDoPedido } from "@/lib/order-status";
 import type { MedusaCustomer, MedusaCustomerOrder } from "@/lib/customer";
 import type { ShippingAddressInput } from "@/lib/checkout";
 import { addAddressAction, logoutAction, removeAddressAction } from "./actions";
@@ -205,15 +206,33 @@ export function AccountDashboard({
           <h2 className="mb-4 text-sm font-bold tracking-[0.1em] text-paper/70">PEDIDOS</h2>
           {orders.length === 0 && <p className="text-sm text-paper/50">Nenhum pedido ainda.</p>}
           <div className="flex flex-col divide-y divide-white/10 border-y border-white/10">
-            {orders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between py-3 text-sm">
-                <span>
-                  #{order.display_id} — {new Date(order.created_at).toLocaleDateString("pt-BR")}
-                </span>
-                <span className="text-paper/60">{order.fulfillment_status}</span>
-                <span className="font-semibold">{formatMoney(order.total, order.currency_code)}</span>
-              </div>
-            ))}
+            {orders.map((order) => {
+              const status = statusDoPedido(order);
+              return (
+                <div
+                  key={order.id}
+                  className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3 text-sm"
+                >
+                  <span>
+                    #{order.display_id} — {new Date(order.created_at).toLocaleDateString("pt-BR")}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-2 ${
+                      status.excecao ? "text-paper/45" : "text-paper/70"
+                    }`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        status.excecao ? "bg-paper/30" : "bg-accent"
+                      }`}
+                    />
+                    {status.rotulo}
+                  </span>
+                  <span className="font-semibold">{formatMoney(order.total, order.currency_code)}</span>
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>

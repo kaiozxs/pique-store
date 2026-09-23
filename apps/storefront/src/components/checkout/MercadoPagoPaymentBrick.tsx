@@ -38,7 +38,12 @@ export function MercadoPagoPaymentBrick({
       {error && <p className="mb-4 text-sm font-semibold text-red-400">{error}</p>}
       <Payment
         initialization={{ amount, payer: email ? { email } : undefined }}
-        customization={{ paymentMethods: { creditCard: "all", debitCard: "all" } }}
+        // O teto de parcelas fica declarado aqui e não só na conta do Mercado
+        // Pago: sem isso, mexer numa configuração do painel muda em silêncio o
+        // que a loja oferece. O Brick já mostra valor da parcela e total.
+        customization={{
+          paymentMethods: { creditCard: "all", debitCard: "all", maxInstallments: 12 },
+        }}
         onSubmit={async ({ formData }) => {
           setError(null);
           const result = await submitMercadoPagoPaymentAction({
