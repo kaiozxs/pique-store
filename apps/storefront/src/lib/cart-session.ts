@@ -15,7 +15,14 @@ export async function setCartId(cartId: string): Promise<void> {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30,
+    // Sem maxAge de propósito: vira cookie de sessão, ou seja, a sacola dura
+    // enquanto o navegador estiver aberto e some quando a pessoa fecha. Foi
+    // decisão da marca — o padrão do comércio eletrônico é guardar por dias,
+    // porque quem monta a sacola hoje costuma fechar a compra depois, e a
+    // Política de Cancelamentos publicada promete que o carrinho permanece
+    // quando a tentativa de pagamento expira (o que continua valendo dentro
+    // da mesma visita). Pra voltar ao comportamento anterior, basta devolver
+    // `maxAge: 60 * 60 * 24 * 30` aqui.
   });
 }
 
