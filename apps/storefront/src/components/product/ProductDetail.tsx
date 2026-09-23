@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
 import { findVariant, formatMoney, getPresaleInfo, isVariantAvailable } from "@/lib/medusa";
 import { addToCartAction } from "@/lib/cart-actions";
@@ -56,6 +56,25 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
   const variante = useMemo(() => findVariant(product, selected), [product, selected]);
 
   const disponivel = variante ? isVariantAvailable(variante) : false;
+
+  // Ninguém consegue pedir mais do que existe: o "+" trava no estoque da
+  // variante escolhida. Sem isso dava pra montar um pedido de 3 peças quando
+  // só havia 1 — produto fantasma, que a loja depois teria que cancelar.
+  // Quando a variante não controla estoque (ou aceita encomenda), o teto é
+  // só um limite são de pedido.
+  const maxQuantidade = useMemo(() => {
+    if (!variante) return 1;
+    if (variante.allow_backorder || !variante.manage_inventory) return 10;
+    return Math.max(1, variante.inventory_quantity ?? 1);
+  }, [variante]);
+
+  // Trocar de tamanho pode cair numa variante com menos estoque que a
+  // quantidade já escolhida.
+  useEffect(() => {
+    setQuantidade((q) => Math.min(q, maxQuantidade));
+  }, [maxQuantidade]);
+
+  const noTeto = quantidade >= maxQuantidade;
   const gallery = useMemo(() => {
     const urls = (product.images ?? []).map((img) => img.url).filter(Boolean) as string[];
     if (urls.length > 0) return urls;
@@ -191,22 +210,34 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
         )}
 
         {disponivel && (
-          <div className="mt-9 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setQuantidade((q) => Math.max(1, q - 1))}
-              className="h-11 w-11 border border-white/25 text-lg hover:border-white/50"
-            >
-              −
-            </button>
-            <span className="w-6 text-center text-sm font-semibold">{quantidade}</span>
-            <button
-              type="button"
-              onClick={() => setQuantidade((q) => q + 1)}
-              className="h-11 w-11 border border-white/25 text-lg hover:border-white/50"
-            >
-              +
-            </button>
+          <div className="mt-9">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                aria-label="Diminuir quantidade"
+                disabled={quantidade <= 1}
+                onClick={() => setQuantidade((q) => Math.max(1, q - 1))}
+                className="h-11 w-11 border border-white/25 text-lg transition-colors hover:border-white/50 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-paper/30 disabled:hover:border-white/10"
+              >
+                −
+              </button>
+              <span className="w-6 text-center text-sm font-semibold">{quantidade}</span>
+              <button
+                type="button"
+                aria-label="Aumentar quantidade"
+                disabled={noTeto}
+                onClick={() => setQuantidade((q) => Math.min(maxQuantidade, q + 1))}
+                className="h-11 w-11 border border-white/25 text-lg transition-colors hover:border-white/50 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-paper/30 disabled:hover:border-white/10"
+              >
+                +
+              </button>
+            </div>
+            {noTeto && (
+              // Aviso sem número: o estoque exato não é informação pública.
+              <p className="mt-3 text-xs text-paper/50">
+                Essa é a quantidade máxima disponível desta peça.
+              </p>
+            )}
           </div>
         )}
 
