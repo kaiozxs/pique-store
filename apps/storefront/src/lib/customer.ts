@@ -1,7 +1,7 @@
 import "server-only";
 import type { HttpTypes } from "@medusajs/types";
 import { sdk } from "./sdk";
-import { getCartId } from "./cart-session";
+import { clearCartId, getCartId } from "./cart-session";
 import { clearCustomerToken, getCustomerToken, setCustomerToken } from "./customer-session";
 import type { ShippingAddressInput } from "./checkout";
 
@@ -68,6 +68,13 @@ export async function registerAndLogin(input: {
 
 export async function logout(): Promise<void> {
   await clearCustomerToken();
+  // A sacola sai junto. Depois do login ela passa a pertencer àquele cliente
+  // (o Medusa grava o customer_id no carrinho), então mantê-la no navegador
+  // depois que ele sai mostra as escolhas de uma pessoa para a próxima que
+  // usar o mesmo aparelho — e a contagem continuar no cabeçalho de quem não
+  // está logado não faz sentido nenhum. O carrinho em si não é apagado no
+  // servidor: quem entrar de novo na conta encontra os itens onde deixou.
+  await clearCartId();
 }
 
 // O JWT do Medusa não é criptografado, só assinado — decodificar o payload
