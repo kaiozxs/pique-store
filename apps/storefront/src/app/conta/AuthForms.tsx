@@ -94,7 +94,7 @@ function GoogleButton({ postLoginRedirect }: { postLoginRedirect: string }) {
         setIsPending(true);
         startGoogleLogin(postLoginRedirect);
       }}
-      className="flex items-center justify-center gap-3 border border-white/25 bg-transparent px-8 py-3 text-[13px] font-bold tracking-[0.08em] text-paper transition-colors hover:border-white/50 disabled:opacity-60"
+      className="flex w-full items-center justify-center gap-3 border border-white/25 bg-transparent px-8 py-3 text-[13px] font-bold tracking-[0.08em] text-paper transition-colors hover:border-white/50 disabled:opacity-60"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
         <path
