@@ -162,35 +162,39 @@ export function Footer() {
           ))}
         </div>
 
+        {/* Copyright sozinho na esquerda; pagamento e compra segura andam
+            juntos na direita, separados pelo mesmo filete vertical do topo. */}
         <div className="flex flex-col items-center gap-8 border-t border-white/10 py-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="order-3 text-xs text-paper/40 lg:order-1">
+          <div className="order-2 text-xs text-paper/40 lg:order-1">
             © {new Date().getFullYear()} PIQUE. Todos os direitos reservados.
           </div>
 
-          <div className="order-1 flex flex-col items-center gap-3 lg:order-2">
-            <span className="text-[11px] font-bold tracking-[0.14em] text-paper/70">FORMAS DE PAGAMENTO</span>
-            <PaymentBrands />
-          </div>
+          <div className="order-1 flex flex-col items-center gap-7 sm:flex-row sm:gap-8 lg:order-2">
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-[11px] font-bold tracking-[0.14em] text-paper/70">FORMAS DE PAGAMENTO</span>
+              <PaymentBrands />
+            </div>
 
-          <div className="order-2 flex items-center gap-3 lg:order-3 lg:border-l lg:border-white/10 lg:pl-8">
-            <svg
-              width="26"
-              height="26"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="shrink-0 text-paper/85"
-            >
-              <path d="M12 2.6l7.2 2.7v6c0 4.4-3 7.7-7.2 9.1-4.2-1.4-7.2-4.7-7.2-9.1v-6L12 2.6Z" />
-              <rect x="9.1" y="11.2" width="5.8" height="4.6" rx="1" fill="currentColor" stroke="none" />
-              <path d="M10.3 11.2v-1.4a1.7 1.7 0 0 1 3.4 0v1.4" />
-            </svg>
-            <div>
-              <div className="text-[11px] font-bold tracking-[0.14em] text-paper/70">COMPRA SEGURA</div>
-              <div className="text-xs text-paper/45">Seus dados protegidos</div>
+            <div className="flex items-center gap-3 sm:border-l sm:border-white/15 sm:pl-8">
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="shrink-0 text-paper/85"
+              >
+                <path d="M12 2.6l7.2 2.7v6c0 4.4-3 7.7-7.2 9.1-4.2-1.4-7.2-4.7-7.2-9.1v-6L12 2.6Z" />
+                <rect x="9.1" y="11.2" width="5.8" height="4.6" rx="1" fill="currentColor" stroke="none" />
+                <path d="M10.3 11.2v-1.4a1.7 1.7 0 0 1 3.4 0v1.4" />
+              </svg>
+              <div>
+                <div className="text-[11px] font-bold tracking-[0.14em] text-paper/70">COMPRA SEGURA</div>
+                <div className="text-xs text-paper/45">Seus dados protegidos</div>
+              </div>
             </div>
           </div>
         </div>
