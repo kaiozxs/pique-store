@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCuratedDrop } from "@/lib/medusa";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/motion/Reveal";
+import { Vitrine } from "@/components/home/Vitrine";
 
 export async function DropDaSemana() {
   const { title, products, region } = await getCuratedDrop();
@@ -12,34 +13,44 @@ export async function DropDaSemana() {
 
   return (
     <section id="drop" className="bg-ink text-paper">
-      <div className="mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32">
-        <Reveal className="mb-16 flex flex-wrap items-end justify-between gap-6">
+      <div className="mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-28">
+        <Reveal className="mb-12 flex flex-wrap items-end justify-between gap-6">
           <div>
             <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">
-              PRIMEIRA COLEÇÃO
+              EM DESTAQUE
             </div>
             <h2 className="font-display text-3xl tracking-wide sm:text-5xl">
-              {title ?? "DROP DA SEMANA"}
+              {title ?? "DROPS DA SEMANA"}
             </h2>
           </div>
-        </Reveal>
-
-        <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product, index) => (
-            <Reveal key={product.id} delay={index * 90}>
-              <ProductCard product={product} region={region} />
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal className="mt-16 flex justify-center">
           <Link
             href="/drops"
-            className="border border-white/35 px-10 py-[18px] text-[13px] font-bold tracking-[0.14em] transition-colors hover:border-accent hover:text-accent"
+            className="group inline-flex items-center gap-2.5 text-[13px] font-bold tracking-[0.12em]"
           >
-            VER COLEÇÃO COMPLETA
+            <span className="transition-colors duration-300 ease-out group-hover:text-accent">
+              VER TODOS
+            </span>
+            <span
+              aria-hidden="true"
+              className="text-accent transition-transform duration-300 ease-out group-hover:translate-x-1.5"
+            >
+              →
+            </span>
           </Link>
         </Reveal>
+
+        {/* Largura fixa por peça: é o que faz o próximo card aparecer cortado
+            na borda e deixa claro, sem escrever nada, que a lista continua. */}
+        <Vitrine>
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="w-[78vw] shrink-0 snap-start sm:w-[300px] lg:w-[302px]"
+            >
+              <ProductCard product={product} region={region} />
+            </div>
+          ))}
+        </Vitrine>
       </div>
     </section>
   );

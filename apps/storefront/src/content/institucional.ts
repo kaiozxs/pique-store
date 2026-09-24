@@ -34,7 +34,34 @@ const ul = (itens: string[]): BlocoInstitucional => ({ tipo: "lista", itens });
 export const PAGINAS: Record<string, PaginaInstitucional> = {
   sobre: {
     title: "Sobre a PIQUE",
-    intro: "A história da marca, o propósito e quem está por trás das peças.",
+    intro: "Pra quem tem pique. Pra quem fecha com a PIQUE.",
+    // Este texto vinha do bloco de manifesto que ficava na home e foi movido
+    // pra cá quando a landing passou a abrir direto na venda. É o texto que
+    // já estava no ar, não um texto novo: a história de verdade da marca
+    // ainda precisa ser escrita por quem a viveu.
+    secoes: [
+      {
+        titulo: "O propósito",
+        blocos: [
+          p(
+            "A PIQUE nasce da fricção entre a elegância do alfaiate e a energia bruta da rua. Não seguimos o que já existe — impomos o que vem a seguir."
+          ),
+          p(
+            "Cada peça é pensada para durar além da estação, além da tendência, além da comparação. A comparação é irrelevante. O padrão, inegociável."
+          ),
+        ],
+      },
+      {
+        titulo: "Como a gente trabalha",
+        blocos: [
+          ul([
+            "Cada peça tem um registro individual, que você confere em Verifique seu PIQUE.",
+            "Os tamanhos seguem P, M, G e GG, com as medidas no guia de tamanhos.",
+            "Quem compra acompanha o pedido pela própria conta, do pagamento à entrega.",
+          ]),
+        ],
+      },
+    ],
   },
   "guia-de-tamanhos": {
     title: "Guia de tamanhos",

@@ -98,8 +98,21 @@ export async function getCuratedDrop(): Promise<{
     { next: { revalidate: 30 } }
   );
 
+  // Sem curadoria no painel, a vitrine cai nas peças publicadas mais
+  // recentes em vez de sumir da página. Desde que a landing abre na venda,
+  // um buraco entre a abertura e as coleções é pior do que mostrar o que
+  // acabou de chegar — e continuam sendo peças de verdade, à venda.
   if (product_ids.length === 0) {
-    return { title, products: [], region };
+    const { products } = await sdk.client.fetch<{ products: MedusaProduct[] }>("/store/products", {
+      query: {
+        region_id: region.id,
+        fields: PRODUCT_FIELDS,
+        limit: 8,
+        order: "-created_at",
+      },
+      next: { revalidate: 30 },
+    });
+    return { title, products, region };
   }
 
   const { products } = await sdk.client.fetch<{ products: MedusaProduct[] }>("/store/products", {

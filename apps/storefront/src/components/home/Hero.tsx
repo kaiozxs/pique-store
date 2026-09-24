@@ -26,11 +26,9 @@ function sanitizeHref(href: string): string {
 
 export function Hero({ config }: { config?: Record<string, string> | null }) {
   const c: HeroConfig = config ?? {};
-  const headlineLine1 = c.headline_line1 || "O PADRÃO É";
-  const headlineHighlight = c.headline_highlight || "INCOMPARÁVEL";
-  const subtext =
-    c.subtext ||
-    "Peças desenhadas para quem entende moda como investimento, não como tendência. PIQUE une o corte impecável do alfaiate ao impulso das ruas.";
+  const headlineLine1 = c.headline_line1 || "DA RUA PRA QUEM É";
+  const headlineHighlight = c.headline_highlight || "DA RUA.";
+  const subtext = c.subtext || "Pra quem tem pique. Pra quem fecha com a PIQUE.";
   const buttonLabel = c.button_label || "EXPLORAR O DROP 001";
   const buttonHref = sanitizeHref(c.button_href || "/drops");
 
@@ -71,11 +69,11 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
             {buttonLabel}
           </Link>
           <Link
-            href="#apresentacao"
+            href="/institucional/sobre"
             className="group relative inline-flex items-center gap-2.5 py-1 text-[13px] font-bold tracking-[0.1em]"
           >
             <span className="transition-colors duration-300 ease-out group-hover:text-accent">
-              LER O MANIFESTO
+              CONHEÇA A PIQUE
             </span>
             <span
               aria-hidden="true"
