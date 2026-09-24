@@ -14,7 +14,7 @@
 // Pix estiver ligado de verdade, este comentário sai. Boleto continua de fora
 // pelo mesmo motivo.
 
-const FONT = "Archivo, Helvetica, Arial, sans-serif";
+const FONT = "Poppins, Helvetica, Arial, sans-serif";
 const CLASSE = "h-6 w-auto text-paper/85 transition-colors";
 
 function Pix() {

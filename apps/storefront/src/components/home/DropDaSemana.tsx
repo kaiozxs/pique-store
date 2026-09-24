@@ -13,13 +13,13 @@ export async function DropDaSemana() {
 
   return (
     <section id="drop" className="bg-ink text-paper">
-      <div className="mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-28">
-        <Reveal className="mb-12 flex flex-wrap items-end justify-between gap-6">
+      <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-20 lg:py-24">
+        <Reveal className="mb-9 flex flex-wrap items-end justify-between gap-6">
           <div>
             <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">
               EM DESTAQUE
             </div>
-            <h2 className="font-display text-3xl tracking-wide sm:text-5xl">
+            <h2 className="font-display text-3xl tracking-wide sm:text-4xl lg:text-5xl">
               {title ?? "DROPS DA SEMANA"}
             </h2>
           </div>

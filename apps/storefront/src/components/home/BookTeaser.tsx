@@ -38,7 +38,7 @@ export async function BookTeaser() {
         className="pointer-events-none absolute inset-0 bg-[url(/images/noise.png)] opacity-[0.045] mix-blend-overlay"
       />
 
-      <div className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-36">
+      <div className="relative mx-auto max-w-7xl px-6 py-20 sm:px-8 sm:py-24 lg:py-28">
         <div className="mb-5 font-accent text-xl italic text-accent">
           {revelado ? "revelado" : "em construção"}
         </div>
@@ -59,7 +59,7 @@ export async function BookTeaser() {
                 width={338}
                 height={172}
                 priority
-                className="h-[48px] w-auto sm:h-[76px]"
+                className="h-[44px] w-auto sm:h-[58px] lg:h-[68px]"
               />
             </>
           )}

@@ -53,15 +53,15 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
       <div className="absolute inset-0 hidden bg-gradient-to-r from-ink via-ink/75 to-transparent sm:block" />
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/10 sm:via-ink/20 sm:to-transparent" />
 
-      <div className="relative mx-auto max-w-7xl px-6 py-28 sm:px-8 sm:py-36">
-        <div className="mb-7 text-[13px] font-semibold tracking-[0.32em] text-paper/60">
+      <div className="relative mx-auto max-w-7xl px-6 py-[clamp(3.5rem,9vh,7rem)] sm:px-8">
+        <div className="mb-5 text-[13px] font-semibold tracking-[0.32em] text-paper/60">
           STREETWEAR DE ALTO PADRÃO
         </div>
-        <h1 className="max-w-[16ch] font-display text-[clamp(2.1rem,9vw,6.5rem)] leading-[0.98] tracking-wide drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
+        <h1 className="max-w-[16ch] font-display text-[clamp(2rem,min(7.5vw,11vh),5rem)] leading-[1.02] tracking-wide drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
           {headlineLine1} <span className="text-accent">{headlineHighlight}</span>
         </h1>
-        <p className="mt-9 max-w-lg text-[17px] leading-relaxed text-paper/85">{subtext}</p>
-        <div className="mt-12 flex flex-wrap items-center gap-8">
+        <p className="mt-6 max-w-lg text-[16px] leading-relaxed text-paper/85">{subtext}</p>
+        <div className="mt-9 flex flex-wrap items-center gap-7">
           <Link
             href={buttonHref}
             className="border border-accent bg-accent px-8 py-[18px] text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"

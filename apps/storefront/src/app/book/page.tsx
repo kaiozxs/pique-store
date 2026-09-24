@@ -28,7 +28,7 @@ export default async function BookPage() {
           className="pointer-events-none absolute inset-0 bg-[url(/images/noise.png)] opacity-[0.045] mix-blend-overlay"
         />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32">
+        <div className="relative mx-auto max-w-7xl px-6 py-20 sm:px-8 sm:py-24 lg:py-28">
           <div className="mb-5 font-accent text-xl italic text-accent">
             {revelado ? "revelado" : "em construção"}
           </div>
@@ -44,7 +44,7 @@ export default async function BookPage() {
                   width={338}
                   height={172}
                   priority
-                  className="h-[52px] w-auto sm:h-[84px]"
+                  className="h-[48px] w-auto sm:h-[64px] lg:h-[76px]"
                 />
               </>
             )}
