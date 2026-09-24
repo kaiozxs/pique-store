@@ -156,6 +156,34 @@ export async function getCurrentCustomer(): Promise<MedusaCustomer | null> {
   }
 }
 
+/**
+ * Um pedido específico do cliente logado, com tudo que a tela de detalhe
+ * mostra: itens congelados na compra, entrega e rastreio.
+ *
+ * Passa pela sessão do próprio cliente — o Medusa só devolve pedido de quem
+ * está autenticado, então não dá pra abrir o pedido dos outros trocando o id
+ * na barra de endereço.
+ */
+export async function getCustomerOrder(orderId: string): Promise<MedusaCustomerOrder | null> {
+  const headers = await authHeaders();
+  if (!headers.Authorization) return null;
+  try {
+    const { order } = await sdk.store.order.retrieve(
+      orderId,
+      {
+        fields:
+          "id,display_id,status,total,subtotal,item_subtotal,item_total,shipping_total,tax_total,currency_code,created_at," +
+          "email,payment_status,fulfillment_status,metadata,*items,*shipping_address,*shipping_methods," +
+          "*payment_collections,*payment_collections.payments,*fulfillments",
+      },
+      headers
+    );
+    return order ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function listCustomerOrders(): Promise<MedusaCustomerOrder[]> {
   const headers = await authHeaders();
   if (!headers.Authorization) return [];

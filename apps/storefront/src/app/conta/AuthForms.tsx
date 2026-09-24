@@ -85,15 +85,35 @@ function PasswordField({
 
 function GoogleButton({ postLoginRedirect }: { postLoginRedirect: string }) {
   const [isPending, setIsPending] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  // Em caso de falha o botão precisa voltar ao normal e dizer o que houve.
+  // Antes ele ficava preso em "REDIRECIONANDO..." pra sempre, porque a
+  // promessa rejeitava sem ninguém ouvir e o estado nunca era desfeito.
+  async function entrar() {
+    setErro(null);
+    setIsPending(true);
+    try {
+      await startGoogleLogin(postLoginRedirect);
+      // Deu certo: o navegador está saindo desta página. O estado continua
+      // travado de propósito, pra não piscar "entrar" durante a saída.
+    } catch (e) {
+      setIsPending(false);
+      setErro(
+        e instanceof Error && e.message
+          ? `Não deu pra entrar com o Google: ${e.message}`
+          : "Não deu pra entrar com o Google. Tenta de novo ou usa e-mail e senha."
+      );
+    }
+  }
 
   return (
+    <>
+      {erro && <p className="mb-3 text-sm font-semibold text-red-400">{erro}</p>}
     <button
       type="button"
       disabled={isPending}
-      onClick={() => {
-        setIsPending(true);
-        startGoogleLogin(postLoginRedirect);
-      }}
+      onClick={entrar}
       className="flex w-full items-center justify-center gap-3 border border-white/25 bg-transparent px-8 py-3 text-[13px] font-bold tracking-[0.08em] text-paper transition-colors hover:border-white/50 disabled:opacity-60"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
@@ -113,6 +133,7 @@ function GoogleButton({ postLoginRedirect }: { postLoginRedirect: string }) {
       </svg>
       {isPending ? "REDIRECIONANDO..." : "CONTINUAR COM O GOOGLE"}
     </button>
+    </>
   );
 }
 

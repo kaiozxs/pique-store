@@ -34,7 +34,13 @@ module.exports = defineConfig({
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
-      authCors: process.env.AUTH_CORS!,
+      // AUTH_CORS é uma variável separada das outras duas, e é fácil esquecer
+      // dela ao publicar: a loja inteira funciona, só o login pelo navegador
+      // (Google) quebra — e quebra em silêncio, porque quem bloqueia é o
+      // navegador, não o servidor. Sem ela, vale o mesmo endereço da loja.
+      authCors: process.env.AUTH_CORS || [process.env.STORE_CORS, process.env.ADMIN_CORS]
+        .filter(Boolean)
+        .join(","),
       jwtSecret: process.env.JWT_SECRET,
       cookieSecret: process.env.COOKIE_SECRET,
     }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
 import { findVariant, formatMoney, getPresaleInfo, isVariantAvailable } from "@/lib/medusa";
+import { isSizeOption, SIZE_ORDER, sizeLabel } from "@/lib/tamanhos";
 import { addToCartAction } from "@/lib/cart-actions";
 import { ShippingEstimate } from "./ShippingEstimate";
 
@@ -14,13 +15,6 @@ const GARMENT_ICON_PATH =
 // só troca como aparece pro cliente brasileiro (P/M/G/GG) e ordena do menor
 // pro maior. O valor real (v.value) não muda, então seleção de variante,
 // estoque e SKU continuam intactos.
-const SIZE_ORDER = ["S", "M", "L", "XL"];
-const SIZE_LABELS: Record<string, string> = { S: "P", M: "M", L: "G", XL: "GG" };
-
-function isSizeOption(optionTitle: string): boolean {
-  const t = optionTitle.toLowerCase();
-  return t === "size" || t === "tamanho";
-}
 
 function sortOptionValues<T extends { value: string }>(optionTitle: string, values: T[]): T[] {
   if (!isSizeOption(optionTitle)) return values;
@@ -36,7 +30,7 @@ function sortOptionValues<T extends { value: string }>(optionTitle: string, valu
 
 function optionValueLabel(optionTitle: string, value: string): string {
   if (!isSizeOption(optionTitle)) return value;
-  return SIZE_LABELS[value.toUpperCase()] ?? value;
+  return sizeLabel(value);
 }
 
 export function ProductDetail({ product, region }: { product: MedusaProduct; region: MedusaRegion }) {

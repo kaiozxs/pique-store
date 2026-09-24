@@ -209,9 +209,10 @@ export function AccountDashboard({
             {orders.map((order) => {
               const status = statusDoPedido(order);
               return (
-                <div
+                <Link
                   key={order.id}
-                  className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3 text-sm"
+                  href={`/conta/pedidos/${order.id}`}
+                  className="group flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3 text-sm transition-colors hover:text-accent"
                 >
                   <span>
                     #{order.display_id} — {new Date(order.created_at).toLocaleDateString("pt-BR")}
@@ -229,8 +230,16 @@ export function AccountDashboard({
                     />
                     {status.rotulo}
                   </span>
-                  <span className="font-semibold">{formatMoney(order.total, order.currency_code)}</span>
-                </div>
+                  <span className="flex items-center gap-2 font-semibold">
+                    {formatMoney(order.total, order.currency_code)}
+                    <span
+                      aria-hidden="true"
+                      className="text-paper/30 transition-all group-hover:translate-x-0.5 group-hover:text-accent"
+                    >
+                      →
+                    </span>
+                  </span>
+                </Link>
               );
             })}
           </div>
