@@ -14,7 +14,13 @@ export function ProductCard({ product }: { product: MedusaProduct; region: Medus
 
   return (
     <Link href={`/produtos/${product.handle}`} className="group block">
-      <div className="relative flex aspect-[3/4] flex-col items-center justify-center gap-3.5 overflow-hidden border border-dashed border-white/20 bg-[#161617]">
+      {/* Tracejado só no card sem foto, onde ele avisa que falta a imagem.
+          Com foto de verdade, tracejado passa impressão de página inacabada. */}
+      <div
+        className={`relative flex aspect-[3/4] flex-col items-center justify-center gap-3.5 overflow-hidden bg-[#161617] ${
+          image ? "border border-white/10" : "border border-dashed border-white/20"
+        }`}
+      >
         {presale && (
           <div className="absolute left-3.5 top-3.5 bg-accent px-2.5 py-1 text-[10px] font-bold tracking-[0.1em] text-paper">
             PRÉ-VENDA
