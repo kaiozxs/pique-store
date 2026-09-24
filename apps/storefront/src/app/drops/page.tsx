@@ -19,13 +19,21 @@ export default async function DropsPage({
 
   return (
     <div className="bg-ink text-paper">
-      <div className="mx-auto max-w-7xl px-6 py-20 sm:px-8">
-        <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">CATÁLOGO</div>
-        <h1 className="mb-10 font-display text-3xl tracking-wide sm:text-5xl">
-          {q ? `RESULTADOS PARA "${q.toUpperCase()}"` : activeCategory ? activeCategory.name.toUpperCase() : "TODOS OS DROPS"}
-        </h1>
+      <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 sm:py-14">
+        {/* Cabeçalho numa linha só: o título sozinho à esquerda e a palavra
+            "catálogo" virando nota discreta do outro lado. Empilhado, ele
+            comia altura à toa e empurrava as peças pra fora da primeira tela —
+            que é justamente o que a pessoa veio ver. */}
+        <div className="mb-7 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <h1 className="font-display text-2xl tracking-wide sm:text-3xl lg:text-4xl">
+            {q ? `RESULTADOS PARA "${q.toUpperCase()}"` : activeCategory ? activeCategory.name.toUpperCase() : "TODOS OS DROPS"}
+          </h1>
+          <div className="text-[12px] font-semibold tracking-[0.22em] text-paper/45">
+            CATÁLOGO · {products.length} {products.length === 1 ? "PEÇA" : "PEÇAS"}
+          </div>
+        </div>
 
-        <div className="mb-14 flex flex-col gap-4 border-y border-white/10 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-9 flex flex-col gap-4 border-y border-white/10 py-4 sm:flex-row sm:items-center sm:justify-between">
           <form action="/drops" className="flex max-w-md flex-1 items-center gap-3 border border-white/20 px-4 py-3">
             <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" className="text-paper/50">
               <path
