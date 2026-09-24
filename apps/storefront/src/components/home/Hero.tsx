@@ -62,10 +62,21 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
         </h1>
         <p className="mt-6 max-w-lg text-[16px] leading-relaxed text-paper/85">{subtext}</p>
         <div className="mt-9 flex flex-wrap items-center gap-7">
+          {/* O branco entra por baixo, inclinado, e sobe cobrindo o vermelho —
+              a borda torta é o que desenha a diagonal enquanto atravessa o
+              botão. A camada é bem maior que ele de propósito: girada, um
+              retângulo do tamanho exato deixaria os cantos descobertos no fim
+              do movimento. Opacidade junto com o deslocamento pra chegada não
+              ser um corte seco. */}
           <Link
             href={buttonHref}
-            className="border border-accent bg-accent px-8 py-[18px] text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
+            className="group relative isolate overflow-hidden border border-accent px-8 py-[18px] text-[13px] font-bold tracking-[0.14em] text-paper transition-colors duration-500 ease-out hover:text-ink"
           >
+            <span aria-hidden="true" className="absolute inset-0 -z-10 bg-accent" />
+            <span
+              aria-hidden="true"
+              className="absolute -inset-12 -z-10 bg-paper opacity-0 transition-all duration-500 ease-out [transform:translate(-12%,105%)_rotate(-9deg)] group-hover:opacity-100 group-hover:[transform:translate(0,0)_rotate(-9deg)]"
+            />
             {buttonLabel}
           </Link>
           <Link
