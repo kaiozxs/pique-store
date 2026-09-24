@@ -93,7 +93,7 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
         {/* Mesmo tratamento do card da vitrine: tracejado só quando falta a
             foto, e a peça aparece inteira em vez de preencher cortando. */}
         <div
-          className={`relative flex aspect-[3/4] flex-col items-center justify-center gap-4 overflow-hidden bg-[#161617] ${
+          className={`relative flex aspect-[4/5] flex-col items-center justify-center gap-4 overflow-hidden bg-[#161617] ${
             image ? "border border-white/10" : "border border-dashed border-white/20"
           }`}
         >
@@ -103,7 +103,7 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
               src={image}
               alt={product.title}
               fill
-              className="object-contain p-8 sm:p-10"
+              className="object-contain p-4 sm:p-6"
               sizes="(min-width: 1024px) 50vw, 100vw"
               priority={activeImage === 0}
             />
