@@ -32,7 +32,17 @@ export function ProductCard({ product }: { product: MedusaProduct; region: Medus
           </div>
         )}
         {image ? (
-          <Image src={image} alt={product.title} fill className="object-cover" sizes="(min-width: 1024px) 25vw, 50vw" />
+          // object-contain, não cover: as fotos são mais largas que o card, e
+          // preencher cortava justamente as mangas. Assim a peça aparece
+          // inteira, e o respiro interno afasta ela das bordas em vez de
+          // encostar no corte.
+          <Image
+            src={image}
+            alt={product.title}
+            fill
+            className="object-contain p-6 sm:p-7"
+            sizes="(min-width: 1024px) 25vw, 50vw"
+          />
         ) : (
           <>
             <svg width="52" height="52" viewBox="0 0 24 24" aria-hidden="true" className="text-paper/35">

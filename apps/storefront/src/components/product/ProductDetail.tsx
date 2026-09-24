@@ -90,14 +90,20 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
   return (
     <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-16 sm:px-8 lg:grid-cols-2 lg:gap-20">
       <div className="flex flex-col gap-4">
-        <div className="relative flex aspect-[3/4] flex-col items-center justify-center gap-4 overflow-hidden border border-dashed border-white/20 bg-[#161617]">
+        {/* Mesmo tratamento do card da vitrine: tracejado só quando falta a
+            foto, e a peça aparece inteira em vez de preencher cortando. */}
+        <div
+          className={`relative flex aspect-[3/4] flex-col items-center justify-center gap-4 overflow-hidden bg-[#161617] ${
+            image ? "border border-white/10" : "border border-dashed border-white/20"
+          }`}
+        >
           {image ? (
             <Image
               key={image}
               src={image}
               alt={product.title}
               fill
-              className="object-cover"
+              className="object-contain p-8 sm:p-10"
               sizes="(min-width: 1024px) 50vw, 100vw"
               priority={activeImage === 0}
             />
