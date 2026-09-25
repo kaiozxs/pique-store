@@ -50,7 +50,7 @@ export function Vitrine({ children }: { children: ReactNode }) {
     <div className="relative">
       <div
         ref={trilho}
-        className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-1 pb-4 pt-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-2 pb-6 pt-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </div>

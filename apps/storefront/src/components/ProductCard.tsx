@@ -23,12 +23,12 @@ export function ProductCard({ product }: { product: MedusaProduct; region: Medus
   return (
     <Link
       href={`/produtos/${product.handle}`}
-      className="group block transition-transform duration-300 ease-out hover:-translate-y-1.5"
+      className="group block transition-transform duration-300 ease-out hover:-translate-y-2.5 hover:scale-[1.03]"
     >
       {/* Tracejado só no card sem foto, onde ele avisa que falta a imagem.
           Com foto de verdade, tracejado passa impressão de página inacabada. */}
       <div
-        className={`relative flex aspect-square flex-col items-center justify-center gap-3.5 overflow-hidden bg-product shadow-[0_0_0_rgba(0,0,0,0)] transition-shadow duration-300 ease-out group-hover:shadow-[0_18px_34px_rgba(0,0,0,0.5)] ${
+        className={`relative flex aspect-square flex-col items-center justify-center gap-3.5 overflow-hidden bg-product shadow-[0_0_0_rgba(0,0,0,0)] transition-shadow duration-300 ease-out group-hover:shadow-[0_26px_50px_-12px_rgba(0,0,0,0.75)] ${
           image ? "border border-white/10" : "border border-dashed border-white/20"
         }`}
       >
