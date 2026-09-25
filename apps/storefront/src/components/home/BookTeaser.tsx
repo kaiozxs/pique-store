@@ -7,7 +7,7 @@ export async function BookTeaser() {
   const revelado = book.status === "revelado";
 
   return (
-    <section id="book" className="relative isolate overflow-hidden bg-ink text-paper">
+    <section id="book" className="bordas-suaves relative isolate overflow-hidden bg-ink text-paper">
       {/* Banner de largura cheia: a foto tem o fundo escuro justamente do lado
           esquerdo, que é onde o texto cai — dá pra escurecer de leve em vez de
           jogar um véu pesado por cima do rosto. No celular a rampa vira

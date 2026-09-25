@@ -33,7 +33,7 @@ export function Hero({ config }: { config?: Record<string, string> | null }) {
   const buttonHref = sanitizeHref(c.button_href || "/drops");
 
   return (
-    <section className="relative overflow-hidden bg-ink text-paper">
+    <section className="bordas-suaves relative overflow-hidden bg-ink text-paper">
       <Image
         src="/images/hero-praia.jpg"
         alt=""

@@ -139,3 +139,32 @@ body {
     transform: none;
   }
 }
+
+/* Dissolve as quatro bordas de uma foto no fundo da página.
+   Sem isso, a imagem termina numa linha reta e a emenda com o preto fica
+   visível — principalmente no topo, encostando no cabeçalho. São dois
+   gradientes sobrepostos (um vertical, um horizontal), então as quinas
+   escurecem mais que os lados, que é justamente onde o corte mais aparece.
+   Só funciona sobre fundo escuro: as bordas viram a cor do site, não
+   transparência de verdade. */
+.bordas-suaves::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      var(--color-ink) 0%,
+      rgba(11, 11, 12, 0) 16%,
+      rgba(11, 11, 12, 0) 84%,
+      var(--color-ink) 100%
+    ),
+    linear-gradient(
+      to right,
+      var(--color-ink) 0%,
+      rgba(11, 11, 12, 0) 11%,
+      rgba(11, 11, 12, 0) 89%,
+      var(--color-ink) 100%
+    );
+}

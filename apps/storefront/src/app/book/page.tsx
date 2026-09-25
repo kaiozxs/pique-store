@@ -13,7 +13,7 @@ export default async function BookPage() {
       {/* Banner da linha: a foto do modelo tem o fundo escuro do lado esquerdo,
           então o texto cai justamente na parte vazia da imagem — sem véu pesado
           por cima do rosto. */}
-      <section className="relative isolate overflow-hidden">
+      <section className="bordas-suaves relative isolate overflow-hidden">
         <Image
           src="/images/wab-modelo.jpg"
           alt=""
