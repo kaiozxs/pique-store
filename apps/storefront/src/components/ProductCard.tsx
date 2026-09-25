@@ -12,13 +12,6 @@ export function ProductCard({ product }: { product: MedusaProduct; region: Medus
   const image = product.thumbnail ?? product.images?.[0]?.url;
   const presale = getPresaleInfo(product);
 
-  // Segunda foto pro hover: de longe a mais útil é a da peça sendo usada, que
-  // é a pergunta que a pessoa faz antes de comprar roupa ("como fica em mim?").
-  // Sem lifestyle cadastrada, cai em qualquer outra foto que não seja a que já
-  // está aparecendo — costas e ângulos servem. Se o produto só tem uma, o
-  // efeito simplesmente não acontece.
-  const galeria = (product.images ?? []).map((i) => i.url).filter((url) => url !== image);
-  const imagemHover = galeria.find((url) => url.includes("lifestyle")) ?? galeria[0];
 
   return (
     <Link
@@ -47,26 +40,13 @@ export function ProductCard({ product }: { product: MedusaProduct; region: Medus
           // preencher cortava justamente as mangas. Assim a peça aparece
           // inteira, e o respiro interno afasta ela das bordas em vez de
           // encostar no corte.
-          <>
-            <Image
-              src={image}
-              alt={product.title}
-              fill
-              className="object-contain transition-opacity duration-500 ease-out group-hover:opacity-0"
-              sizes="(min-width: 1024px) 25vw, 50vw"
-            />
-            {imagemHover && (
-              // A foto de uso tem fundo próprio e preenche o card inteiro — é o
-              // contraste com a peça recortada no cinza que dá o efeito.
-              <Image
-                src={imagemHover}
-                alt=""
-                fill
-                className="object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
-                sizes="(min-width: 1024px) 25vw, 50vw"
-              />
-            )}
-          </>
+          <Image
+            src={image}
+            alt={product.title}
+            fill
+            className="object-contain"
+            sizes="(min-width: 1024px) 25vw, 50vw"
+          />
         ) : (
           <>
             <svg width="52" height="52" viewBox="0 0 24 24" aria-hidden="true" className="text-paper/35">
