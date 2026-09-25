@@ -1,11 +1,13 @@
-// Bandeiras aceitas no checkout, desenhadas aqui em monocromático branco sobre
-// o preto do rodapé.
+// Bandeiras aceitas no checkout, desenhadas aqui em monocromático sobre o
+// preto do rodapé.
 //
-// São representações próprias, não os arquivos de marca oficiais: o símbolo da
-// Mastercard (os dois círculos) é fiel, mas Visa, Elo e Amex usam tipografia
-// exclusiva delas, então aqui são aproximações. Pra ficar idêntico ao logo
-// real basta trocar cada <svg> abaixo pelo arquivo oficial da bandeira — o
-// resto do layout não muda.
+// São representações próprias, não os arquivos de marca oficiais: o losango do
+// Pix e os círculos da Mastercard são fiéis à forma, mas Visa, Elo e Amex usam
+// tipografia exclusiva delas, então aqui são aproximações. Pra ficar idêntico
+// basta trocar cada <svg> pelo arquivo oficial da bandeira — o layout não muda.
+//
+// Todos partem do mesmo viewBox e da mesma altura para terem peso visual
+// parecido: sem isso, uma marca de três letras some ao lado de uma de quatro.
 //
 // ATENÇÃO: o Pix aparece aqui por decisão da marca, mas o checkout AINDA NÃO
 // aceita Pix — hoje só cartão de crédito e débito via Mercado Pago. Enquanto o
@@ -15,29 +17,38 @@
 // pelo mesmo motivo.
 
 const FONT = "Poppins, Helvetica, Arial, sans-serif";
-const CLASSE = "h-6 w-auto text-paper/85 transition-colors";
+const CLASSE = "h-[26px] w-auto text-paper/85 transition-colors";
 
 function Pix() {
   return (
-    <svg viewBox="0 0 46 24" className={CLASSE} role="img" aria-label="Pix">
-      {/* Quatro pontas em losango, com o miolo vazado — a forma do símbolo. */}
-      <path
-        fill="currentColor"
-        d="M23 3.2l4.6 4.6h-9.2L23 3.2Z
-           M31.8 12l-4.6 4.6v-9.2L31.8 12Z
-           M23 20.8l-4.6-4.6h9.2L23 20.8Z
-           M14.2 12l4.6-4.6v9.2L14.2 12Z"
-      />
+    <svg viewBox="0 0 46 26" className={CLASSE} role="img" aria-label="Pix">
+      {/* Losango partido em quatro por um corte em cruz. Cada parte é o
+          quarto exato do losango encolhido em torno do próprio centroide, que
+          é o que deixa o respiro igual nos quatro lados — na tentativa
+          anterior as pontas não fechavam e virava uma estrela vazada. */}
+      <g fill="currentColor">
+        <path d="M23.36 4.72L31.28 12.64L23.36 12.64Z" />
+        <path d="M31.28 13.36L23.36 21.28L23.36 13.36Z" />
+        <path d="M22.64 21.28L14.72 13.36L22.64 13.36Z" />
+        <path d="M14.72 12.64L22.64 4.72L22.64 12.64Z" />
+      </g>
     </svg>
   );
 }
 
 function Visa() {
   return (
-    <svg viewBox="0 0 46 24" className={CLASSE} role="img" aria-label="Visa">
+    <svg viewBox="0 0 46 26" className={CLASSE} role="img" aria-label="Visa">
       <text
-        x="23" y="17" textAnchor="middle" fontFamily={FONT} fontSize="15"
-        fontWeight="700" fontStyle="italic" letterSpacing="0.6" fill="currentColor"
+        x="23"
+        y="18.5"
+        textAnchor="middle"
+        fontFamily={FONT}
+        fontSize="15.5"
+        fontWeight="700"
+        fontStyle="italic"
+        letterSpacing="0.2"
+        fill="currentColor"
       >
         VISA
       </text>
@@ -47,22 +58,37 @@ function Visa() {
 
 function Mastercard() {
   return (
-    <svg viewBox="0 0 46 24" className={CLASSE} role="img" aria-label="Mastercard">
-      {/* Os dois círculos que se cruzam. Em monocromático o da direita fica
-          translúcido, então a interseção aparece mais clara — é o que faz a
-          marca ser reconhecida sem as cores. */}
-      <circle cx="18" cy="12" r="8" fill="currentColor" />
-      <circle cx="28" cy="12" r="8" fill="currentColor" fillOpacity="0.5" />
+    <svg viewBox="0 0 46 26" className={CLASSE} role="img" aria-label="Mastercard">
+      {/* Sem as cores, o que identifica a marca é a lente do meio ter um tom
+          diferente dos dois círculos. Sobrepor duas metades translúcidas da
+          MESMA cor não bastava: a área comum ficava idêntica ao resto e o
+          desenho virava um oito deitado. Aqui os dois círculos são
+          translúcidos e a interseção é pintada por cima, recortada por um
+          deles, em cor cheia. */}
+      <defs>
+        <clipPath id="pique-mc-esq">
+          <circle cx="18.5" cy="13" r="7.4" />
+        </clipPath>
+      </defs>
+      <circle cx="18.5" cy="13" r="7.4" fill="currentColor" fillOpacity="0.55" />
+      <circle cx="27.5" cy="13" r="7.4" fill="currentColor" fillOpacity="0.55" />
+      <circle cx="27.5" cy="13" r="7.4" fill="currentColor" clipPath="url(#pique-mc-esq)" />
     </svg>
   );
 }
 
 function Elo() {
   return (
-    <svg viewBox="0 0 46 24" className={CLASSE} role="img" aria-label="Elo">
+    <svg viewBox="0 0 46 26" className={CLASSE} role="img" aria-label="Elo">
       <text
-        x="23" y="18" textAnchor="middle" fontFamily={FONT} fontSize="17"
-        fontWeight="700" letterSpacing="-0.4" fill="currentColor"
+        x="23"
+        y="19"
+        textAnchor="middle"
+        fontFamily={FONT}
+        fontSize="17"
+        fontWeight="700"
+        letterSpacing="-0.3"
+        fill="currentColor"
       >
         elo
       </text>
@@ -72,10 +98,16 @@ function Elo() {
 
 function Amex() {
   return (
-    <svg viewBox="0 0 46 24" className={CLASSE} role="img" aria-label="American Express">
+    <svg viewBox="0 0 46 26" className={CLASSE} role="img" aria-label="American Express">
       <text
-        x="23" y="16" textAnchor="middle" fontFamily={FONT} fontSize="11"
-        fontWeight="700" letterSpacing="0.5" fill="currentColor"
+        x="23"
+        y="17.5"
+        textAnchor="middle"
+        fontFamily={FONT}
+        fontSize="11"
+        fontWeight="700"
+        letterSpacing="0.2"
+        fill="currentColor"
       >
         AMEX
       </text>
