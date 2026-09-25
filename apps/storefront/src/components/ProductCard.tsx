@@ -17,7 +17,7 @@ export function ProductCard({ product }: { product: MedusaProduct; region: Medus
       {/* Tracejado só no card sem foto, onde ele avisa que falta a imagem.
           Com foto de verdade, tracejado passa impressão de página inacabada. */}
       <div
-        className={`relative flex aspect-square flex-col items-center justify-center gap-3.5 overflow-hidden bg-[#161617] ${
+        className={`relative flex aspect-square flex-col items-center justify-center gap-3.5 overflow-hidden bg-product ${
           image ? "border border-white/10" : "border border-dashed border-white/20"
         }`}
       >

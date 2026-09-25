@@ -220,7 +220,7 @@ function CartAction({ cart }: { cart: MiniCart }) {
                 <div className="max-h-80 overflow-y-auto">
                   {cart.items.map((item) => (
                     <div key={item.id} className="flex gap-3 border-b border-white/10 px-5 py-4 last:border-b-0">
-                      <div className="relative h-16 w-14 shrink-0 overflow-hidden border border-dashed border-white/20 bg-[#161617]">
+                      <div className="relative h-16 w-14 shrink-0 overflow-hidden border border-dashed border-white/20 bg-product">
                         {item.thumbnail && (
                           <Image src={item.thumbnail} alt={item.title} fill className="object-cover" sizes="56px" />
                         )}

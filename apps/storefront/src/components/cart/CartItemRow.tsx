@@ -36,7 +36,7 @@ export function CartItemRow({
 
   return (
     <div className={`flex gap-4 border-b border-white/10 py-6 ${isPending ? "opacity-50" : ""}`}>
-      <div className="relative h-24 w-20 shrink-0 overflow-hidden border border-dashed border-white/20 bg-[#161617]">
+      <div className="relative h-24 w-20 shrink-0 overflow-hidden border border-dashed border-white/20 bg-product">
         {thumbnail && <Image src={thumbnail} alt={title} fill className="object-cover" sizes="80px" />}
       </div>
       <div className="flex flex-1 flex-col justify-between">

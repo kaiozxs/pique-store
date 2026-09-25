@@ -5,12 +5,17 @@
   --color-ink: #0b0b0c;
   --color-paper: #f7f5f2;
   --color-accent: #e21833;
+  /* Fundo atrás das peças. As fotos são PNG sem fundo, então quem aparece
+     atrás da roupa é esta cor. Cinza médio porque precisa servir tanto pra
+     peça preta quanto pra branca: no preto do site a peça escura sumia. */
+  --color-product: #545454;
 }
 
 @theme inline {
   --color-ink: var(--color-ink);
   --color-paper: var(--color-paper);
   --color-accent: var(--color-accent);
+  --color-product: var(--color-product);
   --font-display: "Anton", "Arial Black", sans-serif;
   --font-sans: "Poppins", "Helvetica Neue", Arial, sans-serif;
   --font-accent: "Cormorant Garamond", Georgia, serif;
