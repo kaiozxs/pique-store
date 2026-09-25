@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginAction, registerAction } from "./actions";
 import { startGoogleLogin } from "@/lib/google-auth";
@@ -149,11 +150,17 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     <form action={formAction} className="flex flex-col gap-3">
       <input type="email" name="email" placeholder="E-mail" required className={inputClass} />
       <PasswordField name="password" placeholder="Senha" />
+      <Link
+        href="/conta/senha"
+        className="-mt-1 self-end text-[12px] text-paper/45 underline underline-offset-4 transition-colors hover:text-accent"
+      >
+        Esqueceu a senha?
+      </Link>
       {state?.error && <p className="text-sm font-semibold text-red-400">{state.error}</p>}
       <button
         type="submit"
         disabled={isPending}
-        className="mt-2 border border-accent bg-accent px-8 py-3 text-[13px] font-bold tracking-[0.14em] text-paper transition-colors hover:bg-paper hover:text-ink disabled:opacity-60"
+        className="btn-preenche mt-2 border border-accent px-8 py-3 text-[13px] font-bold tracking-[0.14em] disabled:opacity-60"
       >
         {isPending ? "ENTRANDO..." : "ENTRAR"}
       </button>
@@ -221,7 +228,7 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
       <button
         type="submit"
         disabled={isPending}
-        className="mt-2 border border-accent bg-accent px-8 py-3 text-[13px] font-bold tracking-[0.14em] text-paper transition-colors hover:bg-paper hover:text-ink disabled:opacity-60"
+        className="btn-preenche mt-2 border border-accent px-8 py-3 text-[13px] font-bold tracking-[0.14em] disabled:opacity-60"
       >
         {isPending ? "CRIANDO..." : "CRIAR CONTA"}
       </button>
@@ -245,21 +252,34 @@ export function AuthForms({
 
   return (
     <div className="mx-auto max-w-sm">
+      {/* As abas não pareciam clicáveis: eram só duas palavras, uma vermelha e
+          outra apagada. O saltinho no hover e o traço embaixo da ativa dizem
+          onde dá pra clicar sem precisar escrever nada. */}
       <div className="mb-8 flex gap-6 text-[12px] font-semibold tracking-[0.1em]">
-        <button
-          type="button"
-          onClick={() => setTab("login")}
-          className={tab === "login" ? "text-accent" : "text-paper/40"}
-        >
-          ENTRAR
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("register")}
-          className={tab === "register" ? "text-accent" : "text-paper/40"}
-        >
-          CRIAR CONTA
-        </button>
+        {(
+          [
+            ["login", "ENTRAR"],
+            ["register", "CRIAR CONTA"],
+          ] as const
+        ).map(([chave, rotulo]) => (
+          <button
+            key={chave}
+            type="button"
+            onClick={() => setTab(chave)}
+            aria-pressed={tab === chave}
+            className={`relative pb-1.5 transition-all duration-200 ease-out hover:-translate-y-0.5 ${
+              tab === chave ? "text-accent" : "text-paper/40 hover:text-paper/75"
+            }`}
+          >
+            {rotulo}
+            <span
+              aria-hidden="true"
+              className={`absolute bottom-0 left-0 h-px w-full origin-left bg-accent transition-transform duration-200 ease-out ${
+                tab === chave ? "scale-x-100" : "scale-x-0"
+              }`}
+            />
+          </button>
+        ))}
       </div>
       {tab === "login" ? <LoginForm onSuccess={handleSuccess} /> : <RegisterForm onSuccess={handleSuccess} />}
 

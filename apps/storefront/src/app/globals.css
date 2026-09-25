@@ -74,3 +74,68 @@ body {
     transition: none;
   }
 }
+
+/* Preenchimento diagonal dos botões principais.
+   O branco entra por baixo, inclinado, e sobe cobrindo o vermelho — a borda
+   torta é o que desenha a diagonal enquanto atravessa o botão. As camadas são
+   bem maiores que ele de propósito: giradas, um retângulo do tamanho exato
+   deixaria os cantos descobertos no fim do movimento.
+   Virou classe porque o efeito se repete em vários botões, e copiar o mesmo
+   punhado de spans em cada um é como eles acabam ficando diferentes entre si. */
+.btn-preenche {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--color-paper);
+  transition: color 500ms ease-out;
+}
+
+.btn-preenche::before,
+.btn-preenche::after {
+  content: "";
+  position: absolute;
+  inset: -3rem;
+  z-index: -1;
+}
+
+.btn-preenche::before {
+  background: var(--color-accent);
+}
+
+.btn-preenche::after {
+  background: var(--color-paper);
+  opacity: 0;
+  transform: translate(-12%, 105%) rotate(-9deg);
+  transition:
+    opacity 500ms ease-out,
+    transform 500ms ease-out;
+}
+
+.btn-preenche:hover {
+  color: var(--color-ink);
+}
+
+.btn-preenche:hover::after {
+  opacity: 1;
+  transform: translate(0, 0) rotate(-9deg);
+}
+
+/* Botão desabilitado não deve fingir que responde. */
+.btn-preenche:disabled:hover {
+  color: var(--color-paper);
+}
+
+.btn-preenche:disabled:hover::after {
+  opacity: 0;
+  transform: translate(-12%, 105%) rotate(-9deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-preenche::after {
+    transition: opacity 200ms ease-out;
+    transform: none;
+  }
+  .btn-preenche:hover::after {
+    transform: none;
+  }
+}
