@@ -115,7 +115,13 @@ function GoogleButton({ postLoginRedirect }: { postLoginRedirect: string }) {
       type="button"
       disabled={isPending}
       onClick={entrar}
-      className="flex w-full items-center justify-center gap-3 border border-white/25 bg-transparent px-8 py-3 text-[13px] font-bold tracking-[0.08em] text-paper transition-colors hover:border-white/50 disabled:opacity-60"
+      // De propósito sem o preenchimento vermelho dos outros botões: esse
+      // desenho — fundo neutro, logo colorido — é reconhecido num relance, e
+      // recolorir tira justamente o que faz ele funcionar. Além disso, entrar
+      // é a ação principal e o Google é a alternativa; dar o mesmo peso visual
+      // aos dois faz a pessoa travar na escolha. O que ele ganha é só resposta
+      // ao mouse, pra não parecer morto ao lado do outro.
+      className="flex w-full items-center justify-center gap-3 border border-white/25 bg-transparent px-8 py-3 text-[13px] font-bold tracking-[0.08em] text-paper transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/[0.06] disabled:translate-y-0 disabled:opacity-60 disabled:hover:bg-transparent"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
         <path
