@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { TransicaoDePagina } from "@/components/TransicaoDePagina";
 
 export const metadata: Metadata = {
   title: "PIQUE — Streetwear de Alto Padrão",
@@ -14,7 +15,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pt-BR" className="h-full antialiased">
       <body className="flex min-h-full flex-col bg-paper text-ink">
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          <TransicaoDePagina>{children}</TransicaoDePagina>
+        </main>
         <Footer />
       </body>
     </html>

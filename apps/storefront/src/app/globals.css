@@ -308,3 +308,27 @@ body {
     animation: none;
   }
 }
+
+/* Chegada da página nova — ver components/TransicaoDePagina.
+   Curta de propósito: transição que acontece a cada clique vira estorvo
+   se demorar. */
+@keyframes pagina-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pagina-entra {
+  animation: pagina-entra 260ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pagina-entra {
+    animation: none;
+  }
+}
