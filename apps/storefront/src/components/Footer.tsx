@@ -92,7 +92,16 @@ export function Footer() {
             celular tudo empilha e os filetes somem. */}
         <div className="flex flex-col gap-8 border-b border-white/10 py-10 lg:flex-row lg:items-center lg:gap-10">
           <Link href="/" className="shrink-0" aria-label="PIQUE, ir para a home">
-            <Image src="/logo.png" alt="PIQUE" width={92} height={70} style={{ height: "auto" }} />
+            {/* Versão horizontal, só no rodapé — o cabeçalho segue com a
+                empilhada. Dimensionada pela altura pra ficar discreta ao lado
+                da chamada da newsletter. */}
+            <Image
+              src="/images/logo-horizontal.png"
+              alt="PIQUE"
+              width={119}
+              height={70}
+              className="h-[40px] w-auto sm:h-[46px]"
+            />
           </Link>
 
           <div className="shrink-0 lg:border-l lg:border-white/15 lg:pl-10">
