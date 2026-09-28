@@ -16,7 +16,7 @@ export function ProductCard({ product }: { product: MedusaProduct; region: Medus
   return (
     <Link
       href={`/produtos/${product.handle}`}
-      className="group block transition-transform duration-300 ease-out hover:-translate-y-2.5 hover:scale-[1.03]"
+      className="toque group block transition-transform duration-300 ease-out hover:-translate-y-2.5 hover:scale-[1.03]"
     >
       {/* Tracejado só no card sem foto, onde ele avisa que falta a imagem.
           Com foto de verdade, tracejado passa impressão de página inacabada. */}

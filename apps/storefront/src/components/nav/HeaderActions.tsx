@@ -115,7 +115,7 @@ function AccountAction({ customer }: { customer: { firstName: string | null } | 
 
   if (!customer) {
     return (
-      <Link href="/conta" aria-label="Entrar" className="transition-colors hover:text-accent">
+      <Link href="/conta" aria-label="Entrar" className="alvo-toque toque-leve transition-colors hover:text-accent">
         {icon}
       </Link>
     );
@@ -128,7 +128,7 @@ function AccountAction({ customer }: { customer: { firstName: string | null } | 
         aria-label={`Minha conta${customer.firstName ? `, ${customer.firstName}` : ""}`}
         aria-haspopup="true"
         aria-expanded={open}
-        className="block transition-colors hover:text-accent"
+        className="alvo-toque toque-leve block transition-colors hover:text-accent"
       >
         {icon}
       </Link>

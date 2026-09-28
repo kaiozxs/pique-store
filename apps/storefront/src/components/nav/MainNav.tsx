@@ -149,7 +149,7 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
         aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
         aria-expanded={mobileOpen}
         onClick={() => setMobileOpen((v) => !v)}
-        className="flex h-9 w-9 items-center justify-center text-paper transition-colors hover:text-accent md:hidden"
+        className="alvo-toque toque-leve flex h-9 w-9 items-center justify-center text-paper transition-colors hover:text-accent md:hidden"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
           {mobileOpen ? (
@@ -161,7 +161,7 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
       </button>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 overflow-y-auto bg-ink px-6 py-8 md:hidden">
+        <div className="menu-entra fixed inset-0 z-40 overflow-y-auto bg-ink px-6 py-8 md:hidden">
           <div className="mb-8 flex items-center justify-between">
             <span className="font-display text-2xl tracking-wide text-paper">PIQUE</span>
             <button
@@ -176,10 +176,10 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
             </button>
           </div>
           <div className="mb-2 text-[11px] font-bold tracking-[0.18em] text-paper/50">VESTUÁRIO</div>
-          <div className="mb-8 flex flex-col">
+          <div className="item-menu-entra mb-8 flex flex-col" style={{ animationDelay: "60ms" }}>
             <CategoryLinks categories={categories} onNavigate={() => setMobileOpen(false)} />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="item-menu-entra flex flex-col gap-1" style={{ animationDelay: "120ms" }}>
             {UTILITY_LINKS.map((link) => (
               <Link
                 key={link.href}

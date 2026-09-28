@@ -230,7 +230,7 @@ export function ProductDetail({
                 aria-label="Diminuir quantidade"
                 disabled={quantidade <= 1}
                 onClick={() => setQuantidade((q) => Math.max(1, q - 1))}
-                className="h-11 w-11 border border-white/25 text-lg transition-colors hover:border-white/50 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-paper/30 disabled:hover:border-white/10"
+                className="toque-leve h-11 w-11 border border-white/25 text-lg transition-colors hover:border-white/50 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-paper/30 disabled:hover:border-white/10"
               >
                 −
               </button>
@@ -240,7 +240,7 @@ export function ProductDetail({
                 aria-label="Aumentar quantidade"
                 disabled={noTeto}
                 onClick={() => setQuantidade((q) => Math.min(maxQuantidade, q + 1))}
-                className="h-11 w-11 border border-white/25 text-lg transition-colors hover:border-white/50 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-paper/30 disabled:hover:border-white/10"
+                className="toque-leve h-11 w-11 border border-white/25 text-lg transition-colors hover:border-white/50 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-paper/30 disabled:hover:border-white/10"
               >
                 +
               </button>
@@ -259,7 +259,7 @@ export function ProductDetail({
             type="button"
             disabled={!disponivel || isPending}
             onClick={handleAddToCart}
-            className="border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.12em] text-paper transition-colors hover:bg-paper hover:text-ink disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-transparent disabled:text-paper/40 disabled:hover:bg-transparent disabled:hover:text-paper/40"
+            className="toque border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.12em] text-paper transition-colors hover:bg-paper hover:text-ink disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-transparent disabled:text-paper/40 disabled:hover:bg-transparent disabled:hover:text-paper/40"
           >
             {!disponivel ? "INDISPONÍVEL" : isPending ? "ADICIONANDO..." : "ADICIONAR À SACOLA"}
           </button>

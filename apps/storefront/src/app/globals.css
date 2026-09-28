@@ -115,6 +115,13 @@ body {
   color: var(--color-ink);
 }
 
+/* No celular não existe passar o mouse: o dedo toca e, sem isso, nada
+   acontece na tela até a página trocar — dá impressão de que o toque não
+   pegou. O afundar é a confirmação imediata de que o botão registrou. */
+.btn-preenche:active {
+  transform: scale(0.97);
+}
+
 .btn-preenche:hover::after {
   opacity: 1;
   transform: translate(0, 0) rotate(-9deg);
@@ -209,5 +216,95 @@ body {
   /* Sem movimento, os pontos precisam continuar visíveis. */
   .pulso-etapa {
     opacity: 1;
+  }
+}
+
+/* Resposta ao toque, para o que não usa .btn-preenche.
+   Só afeta o momento do toque/clique, então não atrapalha quem usa mouse. */
+.toque {
+  transition:
+    transform 140ms ease-out,
+    opacity 140ms ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toque:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+/* Ícone ou botão pequeno encolhe menos, senão o movimento fica exagerado. */
+.toque-leve {
+  transition: transform 140ms ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toque-leve:active {
+  transform: scale(0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-preenche:active,
+  .toque:active,
+  .toque-leve:active {
+    transform: none;
+  }
+  .toque:active {
+    opacity: 0.75;
+  }
+}
+
+/* Alvos de toque: o dedo precisa de área, e vários ícones do cabeçalho eram
+   menores que o mínimo confortável. Só no toque — no mouse o alvo pequeno
+   não atrapalha. */
+@media (hover: none) {
+  .alvo-toque {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Menu de celular: aparecia estalando na tela inteira de uma vez. Entrar
+   deslizando de cima deixa claro de onde ele veio — e é o que a pessoa já
+   espera de um menu de aplicativo. */
+@keyframes menu-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-entra {
+  animation: menu-entra 220ms ease-out;
+}
+
+/* Os itens entram em cascata logo depois, pra leitura acompanhar a abertura
+   em vez de receber tudo pronto de uma vez. */
+@keyframes item-menu-entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.item-menu-entra {
+  animation: item-menu-entra 260ms ease-out backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-entra,
+  .item-menu-entra {
+    animation: none;
   }
 }
