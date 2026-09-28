@@ -7,63 +7,111 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
 // senão a animação acontece no canto do olho e não se vê.
 const TRIGGER_RATIO = 0.9;
 
-// Um único listener de scroll pra página inteira, em vez de um por seção, e a
-// checagem é agrupada num timer — rolar rápido não dispara dezenas de
-// recálculos de layout. Timer e não requestAnimationFrame de propósito: quadro
-// de animação não roda em aba oculta ou sem composição, e ali a rolagem ainda
-// acontece (restauração de posição, link com âncora, aba aberta em segundo
-// plano). Com rAF o conteúdo dessas páginas ficaria escondido pra sempre.
-const pending = new Set<HTMLElement>();
-let scheduled = 0;
-let listening = false;
+// Três gatilhos para a mesma checagem, de propósito.
+//
+// O primeiro era só o evento de rolagem da janela, e isso escondia conteúdo de
+// verdade: dentro do navegador embutido de apps (o do Google, por exemplo) e
+// em qualquer página cuja rolagem acontece num elemento interno, esse evento
+// nunca chega — as seções entravam escondidas e não voltavam nunca. Então:
+//
+//   1. IntersectionObserver, que observa a tela e não depende de quem rola;
+//   2. os eventos de rolagem/redimensionamento, como reforço;
+//   3. um pulso de 1 em 1 segundo enquanto houver pendentes, que é a rede de
+//      segurança final — mesmo que 1 e 2 falhem os dois, o conteúdo aparece.
+//
+// O pulso para sozinho assim que tudo foi revelado, e desiste depois de 20
+// tentativas pra não ficar rodando pra sempre numa aba esquecida aberta.
+const pendentes = new Set<HTMLElement>();
+let agendado = 0;
+let ouvindo = false;
+let observador: IntersectionObserver | null = null;
+let pulso: ReturnType<typeof setInterval> | null = null;
+let batidas = 0;
+
+const PULSOS_MAX = 20;
+
+function revelar(el: HTMLElement) {
+  el.dataset.reveal = "shown";
+  pendentes.delete(el);
+  observador?.unobserve(el);
+}
 
 function check() {
-  scheduled = 0;
-  const limit = window.innerHeight * TRIGGER_RATIO;
-  for (const el of pending) {
-    if (el.getBoundingClientRect().top <= limit) {
-      el.dataset.reveal = "shown";
-      pending.delete(el);
-    }
+  agendado = 0;
+  const limite = window.innerHeight * TRIGGER_RATIO;
+  for (const el of pendentes) {
+    if (el.getBoundingClientRect().top <= limite) revelar(el);
   }
-  if (pending.size === 0) stopListening();
+  if (pendentes.size === 0) pararTudo();
 }
 
 function schedule() {
-  if (scheduled) return;
-  scheduled = window.setTimeout(check, 0);
+  if (agendado) return;
+  agendado = window.setTimeout(check, 0);
 }
 
-function startListening() {
-  if (listening) return;
-  listening = true;
+function garantirObservador() {
+  if (observador || typeof IntersectionObserver === "undefined") return;
+  observador = new IntersectionObserver(
+    (entradas) => {
+      for (const entrada of entradas) {
+        if (entrada.isIntersecting) revelar(entrada.target as HTMLElement);
+      }
+      if (pendentes.size === 0) pararTudo();
+    },
+    { rootMargin: "0px 0px -10% 0px" }
+  );
+}
+
+function comecarAOuvir() {
+  if (ouvindo) return;
+  ouvindo = true;
   window.addEventListener("scroll", schedule, { passive: true });
   window.addEventListener("resize", schedule, { passive: true });
-  // Aba que estava em segundo plano (ou página voltando do cache do botão
-  // "voltar") pode ter rolado sem disparar nada: quando ela reaparece, recheca
-  // do zero em vez de confiar no que ficou pendente.
   document.addEventListener("visibilitychange", schedule);
   window.addEventListener("pageshow", schedule);
+  // Rolagem que acontece dentro de um elemento não emite evento na janela,
+  // mas emite na fase de captura do documento.
+  document.addEventListener("scroll", schedule, { passive: true, capture: true });
+
+  batidas = 0;
+  pulso = setInterval(() => {
+    batidas += 1;
+    check();
+    if (batidas >= PULSOS_MAX) {
+      // Desistir escondendo seria o pior desfecho: revela o que sobrou.
+      for (const el of [...pendentes]) revelar(el);
+      pararTudo();
+    }
+  }, 1000);
 }
 
-function stopListening() {
-  if (!listening) return;
-  listening = false;
+function pararTudo() {
+  if (pulso) {
+    clearInterval(pulso);
+    pulso = null;
+  }
+  if (!ouvindo) return;
+  ouvindo = false;
   window.removeEventListener("scroll", schedule);
   window.removeEventListener("resize", schedule);
   document.removeEventListener("visibilitychange", schedule);
   window.removeEventListener("pageshow", schedule);
+  document.removeEventListener("scroll", schedule, { capture: true } as EventListenerOptions);
 }
 
 function watch(el: HTMLElement) {
-  pending.add(el);
-  startListening();
+  pendentes.add(el);
+  garantirObservador();
+  observador?.observe(el);
+  comecarAOuvir();
   schedule();
 }
 
 function unwatch(el: HTMLElement) {
-  pending.delete(el);
-  if (pending.size === 0) stopListening();
+  pendentes.delete(el);
+  observador?.unobserve(el);
+  if (pendentes.size === 0) pararTudo();
 }
 
 /**
