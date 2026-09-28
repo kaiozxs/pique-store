@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getOrder, formatMoney } from "@/lib/orders";
+import { RastreioForm } from "./RastreioForm";
 
 export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[id]">) {
   const { id } = await params;
@@ -35,6 +36,19 @@ export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[
           <div className="text-xs font-semibold uppercase tracking-wide text-muted">Envio</div>
           <div className="mt-1 text-sm text-ink">{order.fulfillment_status}</div>
         </div>
+      </div>
+
+      <div className="mb-6 rounded-lg border border-border bg-surface p-4">
+        <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
+          Código de rastreio
+        </div>
+        <p className="mb-3 text-sm text-muted">
+          Cole aqui o código do despacho. Ele aparece na conta do cliente com link para os Correios.
+        </p>
+        <RastreioForm
+          orderId={order.id}
+          inicial={String((order.metadata as Record<string, unknown> | null)?.tracking_numbers ?? "")}
+        />
       </div>
 
       <div className="mb-6 overflow-hidden rounded-lg border border-border bg-surface">
@@ -89,5 +103,6 @@ export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[
         </div>
       )}
     </div>
+
   );
 }
