@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import type { HttpTypes } from "@medusajs/types";
 import { formatMoney } from "@/lib/medusa";
+import { cpfValido } from "@/lib/validacao";
 import type { MedusaCart } from "@/lib/cart";
 import type { ShippingAddressInput, ShippingOption } from "@/lib/checkout";
 import {
@@ -59,6 +60,8 @@ export function CheckoutClient({
   const [order, setOrder] = useState<HttpTypes.StoreOrder | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cepLoading, setCepLoading] = useState(false);
+  const [cepErro, setCepErro] = useState<string | null>(null);
+  const [cpfErro, setCpfErro] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -67,6 +70,7 @@ export function CheckoutClient({
   // país selecionado é Brasil e o CEP tem os 8 dígitos.
   function handlePostalCodeChange(value: string) {
     setAddress((prev) => ({ ...prev, postal_code: value }));
+    setCepErro(null);
     const digits = value.replace(/\D/g, "");
     if (address.country_code !== "br" || digits.length !== 8) return;
 
@@ -74,7 +78,12 @@ export function CheckoutClient({
     fetch(`https://viacep.com.br/ws/${digits}/json/`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.erro) return;
+        if (data.erro) {
+          // Falhava em silêncio: nada preenchia e a pessoa não sabia por quê.
+          setCepErro("CEP não encontrado. Confere o número ou preenche o endereço à mão.");
+          return;
+        }
+        setCepErro(null);
         setAddress((prev) => ({
           ...prev,
           address_1: data.logradouro || prev.address_1,
@@ -83,7 +92,8 @@ export function CheckoutClient({
         }));
       })
       .catch(() => {
-        // CEP não encontrado ou API fora do ar — cliente preenche na mão.
+        // Consulta fora do ar: não trava a compra, só avisa e segue no manual.
+        setCepErro("Não deu pra buscar o CEP agora. Pode preencher o endereço à mão.");
       })
       .finally(() => setCepLoading(false));
   }
@@ -96,6 +106,14 @@ export function CheckoutClient({
       .replace(/(\d{3})(\d)/, "$1.$2")
       .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
     setCpf(masked);
+    if (cpfErro) setCpfErro(null);
+  }
+
+  // Conferido quando a pessoa sai do campo, não a cada tecla: avisar que está
+  // errado enquanto ela ainda está digitando é só barulho.
+  function conferirCpf() {
+    if (!cpf) return;
+    setCpfErro(cpfValido(cpf) ? null : "Esse CPF não é válido. Confere os números.");
   }
 
   useEffect(() => {
@@ -266,13 +284,20 @@ export function CheckoutClient({
                 onChange={(e) => setAddress({ ...address, province: e.target.value })}
                 className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
               />
-              <input
-                required
-                placeholder={cepLoading ? "Buscando..." : "CEP"}
-                value={address.postal_code}
-                onChange={(e) => handlePostalCodeChange(e.target.value)}
-                className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
-              />
+              <div className="flex flex-col gap-1">
+                <input
+                  required
+                  placeholder={cepLoading ? "Buscando..." : "CEP"}
+                  inputMode="numeric"
+                  value={address.postal_code}
+                  onChange={(e) => handlePostalCodeChange(e.target.value)}
+                  aria-invalid={Boolean(cepErro)}
+                  className={`border bg-transparent px-4 py-3 text-sm outline-none ${
+                    cepErro ? "border-amber-400" : "border-white/20 focus:border-accent"
+                  }`}
+                />
+                {cepErro && <span className="text-xs text-amber-400">{cepErro}</span>}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <select
@@ -296,14 +321,21 @@ export function CheckoutClient({
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <input
-                required
-                placeholder="CPF"
-                inputMode="numeric"
-                value={cpf}
-                onChange={(e) => handleCpfChange(e.target.value)}
-                className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
-              />
+              <div className="flex flex-col gap-1">
+                <input
+                  required
+                  placeholder="CPF"
+                  inputMode="numeric"
+                  value={cpf}
+                  onChange={(e) => handleCpfChange(e.target.value)}
+                  onBlur={conferirCpf}
+                  aria-invalid={Boolean(cpfErro)}
+                  className={`border bg-transparent px-4 py-3 text-sm outline-none ${
+                    cpfErro ? "border-red-400" : "border-white/20 focus:border-accent"
+                  }`}
+                />
+                {cpfErro && <span className="text-xs text-red-400">{cpfErro}</span>}
+              </div>
               <label className="flex flex-col gap-1 text-xs text-paper/50">
                 <input
                   required
