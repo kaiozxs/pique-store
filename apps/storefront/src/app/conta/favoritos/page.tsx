@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentCustomer, listFavorites } from "@/lib/customer";
 import { listProductsByHandles } from "@/lib/medusa";
-import { ProductCard } from "@/components/ProductCard";
+import { FavoritoCard } from "./FavoritoCard";
 import { ContaShell, ContaVazio } from "@/components/conta/ContaShell";
 
 export const metadata: Metadata = { title: "Favoritos — PIQUE" };
@@ -24,7 +24,7 @@ export default async function FavoritosPage() {
       ) : (
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-3">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} region={region} />
+            <FavoritoCard key={product.id} product={product} region={region} />
           ))}
         </div>
       )}

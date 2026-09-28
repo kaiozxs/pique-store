@@ -35,6 +35,7 @@ export function EnderecosClient({ customer }: { customer: MedusaCustomer }) {
   const [form, setForm] = useState<ShippingAddressInput | null>(null);
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [confirmandoRemover, setConfirmandoRemover] = useState<string | null>(null);
+  const [herdeiro, setHerdeiro] = useState("");
   const [cepCarregando, setCepCarregando] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -96,10 +97,15 @@ export function EnderecosClient({ customer }: { customer: MedusaCustomer }) {
     });
   }
 
-  function remover(id: string) {
+  // Excluir o padrão sem escolher outro deixaria a conta sem endereço de
+  // entrega preferido, e o checkout voltaria a abrir em branco sem a pessoa
+  // entender por quê. Quando há outros endereços, o próximo assume.
+  function remover(id: string, herdeiroId?: string) {
     startTransition(async () => {
+      if (herdeiroId) await setDefaultAddressAction(herdeiroId);
       await removeAddressAction(id);
       setConfirmandoRemover(null);
+      setHerdeiro("");
       router.refresh();
     });
   }
@@ -176,26 +182,57 @@ export function EnderecosClient({ customer }: { customer: MedusaCustomer }) {
 
           {/* Excluir endereço não volta atrás — pergunta antes, em vez de
               apagar no primeiro clique. */}
-          {confirmandoRemover === e.id && (
-            <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-white/10 pt-4">
-              <span className="text-sm text-paper/70">Excluir este endereço?</span>
-              <button
-                type="button"
-                disabled={isPending}
-                onClick={() => remover(e.id)}
-                className="border border-accent bg-accent px-4 py-1.5 text-[12px] font-bold tracking-[0.08em] text-paper disabled:opacity-60"
-              >
-                {isPending ? "EXCLUINDO..." : "SIM, EXCLUIR"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmandoRemover(null)}
-                className="text-[12px] font-semibold tracking-[0.06em] text-paper/55 hover:text-paper"
-              >
-                CANCELAR
-              </button>
-            </div>
-          )}
+          {confirmandoRemover === e.id && (() => {
+            const outros = enderecos.filter((o) => o.id !== e.id);
+            const precisaEscolher = e.is_default_shipping && outros.length > 0;
+
+            return (
+              <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
+                <span className="text-sm text-paper/70">
+                  {precisaEscolher
+                    ? "Esse é o seu endereço padrão. Escolha qual passa a ser antes de excluir:"
+                    : "Excluir este endereço?"}
+                </span>
+
+                {precisaEscolher && (
+                  <select
+                    value={herdeiro}
+                    onChange={(ev) => setHerdeiro(ev.target.value)}
+                    className="w-fit max-w-full border border-white/20 bg-ink px-3 py-2 text-sm text-paper outline-none focus:border-accent"
+                  >
+                    <option value="">Escolha um endereço</option>
+                    {outros.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.address_1}
+                        {o.city ? ` — ${o.city}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                <div className="flex flex-wrap items-center gap-4">
+                  <button
+                    type="button"
+                    disabled={isPending || (precisaEscolher && !herdeiro)}
+                    onClick={() => remover(e.id, precisaEscolher ? herdeiro : undefined)}
+                    className="border border-accent bg-accent px-4 py-1.5 text-[12px] font-bold tracking-[0.08em] text-paper disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isPending ? "EXCLUINDO..." : "SIM, EXCLUIR"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setConfirmandoRemover(null);
+                      setHerdeiro("");
+                    }}
+                    className="text-[12px] font-semibold tracking-[0.06em] text-paper/55 hover:text-paper"
+                  >
+                    CANCELAR
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       ))}
 
