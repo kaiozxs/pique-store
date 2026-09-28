@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
 import { findVariant, formatMoney, getPresaleInfo, isVariantAvailable } from "@/lib/medusa";
 import { isSizeOption, SIZE_ORDER, sizeLabel } from "@/lib/tamanhos";
+import { toggleFavoriteAction } from "@/app/conta/actions";
 import { addToCartAction } from "@/lib/cart-actions";
 import { ShippingEstimate } from "./ShippingEstimate";
 
@@ -33,7 +35,17 @@ function optionValueLabel(optionTitle: string, value: string): string {
   return sizeLabel(value);
 }
 
-export function ProductDetail({ product, region }: { product: MedusaProduct; region: MedusaRegion }) {
+export function ProductDetail({
+  product,
+  region,
+  logado = false,
+  favoritoInicial = false,
+}: {
+  product: MedusaProduct;
+  region: MedusaRegion;
+  logado?: boolean;
+  favoritoInicial?: boolean;
+}) {
   const [selected, setSelected] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
     for (const option of product.options ?? []) {
@@ -42,10 +54,11 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
     }
     return initial;
   });
-  const [favorito, setFavorito] = useState(false);
+  const [favorito, setFavorito] = useState(favoritoInicial);
   const [quantidade, setQuantidade] = useState(1);
   const [feedback, setFeedback] = useState<"ok" | "erro" | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [salvandoFavorito, startFavorito] = useTransition();
 
   const variante = useMemo(() => findVariant(product, selected), [product, selected]);
 
@@ -250,16 +263,36 @@ export function ProductDetail({ product, region }: { product: MedusaProduct; reg
           >
             {!disponivel ? "INDISPONÍVEL" : isPending ? "ADICIONANDO..." : "ADICIONAR À SACOLA"}
           </button>
-          <button
-            type="button"
-            onClick={() => setFavorito((f) => !f)}
-            aria-pressed={favorito}
-            className={`border px-5 py-4 text-[13px] font-bold tracking-[0.1em] transition-colors ${
-              favorito ? "border-accent text-accent" : "border-white/25 hover:border-white/50"
-            }`}
-          >
-            {favorito ? "★ FAVORITADO" : "☆ FAVORITAR"}
-          </button>
+          {/* Favoritar só faz sentido com conta: é ela que guarda a lista.
+              Sem login, o botão leva pra entrar em vez de fingir que salvou e
+              perder tudo ao fechar a aba, que era o que acontecia antes. */}
+          {logado ? (
+            <button
+              type="button"
+              disabled={salvandoFavorito}
+              onClick={() => {
+                const novo = !favorito;
+                setFavorito(novo); // resposta imediata; o servidor confirma depois
+                startFavorito(async () => {
+                  const r = await toggleFavoriteAction(product.handle);
+                  setFavorito(r.favoritado);
+                });
+              }}
+              aria-pressed={favorito}
+              className={`border px-5 py-4 text-[13px] font-bold tracking-[0.1em] transition-colors disabled:opacity-70 ${
+                favorito ? "border-accent text-accent" : "border-white/25 hover:border-white/50"
+              }`}
+            >
+              {favorito ? "★ FAVORITADO" : "☆ FAVORITAR"}
+            </button>
+          ) : (
+            <Link
+              href="/conta"
+              className="border border-white/25 px-5 py-4 text-[13px] font-bold tracking-[0.1em] transition-colors hover:border-white/50"
+            >
+              ☆ FAVORITAR
+            </Link>
+          )}
         </div>
         {feedback === "ok" && (
           <p className="mt-3 text-sm font-semibold text-accent">Adicionado à sacola.</p>

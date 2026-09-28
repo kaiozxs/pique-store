@@ -149,7 +149,12 @@ export async function getCurrentCustomer(): Promise<MedusaCustomer | null> {
   const headers = await authHeaders();
   if (!headers.Authorization) return null;
   try {
-    const { customer } = await sdk.store.customer.retrieve({ fields: "*addresses" }, headers);
+    // metadata precisa ser pedido explicitamente: com `fields` preenchido, o
+    // Medusa devolve só o que foi listado — e é nele que moram os favoritos.
+    const { customer } = await sdk.store.customer.retrieve(
+      { fields: "*addresses,metadata" },
+      headers
+    );
     return customer;
   } catch {
     return null;
@@ -201,6 +206,75 @@ export async function listCustomerOrders(): Promise<MedusaCustomerOrder[]> {
 export async function addCustomerAddress(input: ShippingAddressInput): Promise<void> {
   const headers = await authHeaders();
   await sdk.store.customer.createAddress(input, {}, headers);
+}
+
+export async function updateCustomerAddress(
+  addressId: string,
+  input: ShippingAddressInput
+): Promise<void> {
+  const headers = await authHeaders();
+  await sdk.store.customer.updateAddress(addressId, input, {}, headers);
+}
+
+/**
+ * Marca um endereço como padrão de entrega.
+ *
+ * O Medusa não desmarca o anterior sozinho — se dois ficarem marcados, o
+ * checkout passa a escolher um deles por ordem de chegada, que é o tipo de
+ * ambiguidade que o cliente não entende e a gente não consegue explicar. Por
+ * isso o antigo é desmarcado aqui antes de marcar o novo.
+ */
+export async function setDefaultCustomerAddress(addressId: string): Promise<void> {
+  const headers = await authHeaders();
+  const { customer } = await sdk.store.customer.retrieve({ fields: "*addresses" }, headers);
+
+  const anteriores = (customer?.addresses ?? []).filter(
+    (a) => a.is_default_shipping && a.id !== addressId
+  );
+  for (const antigo of anteriores) {
+    await sdk.store.customer.updateAddress(antigo.id, { is_default_shipping: false }, {}, headers);
+  }
+
+  await sdk.store.customer.updateAddress(addressId, { is_default_shipping: true }, {}, headers);
+}
+
+/** Dados que o próprio cliente pode corrigir na conta. */
+export async function updateCustomerProfile(input: {
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+}): Promise<void> {
+  const headers = await authHeaders();
+  await sdk.store.customer.update(input, {}, headers);
+}
+
+// Favoritos moram no metadata do cliente: é uma lista de handles de produto e
+// não justifica uma tabela própria no backend. O importante é que agora eles
+// pertencem à conta, e não à aba do navegador — antes sumiam ao fechar a
+// página.
+const CHAVE_FAVORITOS = "favoritos";
+
+export async function listFavorites(): Promise<string[]> {
+  const customer = await getCurrentCustomer();
+  const bruto = (customer?.metadata as Record<string, unknown> | null)?.[CHAVE_FAVORITOS];
+  return Array.isArray(bruto) ? bruto.filter((h): h is string => typeof h === "string") : [];
+}
+
+export async function toggleFavorite(handle: string): Promise<{ favoritado: boolean }> {
+  const headers = await authHeaders();
+  if (!headers.Authorization) return { favoritado: false };
+
+  const atuais = await listFavorites();
+  const jaTem = atuais.includes(handle);
+  const novos = jaTem ? atuais.filter((h) => h !== handle) : [...atuais, handle];
+
+  const customer = await getCurrentCustomer();
+  await sdk.store.customer.update(
+    { metadata: { ...(customer?.metadata ?? {}), [CHAVE_FAVORITOS]: novos } },
+    {},
+    headers
+  );
+  return { favoritado: !jaTem };
 }
 
 export async function removeCustomerAddress(addressId: string): Promise<void> {

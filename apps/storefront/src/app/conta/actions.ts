@@ -4,6 +4,11 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
   addCustomerAddress,
+  listFavorites,
+  setDefaultCustomerAddress,
+  toggleFavorite,
+  updateCustomerAddress,
+  updateCustomerProfile,
   completeGoogleLogin,
   login,
   logout,
@@ -86,4 +91,35 @@ export async function addAddressAction(input: ShippingAddressInput) {
 export async function removeAddressAction(addressId: string) {
   await removeCustomerAddress(addressId);
   revalidatePath("/conta");
+}
+
+export async function updateAddressAction(addressId: string, input: ShippingAddressInput) {
+  await updateCustomerAddress(addressId, input);
+  revalidatePath("/conta/enderecos");
+  revalidatePath("/conta");
+}
+
+export async function setDefaultAddressAction(addressId: string) {
+  await setDefaultCustomerAddress(addressId);
+  revalidatePath("/conta/enderecos");
+  revalidatePath("/conta");
+}
+
+export async function updateProfileAction(input: {
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+}) {
+  await updateCustomerProfile(input);
+  revalidatePath("/conta");
+}
+
+export async function toggleFavoriteAction(handle: string) {
+  const resultado = await toggleFavorite(handle);
+  revalidatePath("/conta/favoritos");
+  return resultado;
+}
+
+export async function listFavoritesAction() {
+  return listFavorites();
 }

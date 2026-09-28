@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { formatMoney } from "@/lib/medusa";
+import { SECOES_DA_CONTA } from "@/components/conta/ContaNav";
 import { logoutAction } from "@/app/conta/actions";
 
 const CLOSE_DELAY_MS = 150;
@@ -140,13 +141,19 @@ function AccountAction({ customer }: { customer: { firstName: string | null } | 
                 Olá, <span className="font-semibold text-paper">{customer.firstName}</span>
               </div>
             )}
-            <Link
-              href="/conta"
-              className="block px-5 py-3 text-[13px] font-semibold tracking-[0.06em] text-paper transition-colors hover:bg-white/5 hover:text-accent"
-            >
-              MINHA CONTA
-            </Link>
-            <form action={logoutAction}>
+            {/* Rastrear pedido não entra aqui de propósito: o rastreamento
+                mora dentro do pedido, não numa busca separada. */}
+            {SECOES_DA_CONTA.map((secao) => (
+              <Link
+                key={secao.href}
+                href={secao.href}
+                className="block px-5 py-3 text-[13px] font-semibold tracking-[0.06em] text-paper transition-colors hover:bg-white/5 hover:text-accent"
+              >
+                {secao.label}
+              </Link>
+            ))}
+            {/* Sair fica destacado do resto: é a única opção que encerra algo. */}
+            <form action={logoutAction} className="border-t border-white/10">
               <button
                 type="submit"
                 className="block w-full px-5 py-3 text-left text-[13px] font-semibold tracking-[0.06em] text-paper/70 transition-colors hover:bg-white/5 hover:text-accent"

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getProductByHandle } from "@/lib/medusa";
+import { getCurrentCustomer, listFavorites } from "@/lib/customer";
 import { ProductDetail } from "@/components/product/ProductDetail";
 
 // Sem generateStaticParams de propósito: isso obrigaria o build a bater no
@@ -16,7 +17,11 @@ export async function generateMetadata(props: PageProps<"/produtos/[slug]">): Pr
 
 export default async function ProdutoPage(props: PageProps<"/produtos/[slug]">) {
   const { slug } = await props.params;
-  const { product, region } = await getProductByHandle(slug);
+  const [{ product, region }, customer, favoritos] = await Promise.all([
+    getProductByHandle(slug),
+    getCurrentCustomer(),
+    listFavorites(),
+  ]);
 
   if (!product) {
     notFound();
@@ -24,7 +29,12 @@ export default async function ProdutoPage(props: PageProps<"/produtos/[slug]">) 
 
   return (
     <div className="bg-ink text-paper">
-      <ProductDetail product={product} region={region} />
+      <ProductDetail
+        product={product}
+        region={region}
+        logado={Boolean(customer)}
+        favoritoInicial={favoritos.includes(product.handle)}
+      />
     </div>
   );
 }

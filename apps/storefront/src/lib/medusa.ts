@@ -87,6 +87,27 @@ export async function listNavCategories(): Promise<NavCategory[]> {
   return data.nav_categories;
 }
 
+/** Produtos a partir de uma lista de handles — usado pelos favoritos. */
+export async function listProductsByHandles(handles: string[]): Promise<{
+  products: MedusaProduct[];
+  region: MedusaRegion;
+}> {
+  const region = await getDefaultRegion();
+  if (handles.length === 0) return { products: [], region };
+
+  const { products } = await sdk.client.fetch<{ products: MedusaProduct[] }>("/store/products", {
+    query: { handle: handles, region_id: region.id, fields: PRODUCT_FIELDS, limit: handles.length },
+    next: { revalidate: 30 },
+  });
+
+  // Mantém a ordem em que a pessoa favoritou, que é a ordem que ela espera.
+  const porHandle = new Map(products.map((p) => [p.handle, p]));
+  return {
+    products: handles.map((h) => porHandle.get(h)).filter((p): p is MedusaProduct => Boolean(p)),
+    region,
+  };
+}
+
 export async function getCuratedDrop(): Promise<{
   title: string | null;
   products: MedusaProduct[];
