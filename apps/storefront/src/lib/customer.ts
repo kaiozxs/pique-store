@@ -281,3 +281,31 @@ export async function removeCustomerAddress(addressId: string): Promise<void> {
   const headers = await authHeaders();
   await sdk.store.customer.deleteAddress(addressId, headers);
 }
+
+export type PecaDaConta = {
+  id: string;
+  unique_code: string;
+  status: string;
+  invoice_reference: string | null;
+  product: {
+    title: string | null;
+    handle: string | null;
+    thumbnail: string | null;
+    variant_title: string | null;
+  } | null;
+};
+
+/** As peças registradas no nome do cliente logado — "Minhas Coleções". */
+export async function listMyPieces(): Promise<PecaDaConta[]> {
+  const headers = await authHeaders();
+  if (!headers.Authorization) return [];
+  try {
+    const { pieces } = await sdk.client.fetch<{ pieces: PecaDaConta[] }>("/store/pecas/minhas", {
+      headers,
+      cache: "no-store",
+    });
+    return pieces ?? [];
+  } catch {
+    return [];
+  }
+}

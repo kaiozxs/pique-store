@@ -168,3 +168,46 @@ body {
       var(--color-ink) 100%
     );
 }
+
+/* Animações da linha do tempo do pedido — ver components/pedido/LinhaDoTempo.
+   A etapa em andamento se mexe; as concluídas param. É o movimento que diz
+   "é aqui que seu pedido está agora", sem precisar de legenda. */
+@keyframes pulso-etapa {
+  0%, 60%, 100% { opacity: 0.25; transform: scale(0.85); }
+  30% { opacity: 1; transform: scale(1); }
+}
+
+.pulso-etapa {
+  animation: pulso-etapa 1.4s ease-in-out infinite;
+}
+
+@keyframes pulso-aro {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(226, 24, 51, 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(226, 24, 51, 0); }
+}
+
+.pulso-etapa-aro {
+  animation: pulso-aro 1.8s ease-out infinite;
+}
+
+@keyframes balanco-etapa {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.balanco-etapa {
+  display: block;
+  animation: balanco-etapa 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulso-etapa,
+  .pulso-etapa-aro,
+  .balanco-etapa {
+    animation: none;
+  }
+  /* Sem movimento, os pontos precisam continuar visíveis. */
+  .pulso-etapa {
+    opacity: 1;
+  }
+}
