@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CookiesPainel } from "@/components/CookiesPainel";
 import { TransicaoDePagina } from "@/components/TransicaoDePagina";
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <TransicaoDePagina>{children}</TransicaoDePagina>
         </main>
         <Footer />
+        <CookiesPainel />
       </body>
     </html>
   );

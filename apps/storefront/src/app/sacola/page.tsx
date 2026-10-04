@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCart } from "@/lib/cart";
 import { formatMoney } from "@/lib/medusa";
+import { CupomForm } from "@/components/cart/CupomForm";
 import { CartItemRow } from "@/components/cart/CartItemRow";
 
 export const metadata: Metadata = { title: "Sacola — PIQUE" };
@@ -50,6 +51,13 @@ export default async function SacolaPage() {
         </div>
 
         <div className="mt-8 flex flex-col items-end gap-2">
+          <CupomForm aplicados={(cart!.promotions ?? []).map((p) => p.code).filter((c): c is string => Boolean(c))} />
+          {(cart!.discount_total ?? 0) > 0 && (
+            <div className="flex w-full max-w-xs justify-between text-sm text-paper/70">
+              <span>Desconto</span>
+              <span>− {formatMoney(cart!.discount_total, currencyCode)}</span>
+            </div>
+          )}
           <div className="flex w-full max-w-xs justify-between text-sm text-paper/70">
             <span>Subtotal</span>
             <span>{formatMoney(cart!.item_subtotal ?? cart!.subtotal, currencyCode)}</span>

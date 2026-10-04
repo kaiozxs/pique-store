@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { listNavCategories, listProducts } from "@/lib/medusa";
+import { cookies } from "next/headers";
+import { cheapestPrice, listNavCategories, listProducts } from "@/lib/medusa";
 import { ProductCard } from "@/components/ProductCard";
+import { LembrarCatalogo } from "@/components/LembrarCatalogo";
+
+const ORDENS = [
+  { valor: "novos", rotulo: "Mais novos" },
+  { valor: "menor", rotulo: "Menor preço" },
+  { valor: "maior", rotulo: "Maior preço" },
+];
 
 export const metadata: Metadata = {
   title: "Drops — PIQUE",
@@ -10,15 +18,47 @@ export const metadata: Metadata = {
 export default async function DropsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categoria?: string; q?: string }>;
+  searchParams: Promise<{ categoria?: string; q?: string; ordem?: string }>;
 }) {
-  const { categoria, q } = await searchParams;
+  const params = await searchParams;
+  const q = params.q;
+
+  // Sem escolha na URL, vale o que a pessoa deixou da última vez (só existe se
+  // ela permitiu cookies de preferência). "todos" é uma escolha explícita.
+  let lembrado: { categoria?: string; ordem?: string } = {};
+  try {
+    const bruto = (await cookies()).get("piquestore_prefs")?.value;
+    if (bruto) lembrado = JSON.parse(bruto);
+  } catch {
+    // cookie ilegível: ignora
+  }
+  const semEscolha = params.categoria === undefined && params.ordem === undefined && !q;
+  const categoriaEscolhida = semEscolha ? lembrado.categoria : params.categoria;
+  const categoria = categoriaEscolhida === "todos" ? undefined : categoriaEscolhida;
+  const ordemEscolhida = params.ordem ?? (semEscolha ? lembrado.ordem : undefined);
+  const ordem = ORDENS.some((o) => o.valor === ordemEscolhida) ? ordemEscolhida! : "novos";
   const categories = await listNavCategories();
   const activeCategory = categoria ? categories.find((c) => c.handle === categoria) : undefined;
-  const { products, region } = await listProducts({ categoryId: activeCategory?.id, q });
+  const listados = await listProducts({ categoryId: activeCategory?.id, q });
+  const { region } = listados;
+  const products =
+    ordem === "novos"
+      ? listados.products
+      : [...listados.products].sort((a, b) => {
+          const pa = cheapestPrice(a)?.amount ?? Infinity;
+          const pb = cheapestPrice(b)?.amount ?? Infinity;
+          return ordem === "menor" ? pa - pb : pb - pa;
+        });
+  const href = (cat?: string, ord = ordem) => {
+    const p = new URLSearchParams();
+    p.set("categoria", cat ?? "todos");
+    if (ord !== "novos") p.set("ordem", ord);
+    return `/drops?${p.toString()}`;
+  };
 
   return (
     <div className="bg-ink text-paper">
+      <LembrarCatalogo categoria={activeCategory?.handle ?? "todos"} ordem={ordem} />
       <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 sm:py-14">
         {/* Cabeçalho numa linha só: o título sozinho à esquerda e a palavra
             "catálogo" virando nota discreta do outro lado. Empilhado, ele
@@ -59,7 +99,7 @@ export default async function DropsPage({
 
           <div className="flex flex-wrap gap-3 text-[12px] font-semibold tracking-[0.08em]">
             <Link
-              href="/drops"
+              href={href()}
               className={`border px-4 py-2 transition-colors ${
                 !activeCategory ? "border-accent bg-accent text-paper" : "border-white/20 hover:border-white/50"
               }`}
@@ -71,7 +111,7 @@ export default async function DropsPage({
               .map((c) => (
                 <Link
                   key={c.id}
-                  href={`/drops?categoria=${c.handle}`}
+                  href={href(c.handle)}
                   className={`border px-4 py-2 uppercase transition-colors ${
                     activeCategory?.id === c.id
                       ? "border-accent bg-accent text-paper"
@@ -82,6 +122,21 @@ export default async function DropsPage({
                 </Link>
               ))}
           </div>
+        </div>
+
+        <div className="mb-6 flex flex-wrap items-center gap-3 text-[12px] font-semibold tracking-[0.08em]">
+          <span className="text-paper/45">ORDENAR</span>
+          {ORDENS.map((o) => (
+            <Link
+              key={o.valor}
+              href={href(activeCategory?.handle, o.valor)}
+              className={`border px-3 py-1.5 transition-colors ${
+                ordem === o.valor ? "border-white/60 text-paper" : "border-white/15 text-paper/60 hover:border-white/40"
+              }`}
+            >
+              {o.rotulo.toUpperCase()}
+            </Link>
+          ))}
         </div>
 
         {products.length === 0 ? (

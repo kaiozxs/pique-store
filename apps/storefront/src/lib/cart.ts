@@ -17,6 +17,7 @@ const CART_FIELDS = [
   "*promotions",
   "*payment_collection",
   "+email",
+  "+discount_total",
 ].join(",");
 
 async function createCart(): Promise<MedusaCart> {
@@ -65,4 +66,18 @@ export async function removeLineItem(lineItemId: string): Promise<MedusaCart> {
   await sdk.store.cart.deleteLineItem(cart.id, lineItemId);
   const { cart: updated } = await sdk.store.cart.retrieve(cart.id, { fields: CART_FIELDS });
   return updated;
+}
+
+/**
+ * Cupom: o código fica no próprio carrinho, no servidor — por isso sobrevive
+ * a fechar o navegador junto com a sacola, sem precisar de cookie próprio.
+ */
+export async function setPromoCodes(codes: string[]): Promise<void> {
+  const cart = await getOrCreateCart();
+  await sdk.store.cart.update(cart.id, { promo_codes: codes });
+}
+
+export async function appliedPromoCodes(): Promise<string[]> {
+  const cart = await getCart();
+  return (cart?.promotions ?? []).map((p) => p.code).filter((c): c is string => Boolean(c));
 }

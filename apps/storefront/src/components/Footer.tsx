@@ -32,6 +32,7 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] 
       { label: "Política de privacidade", href: "/institucional/politica-de-privacidade" },
       { label: "Termos de uso", href: "/institucional/termos-de-uso" },
       { label: "Política de cookies", href: "/institucional/politica-de-cookies" },
+      { label: "Preferências de cookies", href: "#preferencias-cookies" },
       { label: "Política de envio", href: "/institucional/politica-de-envio" },
       { label: "Política de trocas e devoluções", href: "/institucional/trocas-e-devolucoes" },
       { label: "Política de cancelamentos", href: "/institucional/cancelamentos" },
