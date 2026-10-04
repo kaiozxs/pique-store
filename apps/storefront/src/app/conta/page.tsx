@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getCurrentCustomer } from "@/lib/customer";
+import { LoginVitrine } from "@/components/conta/LoginVitrine";
 import { AuthForms } from "./AuthForms";
 import { AccountDashboard } from "./AccountDashboard";
 
@@ -15,35 +16,26 @@ export default async function ContaPage() {
     // precisa de vitrine, só do formulário. A foto fica de um lado e o
     // formulário do outro; no celular só o formulário.
     return (
-      <div className="fixed inset-0 z-[55] overflow-y-auto bg-ink text-paper lg:grid lg:grid-cols-[1.1fr_1fr] lg:overflow-hidden">
-        <div className="relative hidden lg:block">
-          <Image src="/images/hero-praia.jpg" alt="" fill priority sizes="55vw" className="object-cover" />
-          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/50" />
-          <div className="absolute inset-x-0 bottom-0 p-10">
-            <h2 className="font-display text-[clamp(2rem,5vh,3.25rem)] leading-[1.05] tracking-wide">
-              DA RUA PRA
-              <br />
-              QUEM É DA RUA.
-            </h2>
-            <p className="mt-4 max-w-sm text-sm text-paper/70">
-              Entre para guardar seus favoritos, acompanhar pedidos e registrar suas peças.
-            </p>
-          </div>
-        </div>
+      <div className="login-fundo fixed inset-0 z-[55] overflow-y-auto text-paper">
+        <div className="flex min-h-full items-center justify-center p-4 sm:p-8">
+          <div className="grid w-full max-w-5xl gap-0 rounded-3xl border border-white/10 bg-[#141414] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.6)] lg:min-h-[600px] lg:grid-cols-[1fr_1.05fr]">
+            <LoginVitrine />
 
-        <div className="flex min-h-full flex-col px-6 py-8 sm:px-12">
-          <div className="flex items-center justify-between">
-            <Link href="/" aria-label="PIQUE, ir para a home">
-              <Image src="/images/logo-horizontal.png" alt="PIQUE" width={110} height={44} className="h-11 w-auto" />
-            </Link>
-            <Link href="/" className="text-[12px] font-semibold tracking-[0.1em] text-paper/55 transition-colors hover:text-paper">
-              ← VOLTAR À LOJA
-            </Link>
-          </div>
-          <div className="flex flex-1 flex-col justify-center py-10">
-            <div className="mx-auto w-full max-w-sm">
-              <h1 className="mb-8 font-display text-3xl tracking-wide sm:text-4xl">BEM-VINDO À PIQUE</h1>
-              <AuthForms />
+            <div className="login-suave flex flex-col px-5 py-6 sm:px-10">
+              <div className="flex items-center justify-between lg:hidden">
+                <Link href="/" aria-label="PIQUE, ir para a home">
+                  <Image src="/images/logo-horizontal.png" alt="PIQUE" width={96} height={40} className="h-10 w-auto" />
+                </Link>
+                <Link href="/" className="rounded-full bg-white/10 px-4 py-2 text-[12px] font-semibold tracking-[0.06em]">
+                  Voltar à loja →
+                </Link>
+              </div>
+              <div className="flex flex-1 flex-col justify-center py-8">
+                <div className="mx-auto w-full max-w-sm">
+                  <h1 className="mb-8 font-display text-3xl tracking-wide sm:text-4xl">BEM-VINDO À PIQUE</h1>
+                  <AuthForms />
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -332,3 +332,42 @@ body {
     animation: none;
   }
 }
+
+/* Tela de login: campos e botões suaves, como cartão flutuante. Escopado ao
+   contêiner para não mexer nos formulários do checkout. */
+.login-suave input:not([type="checkbox"]):not([type="radio"]) {
+  border-radius: 10px;
+  border-color: transparent;
+  background-color: rgb(255 255 255 / 0.06);
+}
+.login-suave input:not([type="checkbox"]):focus {
+  border-color: var(--color-accent);
+  background-color: rgb(255 255 255 / 0.09);
+}
+.login-suave div:has(> input[type="password"]),
+.login-suave div:has(> input[type="text"]) {
+  border-radius: 10px;
+}
+.login-suave form button,
+.login-suave button[type="submit"] {
+  border-radius: 10px;
+}
+.login-fundo {
+  background:
+    radial-gradient(60% 50% at 15% 10%, rgb(226 24 51 / 0.16), transparent 70%),
+    radial-gradient(50% 45% at 90% 95%, rgb(226 24 51 / 0.1), transparent 70%),
+    #0a0a0a;
+}
+.login-suave div:has(> input[type="password"]),
+.login-suave div:has(> input[type="text"]) {
+  border-color: transparent;
+  background-color: rgb(255 255 255 / 0.06);
+}
+.login-suave div:has(> input[type="password"]):focus-within,
+.login-suave div:has(> input[type="text"]):focus-within {
+  border-color: var(--color-accent);
+}
+.login-suave div > input[type="password"],
+.login-suave div > input[type="text"] {
+  background-color: transparent;
+}
