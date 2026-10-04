@@ -18,7 +18,7 @@ export default async function ContaPage() {
     return (
       <div className="login-fundo fixed inset-0 z-[55] overflow-y-auto text-paper">
         <div className="flex min-h-full items-center justify-center p-4 sm:p-8">
-          <div className="grid w-full max-w-5xl gap-0 rounded-3xl border border-white/10 bg-[#141414] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.6)] lg:min-h-[600px] lg:grid-cols-[1.05fr_1fr]">
+          <div className="grid w-full max-w-6xl gap-0 rounded-3xl border border-white/10 bg-[#141414] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.6)] lg:min-h-[680px] lg:grid-cols-[1fr_1.1fr]">
             <LoginVitrine />
 
             <div className="login-suave flex flex-col px-5 py-6 sm:px-10">
@@ -32,9 +32,20 @@ export default async function ContaPage() {
               </div>
               <div className="flex flex-1 flex-col justify-center py-8">
                 <div className="mx-auto w-full max-w-sm">
-                  <h1 className="mb-8 font-display text-3xl tracking-wide sm:text-4xl">BEM-VINDO À PIQUE</h1>
+                  <div className="mb-3 text-[12px] font-semibold tracking-[0.3em] text-accent">ÁREA DO CLIENTE</div>
+                  <h1 className="font-display text-5xl tracking-wide sm:text-6xl">ENTRAR</h1>
+                  <p className="mb-8 mt-3 text-sm leading-relaxed text-paper/55">
+                    Acompanhe pedidos, salve favoritos e registre suas peças PIQUE.
+                  </p>
                   <AuthForms />
                 </div>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-[11px] tracking-[0.12em] text-paper/40">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                  <rect x="5" y="11" width="14" height="9" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                COMPRA SEGURA · SEUS DADOS PROTEGIDOS
               </div>
             </div>
           </div>

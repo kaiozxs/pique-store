@@ -512,3 +512,37 @@ body::after {
     opacity: 1 !important;
   }
 }
+
+/* Login: foto que se aproxima devagar e traço de progresso do slide. */
+@keyframes aproximar-lento {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+@keyframes encher {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.login-zoom {
+  animation: aproximar-lento 7s ease-out both;
+}
+.login-traco {
+  transform-origin: 0 50%;
+  animation: encher 5s linear both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .login-zoom,
+  .login-traco {
+    animation: none;
+  }
+  .login-traco {
+    transform: scaleX(1);
+  }
+}
