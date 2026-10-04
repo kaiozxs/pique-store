@@ -1,8 +1,6 @@
 import { Hero } from "@/components/home/Hero";
 import { Collections } from "@/components/home/Collections";
 import { DropDaSemana } from "@/components/home/DropDaSemana";
-import { Letreiro } from "@/components/home/Letreiro";
-import { Manifesto } from "@/components/home/Manifesto";
 import { BookTeaser } from "@/components/home/BookTeaser";
 import { getHomeSections, type HomeSectionType } from "@/lib/medusa";
 
@@ -21,9 +19,7 @@ export default async function Home() {
   return (
     <>
       {ativa.has("hero") && <Hero config={config("hero")} />}
-      <Letreiro />
       {ativa.has("drop_destaque") && <DropDaSemana />}
-      <Manifesto />
       <Collections />
       {ativa.has("wab_teaser") && <BookTeaser />}
     </>
