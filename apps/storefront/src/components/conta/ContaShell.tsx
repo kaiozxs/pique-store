@@ -1,6 +1,10 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import Link from "next/link";
+import { fotoDoCliente, getCurrentCustomer, idPessoal } from "@/lib/customer";
+import { logoutAction } from "@/app/conta/actions";
+import { Avatar } from "./Avatar";
 import { ContaNav } from "./ContaNav";
+import { ContaSidebar } from "./ContaSidebar";
 
 /**
  * Moldura das páginas da conta.
@@ -10,7 +14,7 @@ import { ContaNav } from "./ContaNav";
  * elas, senão a pessoa entra num pedido e não acha o caminho de volta pro
  * resto da conta sem passar pelo menu do topo.
  */
-export function ContaShell({
+export async function ContaShell({
   titulo,
   descricao,
   acao,
@@ -21,9 +25,33 @@ export function ContaShell({
   acao?: ReactNode;
   children: ReactNode;
 }) {
+  const customer = await getCurrentCustomer();
+  const nome = customer ? [customer.first_name, customer.last_name].filter(Boolean).join(" ") || customer.email : "";
+
   return (
     <div className="bg-ink text-paper">
-      <div className="mx-auto max-w-5xl px-6 py-14 sm:px-8">
+      <div className="mx-auto flex max-w-6xl gap-10 px-6 py-14 sm:px-8">
+        {customer && (
+          <ContaSidebar
+            topo={
+              <Link href="/conta" className="flex items-center gap-3 border border-white/12 p-4 transition-colors hover:border-white/30">
+                <Avatar foto={fotoDoCliente(customer)} nome={nome} tamanho={48} />
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-semibold">{nome}</div>
+                  <div className="text-[11px] tracking-[0.14em] text-paper/45">{idPessoal(customer)}</div>
+                </div>
+              </Link>
+            }
+            rodape={
+              <form action={logoutAction}>
+                <button type="submit" className="px-4 py-2 text-[12px] font-semibold tracking-[0.1em] text-paper/50 transition-colors hover:text-accent">
+                  SAIR DA CONTA
+                </button>
+              </form>
+            }
+          />
+        )}
+        <div className="min-w-0 flex-1">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="mb-2 text-[13px] font-semibold tracking-[0.28em] text-paper/50">CONTA</div>
@@ -33,9 +61,12 @@ export function ContaShell({
           {acao}
         </div>
 
-        <ContaNav />
+        <div className="md:hidden">
+          <ContaNav />
+        </div>
 
         <div className="mt-9">{children}</div>
+        </div>
       </div>
     </div>
   );

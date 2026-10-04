@@ -1,10 +1,8 @@
 import Link from "next/link";
-import type { MedusaCustomer, MedusaCustomerOrder } from "@/lib/customer";
-import { formatMoney } from "@/lib/medusa";
-import { statusDoPedido } from "@/lib/order-status";
+import { fotoDoCliente, idPessoal, type MedusaCustomer } from "@/lib/customer";
 import { ContaShell } from "@/components/conta/ContaShell";
 import { DadosPessoais } from "./DadosPessoais";
-import { logoutAction } from "./actions";
+import { PerfilIdentidade } from "./PerfilIdentidade";
 
 function Bloco({
   titulo,
@@ -29,74 +27,22 @@ function Bloco({
 /**
  * Minha Conta virou o que o documento do programador define: informações
  * pessoais e segurança. Pedidos, endereços e favoritos ganharam páginas
- * próprias — aqui ficam só os três últimos pedidos como atalho, pra não
- * repetir a lista inteira em dois lugares.
+ * próprias. O perfil mostra só o que é do perfil: identificação, foto, dados
+ * e segurança.
  */
-export function AccountDashboard({
-  customer,
-  orders,
-}: {
-  customer: MedusaCustomer;
-  orders: MedusaCustomerOrder[];
-}) {
-  const ultimos = orders.slice(0, 3);
+export function AccountDashboard({ customer }: { customer: MedusaCustomer }) {
+  const nome = [customer.first_name, customer.last_name].filter(Boolean).join(" ") || customer.email;
 
   return (
     <ContaShell
-      titulo={`Olá, ${customer.first_name ?? customer.email}`}
-      acao={
-        <form action={logoutAction}>
-          <button
-            type="submit"
-            className="text-sm font-semibold tracking-[0.08em] text-paper/50 transition-colors hover:text-accent"
-          >
-            SAIR
-          </button>
-        </form>
-      }
+      titulo="Minha conta"
+      descricao="Seus dados e a segurança do acesso."
     >
       <div className="flex flex-col gap-4">
+        <PerfilIdentidade foto={fotoDoCliente(customer)} nome={nome} id={idPessoal(customer)} email={customer.email} />
+
         <Bloco titulo="DADOS PESSOAIS">
           <DadosPessoais customer={customer} />
-        </Bloco>
-
-        <Bloco
-          titulo="ÚLTIMOS PEDIDOS"
-          acao={
-            <Link
-              href="/conta/pedidos"
-              className="text-[12px] font-semibold tracking-[0.06em] text-paper/55 transition-colors hover:text-accent"
-            >
-              VER TODOS
-            </Link>
-          }
-        >
-          {ultimos.length === 0 ? (
-            <p className="text-sm text-paper/50">Você ainda não fez nenhum pedido.</p>
-          ) : (
-            <div className="flex flex-col divide-y divide-white/10">
-              {ultimos.map((order) => {
-                const status = statusDoPedido(order);
-                return (
-                  <Link
-                    key={order.id}
-                    href={`/conta/pedidos/${order.id}`}
-                    className="group flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3 text-sm transition-colors hover:text-accent"
-                  >
-                    <span>
-                      #{order.display_id} — {new Date(order.created_at).toLocaleDateString("pt-BR")}
-                    </span>
-                    <span className={status.excecao ? "text-paper/45" : "text-paper/70"}>
-                      {status.rotulo}
-                    </span>
-                    <span className="font-semibold">
-                      {formatMoney(order.total, order.currency_code)}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
         </Bloco>
 
         <Bloco titulo="SEGURANÇA">

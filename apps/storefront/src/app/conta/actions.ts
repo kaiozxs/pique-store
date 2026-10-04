@@ -8,6 +8,7 @@ import {
   setDefaultCustomerAddress,
   toggleFavorite,
   updateCustomerAddress,
+  updateCustomerPhoto,
   updateCustomerProfile,
   completeGoogleLogin,
   login,
@@ -122,4 +123,9 @@ export async function toggleFavoriteAction(handle: string) {
 
 export async function listFavoritesAction() {
   return listFavorites();
+}
+
+export async function updatePhotoAction(dataUrl: string | null) {
+  await updateCustomerPhoto(dataUrl);
+  revalidatePath("/conta", "layout");
 }

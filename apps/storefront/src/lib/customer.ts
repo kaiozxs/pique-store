@@ -338,3 +338,36 @@ export async function listMyPieces(): Promise<PecaDaConta[]> {
     return [];
   }
 }
+
+// A foto de perfil mora no metadata do cliente, como data URL. O navegador a
+// reduz para 256px antes de enviar (≈15–30 KB), então não precisa de storage de
+// arquivos — e acompanha a conta no banco, em qualquer aparelho.
+const CHAVE_FOTO = "foto";
+const FOTO_MAX_CHARS = 120_000;
+
+export function fotoDoCliente(customer: MedusaCustomer | null): string | null {
+  const bruto = (customer?.metadata as Record<string, unknown> | null)?.[CHAVE_FOTO];
+  return typeof bruto === "string" && bruto.startsWith("data:image/jpeg;base64,") ? bruto : null;
+}
+
+/** ID pessoal exibido na conta: curto, estável e derivado do id interno. */
+export function idPessoal(customer: MedusaCustomer): string {
+  return `PQ-${customer.id.replace(/^cus_/i, "").slice(-8).toUpperCase()}`;
+}
+
+export async function updateCustomerPhoto(dataUrl: string | null): Promise<void> {
+  const headers = await authHeaders();
+  if (!headers.Authorization) return;
+  if (dataUrl !== null) {
+    // Só JPEG, tamanho limitado: o campo é gravado como veio e depois servido
+    // de volta em <img>, então nada fora desse formato entra.
+    if (!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(dataUrl) || dataUrl.length > FOTO_MAX_CHARS) {
+      throw new Error("Foto inválida");
+    }
+  }
+  const customer = await getCurrentCustomer();
+  const metadata: Record<string, unknown> = { ...(customer?.metadata ?? {}) };
+  if (dataUrl) metadata[CHAVE_FOTO] = dataUrl;
+  else delete metadata[CHAVE_FOTO];
+  await sdk.store.customer.update({ metadata: dataUrl ? metadata : { ...metadata, [CHAVE_FOTO]: null } }, {}, headers);
+}

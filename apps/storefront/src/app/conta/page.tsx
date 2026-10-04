@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getCurrentCustomer, listCustomerOrders } from "@/lib/customer";
+import { getCurrentCustomer } from "@/lib/customer";
 import { AuthForms } from "./AuthForms";
 import { AccountDashboard } from "./AccountDashboard";
 
@@ -20,6 +20,5 @@ export default async function ContaPage() {
     );
   }
 
-  const orders = await listCustomerOrders();
-  return <AccountDashboard customer={customer} orders={orders} />;
+  return <AccountDashboard customer={customer} />;
 }
