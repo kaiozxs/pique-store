@@ -32,7 +32,7 @@ function CollectionTile({ category, thumbnail }: { category: NavCategory; thumbn
 
   const label = (
     <div className="relative p-6">
-      <div className="font-display text-2xl leading-none tracking-wide sm:text-3xl">
+      <div className="break-words font-display text-[clamp(1.25rem,2vw,1.875rem)] leading-none tracking-wide">
         {category.name.toUpperCase()}
       </div>
       {category.available && (
@@ -87,7 +87,7 @@ export async function Collections() {
 
   return (
     <section className="bg-ink text-paper">
-      <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-7xl px-6 py-14 sm:px-8 sm:py-16 lg:py-20">
         <Reveal className="mb-10 flex flex-wrap items-end justify-between gap-6">
           <h2 className="font-display text-3xl tracking-wide sm:text-4xl lg:text-5xl">COLEÇÕES</h2>
           <div className="max-w-xs text-sm text-paper/55">

@@ -13,7 +13,7 @@ export async function DropDaSemana() {
 
   return (
     <section id="drop" className="bg-ink text-paper">
-      <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-7xl px-6 py-14 sm:px-8 sm:py-16 lg:py-20">
         <Reveal className="mb-9 flex flex-wrap items-end justify-between gap-6">
           <div>
             <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">
