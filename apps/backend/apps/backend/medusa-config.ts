@@ -95,5 +95,6 @@ module.exports = defineConfig({
     { resolve: "./src/modules/home-config" },
     { resolve: "./src/modules/dicas" },
     { resolve: "./src/modules/faq" },
+    { resolve: "./src/modules/acesso" },
   ],
 })

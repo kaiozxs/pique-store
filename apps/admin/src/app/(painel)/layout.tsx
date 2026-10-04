@@ -14,7 +14,7 @@ export default async function PainelLayout({ children }: { children: ReactNode }
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      <Sidebar papel={user.papel} />
       <div className="flex flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-border bg-surface px-6 py-3">
           <div className="text-sm text-muted">{user?.email ?? ""}</div>

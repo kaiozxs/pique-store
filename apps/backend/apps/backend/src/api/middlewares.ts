@@ -6,6 +6,8 @@ import { homeConfigAdminMiddlewares } from "./admin/home-config/middlewares"
 import { dicasAdminMiddlewares } from "./admin/dicas/middlewares"
 import { faqAdminMiddlewares } from "./admin/faq/middlewares"
 import { dashboardMetricsAdminMiddlewares } from "./admin/dashboard-metrics/middlewares"
+import { acessosAdminMiddlewares } from "./admin/acessos/middlewares"
+import { acessoStoreMiddlewares } from "./store/acesso/middlewares"
 import { verifiqueStoreMiddlewares } from "./store/verifique/middlewares"
 import { pecasStoreMiddlewares } from "./store/pecas/middlewares"
 import { mercadoPagoStoreMiddlewares } from "./store/checkout/mercadopago/middlewares"
@@ -19,6 +21,8 @@ export default defineMiddlewares({
     ...dicasAdminMiddlewares,
     ...faqAdminMiddlewares,
     ...dashboardMetricsAdminMiddlewares,
+    ...acessosAdminMiddlewares,
+    ...acessoStoreMiddlewares,
     ...verifiqueStoreMiddlewares,
     ...pecasStoreMiddlewares,
     ...mercadoPagoStoreMiddlewares,

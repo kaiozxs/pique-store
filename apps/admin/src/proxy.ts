@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE } from "./lib/constants";
+import { SESSION_COOKIE, SSO_COOKIE } from "./lib/constants";
 
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/sso"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
-  const hasSession = Boolean(request.cookies.get(SESSION_COOKIE)?.value);
+  const hasOwnSession = Boolean(request.cookies.get(SESSION_COOKIE)?.value);
+  const hasSession = hasOwnSession || Boolean(request.cookies.get(SSO_COOKIE)?.value);
 
   if (!hasSession && !isPublic) {
     const loginUrl = new URL("/login", request.url);
@@ -14,7 +15,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (hasSession && pathname === "/login") {
+  // Só o login próprio redireciona daqui: a sessão vinda do site pode estar
+  // revogada, e mandar /login para / criaria um laço com o layout.
+  if (hasOwnSession && pathname === "/login") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

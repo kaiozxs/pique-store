@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
+import { podeAcessar } from "@/lib/papel";
 import { getDashboardMetrics, type DashboardPeriod, type DashboardRangeQuery } from "@/lib/dashboard";
 import { formatMoney } from "@/lib/orders";
 import { DateRangeCalendar } from "@/components/DateRangeCalendar";
@@ -28,6 +31,10 @@ function niceCeil(value: number): number {
 }
 
 export default async function DashboardPage({ searchParams }: PageProps<"/">) {
+  // Faturamento é parte financeira: o lojista segue direto para os pedidos.
+  const user = await getCurrentUser();
+  if (!user || !podeAcessar(user.papel, "/")) redirect("/pedidos");
+
   const params = await searchParams;
   const start = typeof params.start === "string" ? params.start : null;
   const end = typeof params.end === "string" ? params.end : null;

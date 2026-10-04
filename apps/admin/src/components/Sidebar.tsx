@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { podeAcessar, type Papel } from "@/lib/papel";
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard" },
@@ -13,9 +14,10 @@ const NAV_ITEMS = [
   { href: "/dicas", label: "Dicas" },
   { href: "/faq", label: "FAQ" },
   { href: "/pecas", label: "Verifique seu PIQUE" },
+  { href: "/acessos", label: "Acessos" },
 ];
 
-export function Sidebar() {
+export function Sidebar({ papel }: { papel: Papel }) {
   const pathname = usePathname();
 
   return (
@@ -24,7 +26,7 @@ export function Sidebar() {
         <Image src="/logo.png" alt="PIQUE" width={56} height={42} style={{ height: "auto" }} priority />
         <div className="text-[10px] font-semibold tracking-[0.2em] text-muted">ADMIN</div>
       </div>
-      {NAV_ITEMS.map((item) => {
+      {NAV_ITEMS.filter((item) => podeAcessar(papel, item.href)).map((item) => {
         const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
         return (
           <Link
