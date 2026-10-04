@@ -371,3 +371,10 @@ body {
 .login-suave div > input[type="text"] {
   background-color: transparent;
 }
+.login-suave div > input[type="password"]:not([type="checkbox"]):not([type="radio"]),
+.login-suave div > input[type="text"]:not([type="checkbox"]):not([type="radio"]) {
+  background-color: transparent;
+}
+.login-suave button {
+  border-radius: 10px;
+}

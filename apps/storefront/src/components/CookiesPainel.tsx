@@ -56,10 +56,10 @@ export function CookiesPainel() {
     <div
       role="dialog"
       aria-label="Preferências de cookies"
-      className="fixed inset-x-0 bottom-0 z-[60] border-t border-white/15 bg-ink/95 px-5 py-5 text-paper backdrop-blur sm:px-8"
+      className="fixed inset-x-0 bottom-0 z-[60] max-h-[85vh] overflow-y-auto border-t border-white/15 bg-ink/95 px-4 py-4 text-paper backdrop-blur sm:px-8 sm:py-5"
     >
-      <div className="mx-auto flex max-w-5xl flex-col gap-4">
-        <p className="text-[13px] leading-relaxed text-paper/80">
+      <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:gap-4">
+        <p className="text-[12px] leading-snug text-paper/80 sm:text-[13px] sm:leading-relaxed">
           Usamos cookies essenciais para o login e a sacola funcionarem. Os demais só são ativados com a sua permissão.{" "}
           <a href="/institucional/politica-de-cookies" className="underline hover:text-paper">
             Política de cookies
@@ -90,27 +90,27 @@ export function CookiesPainel() {
           </ul>
         )}
 
-        <div className="flex flex-wrap gap-3 text-[12px] font-bold tracking-[0.1em]">
+        <div className="grid grid-cols-2 gap-2 text-[11px] font-bold tracking-[0.08em] sm:flex sm:flex-wrap sm:gap-3 sm:text-[12px] sm:tracking-[0.1em]">
           <button
             type="button"
             onClick={() => decidir({ preferencias: true, analise: true, marketing: true })}
-            className="toque border border-accent bg-accent px-5 py-3"
+            className="toque border border-accent bg-accent px-3 py-3 sm:px-5"
           >
             ACEITAR TODOS
           </button>
           <button
             type="button"
             onClick={() => decidir({ preferencias: false, analise: false, marketing: false })}
-            className="toque border border-white/30 px-5 py-3 hover:border-white"
+            className="toque border border-white/30 px-3 py-3 sm:px-5 hover:border-white"
           >
             REJEITAR OPCIONAIS
           </button>
           {detalhe ? (
-            <button type="button" onClick={() => decidir(escolha)} className="toque border border-white/30 px-5 py-3 hover:border-white">
+            <button type="button" onClick={() => decidir(escolha)} className="toque col-span-2 border border-white/30 px-3 py-3 sm:col-auto sm:px-5 hover:border-white">
               SALVAR ESCOLHA
             </button>
           ) : (
-            <button type="button" onClick={() => setDetalhe(true)} className="toque border border-white/30 px-5 py-3 hover:border-white">
+            <button type="button" onClick={() => setDetalhe(true)} className="toque col-span-2 border border-white/30 px-3 py-3 sm:col-auto sm:px-5 hover:border-white">
               PERSONALIZAR
             </button>
           )}

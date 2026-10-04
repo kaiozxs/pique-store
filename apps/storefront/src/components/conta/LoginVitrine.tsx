@@ -20,7 +20,7 @@ export function LoginVitrine() {
   }, []);
 
   return (
-    <div className="relative hidden overflow-hidden rounded-2xl lg:block">
+    <div className="relative hidden overflow-hidden rounded-2xl lg:order-2 lg:block">
       {SLIDES.map((s, i) => (
         <Image
           key={s.src}

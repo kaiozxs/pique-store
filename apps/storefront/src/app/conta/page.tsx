@@ -18,7 +18,7 @@ export default async function ContaPage() {
     return (
       <div className="login-fundo fixed inset-0 z-[55] overflow-y-auto text-paper">
         <div className="flex min-h-full items-center justify-center p-4 sm:p-8">
-          <div className="grid w-full max-w-5xl gap-0 rounded-3xl border border-white/10 bg-[#141414] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.6)] lg:min-h-[600px] lg:grid-cols-[1fr_1.05fr]">
+          <div className="grid w-full max-w-5xl gap-0 rounded-3xl border border-white/10 bg-[#141414] p-3 shadow-[0_30px_90px_rgba(0,0,0,0.6)] lg:min-h-[600px] lg:grid-cols-[1.05fr_1fr]">
             <LoginVitrine />
 
             <div className="login-suave flex flex-col px-5 py-6 sm:px-10">
