@@ -1,7 +1,7 @@
 import "server-only";
 import type { HttpTypes } from "@medusajs/types";
 import { sdk } from "./sdk";
-import { clearCartId, getCartId } from "./cart-session";
+import { clearCartId, getCartId, setCartId } from "./cart-session";
 import { clearCustomerToken, getCustomerToken, setCustomerToken } from "./customer-session";
 import type { ShippingAddressInput } from "./checkout";
 
@@ -15,6 +15,35 @@ async function authHeaders(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+const CHAVE_CARRINHO = "carrinho_id";
+
+/**
+ * Depois do login: se há sacola neste navegador, ela passa para a conta; se
+ * não há, devolve a que a pessoa deixou guardada ao sair (ou em outro
+ * aparelho). Melhor-esforço — falhar aqui nunca deve impedir o login.
+ */
+async function associarCarrinho(token: string): Promise<void> {
+  const bearer = { Authorization: `Bearer ${token}` };
+  const cartId = await getCartId();
+  if (cartId) {
+    try {
+      await sdk.store.cart.transferCart(cartId, {}, bearer);
+    } catch {
+      // segue sem transferir
+    }
+    return;
+  }
+  try {
+    const { customer } = await sdk.store.customer.retrieve({ fields: "metadata" }, bearer);
+    const guardado = customer?.metadata?.[CHAVE_CARRINHO];
+    if (typeof guardado !== "string") return;
+    const { cart } = await sdk.store.cart.retrieve(guardado, { fields: "id,completed_at" });
+    if (!cart.completed_at) await setCartId(cart.id);
+  } catch {
+    // carrinho expirado ou inexistente: a pessoa começa uma sacola nova
+  }
+}
+
 export async function login(email: string, password: string): Promise<ActionResult> {
   try {
     const token = await sdk.auth.login("customer", "emailpass", { email, password });
@@ -23,16 +52,7 @@ export async function login(email: string, password: string): Promise<ActionResu
     }
     await setCustomerToken(token);
 
-    // Associa o carrinho guest atual (se existir) a essa conta. Melhor-esforço:
-    // se falhar, o cliente continua com um carrinho guest normal.
-    const cartId = await getCartId();
-    if (cartId) {
-      try {
-        await sdk.store.cart.transferCart(cartId, {}, { Authorization: `Bearer ${token}` });
-      } catch {
-        // segue sem transferir
-      }
-    }
+    await associarCarrinho(token);
 
     return { ok: true };
   } catch {
@@ -67,6 +87,22 @@ export async function registerAndLogin(input: {
 }
 
 export async function logout(): Promise<void> {
+  // Guarda o id da sacola na conta antes de soltar o navegador dela, para
+  // que o próximo login (aqui ou em outro aparelho) a encontre.
+  try {
+    const cartId = await getCartId();
+    const headers = await authHeaders();
+    if (cartId && headers.Authorization) {
+      const { customer } = await sdk.store.customer.retrieve({ fields: "metadata" }, headers);
+      await sdk.store.customer.update(
+        { metadata: { ...(customer?.metadata ?? {}), [CHAVE_CARRINHO]: cartId } },
+        {},
+        headers
+      );
+    }
+  } catch {
+    // sair não pode falhar por causa disso
+  }
   await clearCustomerToken();
   // A sacola sai junto. Depois do login ela passa a pertencer àquele cliente
   // (o Medusa grava o customer_id no carrinho), então mantê-la no navegador
@@ -133,14 +169,7 @@ export async function completeGoogleLogin(query: { code: string; state: string }
 
   await setCustomerToken(token);
 
-  const cartId = await getCartId();
-  if (cartId) {
-    try {
-      await sdk.store.cart.transferCart(cartId, {}, { Authorization: `Bearer ${token}` });
-    } catch {
-      // segue sem transferir
-    }
-  }
+  await associarCarrinho(token);
 
   return { ok: true };
 }
