@@ -172,6 +172,12 @@ export function Footer() {
           ))}
         </div>
 
+        {/* A marca em letra gigante vazada: apaga no repouso e acende em
+            vermelho no hover. É decoração pura — a identidade real está no topo. */}
+        <div aria-hidden="true" className="marca-vazada-caixa -mb-[0.18em] select-none overflow-hidden text-center">
+          <div className="marca-vazada font-display text-[clamp(5rem,26vw,22rem)] leading-[0.82] tracking-wide">PIQUE</div>
+        </div>
+
         {/* Copyright sozinho na esquerda; pagamento e compra segura andam
             juntos na direita, separados pelo mesmo filete vertical do topo. */}
         <div className="flex flex-col items-center gap-8 border-t border-white/10 py-8 lg:flex-row lg:items-center lg:justify-between">

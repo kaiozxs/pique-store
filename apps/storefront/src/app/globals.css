@@ -378,3 +378,137 @@ body {
 .login-suave button {
   border-radius: 10px;
 }
+
+/* ───────── Movimento da home ─────────
+   Tudo em CSS puro: nada depende de JavaScript para aparecer, então um
+   navegador que bloqueie animação (ou o embutido de apps) mostra a página
+   completa, só parada. Cada bloco respeita prefers-reduced-motion. */
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes aproximar {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes respirar {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+.hero-sobe {
+  animation: subir 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--atraso, 0ms);
+}
+
+/* A foto chega de perto e depois fica "respirando" bem devagar. */
+.hero-foto {
+  animation:
+    aproximar 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both,
+    respirar 24s ease-in-out 1.8s infinite alternate;
+  transform-origin: 60% 40%;
+}
+
+/* Faixa de letreiro entre a abertura e as peças. */
+.faixa-letreiro {
+  animation: marquee 38s linear infinite;
+}
+.faixa-letreiro-caixa:hover .faixa-letreiro {
+  animation-play-state: paused;
+}
+
+/* Frase de manifesto: cada palavra acende conforme entra na tela. Onde o
+   navegador não suporta animação ligada à rolagem, as palavras ficam todas
+   acesas — a leitura nunca depende do efeito. */
+.manifesto-palavra {
+  opacity: 1;
+}
+.progresso-leitura {
+  display: none;
+}
+@supports (animation-timeline: view()) {
+  .manifesto-palavra {
+    opacity: 0.18;
+    animation: acender linear both;
+    animation-timeline: view();
+    animation-range: entry 25% cover calc(30% + var(--i, 0) * 1.6%);
+  }
+  @keyframes acender {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Barra fina no topo mostrando quanto da página já foi lida. */
+  .progresso-leitura {
+    display: block;
+    transform-origin: 0 50%;
+    animation: avancar linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes avancar {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+/* Textura de granulado sobre tudo, quase imperceptível: tira o ar de tela
+   digital chapada e dá a sensação de impressão em tecido. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background-image: url("/images/noise.png");
+  opacity: 0.03;
+}
+
+/* Palavra gigante vazada no pé da página. */
+.marca-vazada {
+  -webkit-text-stroke: 1.5px rgb(247 245 242 / 0.16);
+  color: transparent;
+  transition:
+    -webkit-text-stroke-color 0.5s ease,
+    color 0.5s ease;
+}
+.marca-vazada-caixa:hover .marca-vazada {
+  -webkit-text-stroke-color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-sobe,
+  .hero-foto,
+  .faixa-letreiro,
+  .progresso-leitura {
+    animation: none !important;
+  }
+  .progresso-leitura {
+    display: none !important;
+  }
+  .manifesto-palavra {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
