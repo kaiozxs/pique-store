@@ -9,7 +9,7 @@ export function Avatar({
   tamanho?: number;
 }) {
   const iniciais =
-    nome
+    (nome ?? "")
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)

@@ -199,10 +199,11 @@ export async function getCurrentCustomer(): Promise<MedusaCustomer | null> {
   const headers = await authHeaders();
   if (!headers.Authorization) return null;
   try {
-    // metadata precisa ser pedido explicitamente: com `fields` preenchido, o
-    // Medusa devolve só o que foi listado — e é nele que moram os favoritos.
+    // `+` ACRESCENTA aos campos padrão (nome, e-mail, telefone...) em vez de
+    // substituí-los. Sem o `+`, o Medusa devolvia só endereços e metadata, e a
+    // conta ficava sem nome nem e-mail.
     const { customer } = await sdk.store.customer.retrieve(
-      { fields: "*addresses,metadata" },
+      { fields: "+metadata,*addresses" },
       headers
     );
     return customer;
