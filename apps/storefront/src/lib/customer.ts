@@ -79,8 +79,18 @@ export async function registerAndLogin(input: {
       {},
       { Authorization: `Bearer ${registrationToken}` }
     );
-  } catch {
-    return { ok: false, error: "Não foi possível criar a conta. O e-mail já pode estar em uso." };
+  } catch (e) {
+    console.error("[cadastro] falha ao criar a conta:", e);
+    const texto = e instanceof Error ? e.message.toLowerCase() : "";
+    // O Medusa recusa e-mail repetido com "already exists"; aqui isso vira o
+    // aviso que a pessoa precisa: já tem conta, é só entrar.
+    if (texto.includes("already")) {
+      return {
+        ok: false,
+        error: "Já existe uma conta com esse e-mail. Use a aba ENTRAR — ou \"Esqueceu a senha?\" se não lembra dela.",
+      };
+    }
+    return { ok: false, error: "Não foi possível criar a conta agora. Tente de novo em instantes." };
   }
 
   return login(input.email, input.password);
