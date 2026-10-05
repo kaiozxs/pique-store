@@ -140,7 +140,8 @@ export async function completeGoogleLogin(query: { code: string; state: string }
       return { ok: false, error: "Esse login precisa de uma etapa adicional não suportada aqui." };
     }
     token = result;
-  } catch {
+  } catch (e) {
+    console.error("[google-login] falha ao confirmar o retorno do Google:", e);
     return { ok: false, error: "Não foi possível confirmar o login com o Google." };
   }
 
@@ -162,7 +163,17 @@ export async function completeGoogleLogin(query: { code: string; state: string }
       );
       const refreshed = await sdk.auth.refresh(bearer);
       token = refreshed.token;
-    } catch {
+    } catch (e) {
+      // O motivo real fica no log do servidor (Vercel → Logs): o cliente só vê
+      // a mensagem amigável, e sem isso a causa se perdia.
+      console.error("[google-login] falha ao criar a conta:", e);
+      const texto = e instanceof Error ? e.message.toLowerCase() : "";
+      if (texto.includes("already exists") || texto.includes("already")) {
+        return {
+          ok: false,
+          error: "Já existe uma conta com esse e-mail criada com senha. Entre com e-mail e senha, ou use outro e-mail.",
+        };
+      }
       return { ok: false, error: "Não foi possível criar sua conta com o Google." };
     }
   }
