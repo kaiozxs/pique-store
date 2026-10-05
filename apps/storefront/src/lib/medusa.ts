@@ -259,11 +259,24 @@ export type HomeSection = {
   config: Record<string, string> | null;
 };
 
+// Seções que aparecem quando o painel não responde. A home precisa abrir
+// mesmo com o backend instável: o cliente chega por aqui, e uma página de
+// erro no lugar da vitrine é pior do que uma vitrine sem curadoria.
+const SECOES_PADRAO: HomeSection[] = [
+  { type: "hero", position: 0, visible: true, config: null },
+  { type: "drop_destaque", position: 1, visible: true, config: null },
+  { type: "wab_teaser", position: 2, visible: true, config: null },
+];
+
 export async function getHomeSections(): Promise<HomeSection[]> {
-  const data = await sdk.client.fetch<{ sections: HomeSection[] }>("/store/home-config", {
-    next: { revalidate: 300 },
-  });
-  return data.sections;
+  try {
+    const data = await sdk.client.fetch<{ sections: HomeSection[] }>("/store/home-config", {
+      next: { revalidate: 300 },
+    });
+    return data.sections;
+  } catch {
+    return SECOES_PADRAO;
+  }
 }
 
 // --- Dicas (conteúdo editorial) ---

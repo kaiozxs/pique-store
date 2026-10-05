@@ -5,7 +5,10 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Vitrine } from "@/components/home/Vitrine";
 
 export async function DropDaSemana() {
-  const { title, products, region } = await getCuratedDrop();
+  // Se o backend não responder, a seção some — a página inteira não cai.
+  const drop = await getCuratedDrop().catch(() => null);
+  if (!drop) return null;
+  const { title, products, region } = drop;
 
   // Seção é curada pelo painel admin — sem produtos publicados, não mostramos
   // conteúdo de preenchimento nenhum.

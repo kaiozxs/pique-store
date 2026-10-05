@@ -68,7 +68,9 @@ function CollectionTile({ category, thumbnail }: { category: NavCategory; thumbn
 }
 
 export async function Collections() {
-  const [categories, { products }] = await Promise.all([listNavCategories(), listProducts()]);
+  const dados = await Promise.all([listNavCategories(), listProducts()]).catch(() => null);
+  if (!dados) return null;
+  const [categories, { products }] = dados;
 
   const thumbnailByCategory = new Map<string, string>();
   for (const product of products) {
