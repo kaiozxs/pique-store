@@ -44,8 +44,27 @@ export async function ContaShell({
             }
             rodape={
               <form action={logoutAction}>
-                <button type="submit" className="px-4 py-2 text-[12px] font-semibold tracking-[0.1em] text-paper/50 transition-colors hover:text-accent">
+                {/* Parece botão antes mesmo do hover (borda e seta) e responde ao
+                    mouse: preenche de vermelho, a seta anda e o cursor vira mão. */}
+                <button
+                  type="submit"
+                  className="toque-leve group flex w-full cursor-pointer items-center justify-between border border-white/15 px-4 py-3 text-[12px] font-semibold tracking-[0.1em] text-paper/70 transition-all duration-200 hover:border-accent hover:bg-accent hover:text-paper"
+                >
                   SAIR DA CONTA
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                    className="transition-transform duration-200 group-hover:translate-x-1"
+                  >
+                    <path d="M9 4H5v16h4M15 8l4 4-4 4M19 12H9" />
+                  </svg>
                 </button>
               </form>
             }
