@@ -546,3 +546,54 @@ body::after {
     transform: scaleX(1);
   }
 }
+
+/* Botão desabilitado não mostra o preenchimento vermelho. */
+.btn-preenche:disabled::before {
+  background: transparent;
+}
+.btn-preenche:disabled::after {
+  display: none;
+}
+
+/* Mesma animação, ao contrário: botão claro que enche de vermelho. */
+.btn-preenche-inverso {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--color-ink);
+  transition: color 500ms ease-out;
+}
+.btn-preenche-inverso::before,
+.btn-preenche-inverso::after {
+  content: "";
+  position: absolute;
+  inset: -3rem;
+  z-index: -1;
+}
+.btn-preenche-inverso::before {
+  background: var(--color-paper);
+}
+.btn-preenche-inverso::after {
+  background: var(--color-accent);
+  opacity: 0;
+  transform: translate(-12%, 105%) rotate(-9deg);
+  transition:
+    opacity 500ms ease-out,
+    transform 500ms ease-out;
+}
+.btn-preenche-inverso:hover {
+  color: var(--color-paper);
+}
+.btn-preenche-inverso:hover::after {
+  opacity: 1;
+  transform: translate(0, 0) rotate(-9deg);
+}
+.btn-preenche-inverso:active {
+  transform: scale(0.97);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-preenche::after,
+  .btn-preenche-inverso::after {
+    transition: none;
+  }
+}

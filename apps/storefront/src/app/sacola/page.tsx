@@ -18,7 +18,7 @@ export default async function SacolaPage() {
         <h1 className="font-display text-3xl tracking-wide sm:text-5xl">SUA SACOLA ESTÁ VAZIA</h1>
         <Link
           href="/drops"
-          className="mt-9 border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
+          className="btn-preenche mt-9 border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em]"
         >
           EXPLORAR OS DROPS
         </Link>
@@ -68,7 +68,7 @@ export default async function SacolaPage() {
           </div>
           <Link
             href="/checkout"
-            className="mt-4 border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
+            className="btn-preenche mt-4 border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em]"
           >
             FINALIZAR COMPRA
           </Link>

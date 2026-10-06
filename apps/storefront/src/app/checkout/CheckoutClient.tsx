@@ -190,7 +190,7 @@ export function CheckoutClient({
           </p>
           <Link
             href="/"
-            className="mt-9 inline-block border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
+            className="btn-preenche mt-9 inline-block border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em]"
           >
             VOLTAR À LOJA
           </Link>
@@ -206,7 +206,7 @@ export function CheckoutClient({
         <h1 className="font-display text-3xl tracking-wide sm:text-5xl">SUA SACOLA ESTÁ VAZIA</h1>
         <Link
           href="/drops"
-          className="mt-9 border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
+          className="btn-preenche mt-9 border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em]"
         >
           EXPLORAR OS DROPS
         </Link>
@@ -353,7 +353,7 @@ export function CheckoutClient({
             <button
               type="submit"
               disabled={isPending}
-              className="mt-4 w-fit border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink disabled:opacity-60"
+              className="btn-preenche mt-4 w-fit border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] disabled:opacity-60"
             >
               {isPending ? "SALVANDO..." : "CONTINUAR PARA FRETE"}
             </button>
@@ -388,7 +388,7 @@ export function CheckoutClient({
               type="button"
               disabled={isPending || !selectedOptionId}
               onClick={handleShippingSubmit}
-              className="mt-4 w-fit border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink disabled:opacity-60"
+              className="btn-preenche mt-4 w-fit border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] disabled:opacity-60"
             >
               {isPending ? "SALVANDO..." : "CONTINUAR PARA REVISÃO"}
             </button>
@@ -456,7 +456,7 @@ export function CheckoutClient({
               type="button"
               disabled={isPending}
               onClick={handleComplete}
-              className="w-fit border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink disabled:opacity-60"
+              className="btn-preenche w-fit border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] disabled:opacity-60"
             >
               {isPending ? "PROCESSANDO..." : "FINALIZAR PEDIDO"}
             </button>

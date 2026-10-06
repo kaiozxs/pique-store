@@ -62,7 +62,7 @@ export function VerifiqueForm() {
         <button
           type="submit"
           disabled={loading}
-          className="border border-accent bg-accent px-7 py-3 text-[13px] font-bold tracking-[0.12em] text-paper transition-colors hover:bg-paper hover:text-ink disabled:opacity-60"
+          className="btn-preenche border border-accent px-7 py-3 text-[13px] font-bold tracking-[0.12em] text-paper disabled:opacity-60"
         >
           {loading ? "VERIFICANDO..." : "VERIFICAR"}
         </button>

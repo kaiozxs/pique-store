@@ -124,7 +124,7 @@ export function Footer() {
             />
             <button
               type="submit"
-              className="shrink-0 bg-paper px-7 py-3 text-[13px] font-bold tracking-[0.08em] text-ink transition-colors hover:bg-accent hover:text-paper"
+              className="btn-preenche-inverso shrink-0 px-7 py-3 text-[13px] font-bold tracking-[0.08em]"
             >
               ENVIAR
             </button>

@@ -217,7 +217,7 @@ function CartAction({ cart }: { cart: MiniCart }) {
                 <Link
                   href="/drops"
                   onClick={() => setOpen(false)}
-                  className="border border-accent bg-accent px-5 py-2.5 text-[12px] font-bold tracking-[0.1em] transition-colors hover:bg-paper hover:text-ink"
+                  className="btn-preenche border border-accent px-5 py-2.5 text-[12px] font-bold tracking-[0.1em]"
                 >
                   EXPLORAR OS DROPS
                 </Link>
@@ -250,7 +250,7 @@ function CartAction({ cart }: { cart: MiniCart }) {
                   <Link
                     href="/checkout"
                     onClick={() => setOpen(false)}
-                    className="border border-accent bg-accent px-5 py-3 text-center text-[13px] font-bold tracking-[0.1em] transition-colors hover:bg-paper hover:text-ink"
+                    className="btn-preenche border border-accent px-5 py-3 text-center text-[13px] font-bold tracking-[0.1em]"
                   >
                     IR PARA PAGAMENTO
                   </Link>

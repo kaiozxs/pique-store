@@ -46,7 +46,7 @@ export function GoogleCallbackClient() {
           <p className="mb-6 text-sm font-semibold text-red-400">{error}</p>
           <Link
             href="/conta"
-            className="border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
+            className="btn-preenche border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em]"
           >
             VOLTAR PRA CONTA
           </Link>

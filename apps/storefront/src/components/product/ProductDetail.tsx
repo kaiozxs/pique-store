@@ -259,7 +259,7 @@ export function ProductDetail({
             type="button"
             disabled={!disponivel || isPending}
             onClick={handleAddToCart}
-            className="toque border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.12em] text-paper transition-colors hover:bg-paper hover:text-ink disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-transparent disabled:text-paper/40 disabled:hover:bg-transparent disabled:hover:text-paper/40"
+            className="btn-preenche toque border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.12em] text-paper disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-transparent disabled:text-paper/40 disabled:hover:bg-transparent disabled:hover:text-paper/40"
           >
             {!disponivel ? "INDISPONÍVEL" : isPending ? "ADICIONANDO..." : "ADICIONAR À SACOLA"}
           </button>

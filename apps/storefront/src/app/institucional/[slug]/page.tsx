@@ -147,7 +147,7 @@ export default async function InstitucionalPage(props: PageProps<"/institucional
 
         <Link
           href="/"
-          className="mt-12 inline-block border border-accent bg-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] transition-colors hover:bg-paper hover:text-ink"
+          className="btn-preenche mt-12 inline-block border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em]"
         >
           VOLTAR À LOJA
         </Link>
