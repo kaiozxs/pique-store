@@ -142,6 +142,12 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 // existe (só associa a sessão) ou é a primeira vez com essa conta Google —
 // nesse caso cria o cliente com os dados do perfil do Google e pega um novo
 // token já com o cliente vinculado (sdk.auth.refresh).
+/** Resumo curto do erro para mostrar junto da mensagem — só o texto que o Medusa devolve. */
+function detalheDoErro(e: unknown): string {
+  const msg = e instanceof Error ? e.message : String(e);
+  return msg.replace(/Bearer\s+\S+/gi, "Bearer ***").slice(0, 140);
+}
+
 export async function completeGoogleLogin(query: { code: string; state: string }): Promise<ActionResult> {
   let token: string;
   try {
@@ -152,7 +158,10 @@ export async function completeGoogleLogin(query: { code: string; state: string }
     token = result;
   } catch (e) {
     console.error("[google-login] falha ao confirmar o retorno do Google:", e);
-    return { ok: false, error: "Não foi possível confirmar o login com o Google." };
+    return {
+      ok: false,
+      error: `Não foi possível confirmar o login com o Google. (${detalheDoErro(e)})`,
+    };
   }
 
   const bearer = { Authorization: `Bearer ${token}` };
@@ -184,7 +193,10 @@ export async function completeGoogleLogin(query: { code: string; state: string }
           error: "Já existe uma conta com esse e-mail criada com senha. Entre com e-mail e senha, ou use outro e-mail.",
         };
       }
-      return { ok: false, error: "Não foi possível criar sua conta com o Google." };
+      return {
+        ok: false,
+        error: `Não foi possível criar sua conta com o Google. (${detalheDoErro(e)})`,
+      };
     }
   }
 
