@@ -46,13 +46,31 @@ export async function getOrCreateCart(): Promise<MedusaCart> {
   return createCart();
 }
 
-export async function addLineItem(variantId: string, quantity: number): Promise<MedusaCart> {
-  const cart = await getOrCreateCart();
-  const { cart: updated } = await sdk.store.cart.createLineItem(cart.id, {
-    variant_id: variantId,
-    quantity,
-  });
-  return updated;
+/**
+ * Adiciona direto no carrinho do cookie, sem ler o carrinho inteiro antes —
+ * essa leitura custava quase 1s a cada clique. Só quando a adição falha é que
+ * se confere se o carrinho ainda vale: se ele sumiu ou já virou pedido, abre
+ * outro; se vale, o erro é de verdade (estoque, por exemplo) e sobe.
+ */
+export async function addLineItem(variantId: string, quantity: number): Promise<void> {
+  const body = { variant_id: variantId, quantity };
+  const cartId = await getCartId();
+
+  if (cartId) {
+    try {
+      await sdk.store.cart.createLineItem(cartId, body, { fields: "id" });
+      return;
+    } catch (erro) {
+      const valido = await sdk.store.cart
+        .retrieve(cartId, { fields: "id,completed_at" })
+        .then(({ cart }) => !cart.completed_at)
+        .catch(() => false);
+      if (valido) throw erro;
+    }
+  }
+
+  const novo = await createCart();
+  await sdk.store.cart.createLineItem(novo.id, body, { fields: "id" });
 }
 
 export async function updateLineItemQuantity(lineItemId: string, quantity: number): Promise<MedusaCart> {

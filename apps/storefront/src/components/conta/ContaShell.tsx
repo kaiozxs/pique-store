@@ -3,6 +3,7 @@ import Link from "next/link";
 import { fotoDoCliente, getCurrentCustomer, idPessoal } from "@/lib/customer";
 import { logoutAction } from "@/app/conta/actions";
 import { Avatar } from "./Avatar";
+import { CopiarId } from "./CopiarId";
 import { ContaNav } from "./ContaNav";
 import { ContaSidebar } from "./ContaSidebar";
 
@@ -34,13 +35,20 @@ export async function ContaShell({
         {customer && (
           <ContaSidebar
             topo={
-              <Link href="/conta" className="flex items-center gap-3 border border-white/12 p-4 transition-colors hover:border-white/30">
-                <Avatar foto={fotoDoCliente(customer)} nome={nome} tamanho={48} />
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-semibold">{nome}</div>
-                  <div className="text-[11px] tracking-[0.14em] text-paper/45">{idPessoal(customer)}</div>
+              <div className="flex items-center gap-3 border border-white/12 p-4">
+                <Link href="/conta" aria-label="Minha conta" className="shrink-0">
+                  <Avatar foto={fotoDoCliente(customer)} nome={nome} tamanho={48} />
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <Link href="/conta" className="block truncate text-sm font-semibold transition-colors hover:text-accent">
+                    {nome}
+                  </Link>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[11px] tracking-[0.14em] text-paper/45">{idPessoal(customer)}</span>
+                    <CopiarId id={idPessoal(customer)} className="-my-1" />
+                  </div>
                 </div>
-              </Link>
+              </div>
             }
             rodape={
               <form action={logoutAction}>

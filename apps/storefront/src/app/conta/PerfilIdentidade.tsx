@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { Avatar } from "@/components/conta/Avatar";
+import { CopiarId } from "@/components/conta/CopiarId";
 import { updatePhotoAction } from "./actions";
 
 const LADO = 256;
@@ -78,8 +79,9 @@ export function PerfilIdentidade({
       <div className="min-w-0 flex-1">
         <div className="truncate font-display text-2xl tracking-wide">{nome.toUpperCase()}</div>
         <div className="mt-1 truncate text-sm text-paper/55">{email}</div>
-        <div className="mt-3 inline-block border border-white/20 px-3 py-1 text-[11px] font-semibold tracking-[0.2em] text-paper/70">
+        <div className="mt-3 inline-flex items-center gap-1 border border-white/20 py-0.5 pl-3 pr-1 text-[11px] font-semibold tracking-[0.2em] text-paper/70">
           ID {id}
+          <CopiarId id={id} />
         </div>
       </div>
       <div className="flex flex-col gap-2 text-[12px] font-bold tracking-[0.1em]">

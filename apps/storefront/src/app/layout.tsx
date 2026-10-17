@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { OcultarEm } from "@/components/OcultarEm";
 import { CookiesPainel } from "@/components/CookiesPainel";
 import { TransicaoDePagina } from "@/components/TransicaoDePagina";
 
@@ -20,7 +21,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="flex-1">
           <TransicaoDePagina>{children}</TransicaoDePagina>
         </main>
-        <Footer />
+        <OcultarEm prefixos={["/conta"]}>
+          <Footer />
+        </OcultarEm>
         <CookiesPainel />
       </body>
     </html>
