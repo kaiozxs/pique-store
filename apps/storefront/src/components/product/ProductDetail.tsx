@@ -198,20 +198,38 @@ export function ProductDetail({
               {option.title.toUpperCase()}
             </div>
             <div className="flex flex-wrap gap-2">
-              {sortOptionValues(option.title, option.values ?? []).map((v) => (
-                <button
-                  key={v.value}
-                  type="button"
-                  onClick={() => setSelected((prev) => ({ ...prev, [option.title]: v.value }))}
-                  className={`border px-4 py-2 text-sm transition-colors ${
-                    selected[option.title] === v.value
-                      ? "border-accent text-accent"
-                      : "border-white/25 hover:border-white/50"
-                  }`}
-                >
-                  {optionValueLabel(option.title, v.value)}
-                </button>
-              ))}
+              {sortOptionValues(option.title, option.values ?? []).map((v) => {
+                // Esgotado = a combinação com as outras escolhas atuais não
+                // existe ou está sem estoque. Continua clicável (a pessoa pode
+                // querer ver), mas leva um X pra avisar antes do clique.
+                const combinacao = findVariant(product, { ...selected, [option.title]: v.value });
+                const esgotado = !combinacao || !isVariantAvailable(combinacao);
+                const ativo = selected[option.title] === v.value;
+                return (
+                  <button
+                    key={v.value}
+                    type="button"
+                    onClick={() => setSelected((prev) => ({ ...prev, [option.title]: v.value }))}
+                    aria-label={`${optionValueLabel(option.title, v.value)}${esgotado ? " (indisponível)" : ""}`}
+                    className={`relative overflow-hidden border px-4 py-2 text-sm transition-colors ${
+                      ativo ? "border-accent text-accent" : "border-white/25 hover:border-white/50"
+                    } ${esgotado ? "text-paper/35" : ""}`}
+                  >
+                    {optionValueLabel(option.title, v.value)}
+                    {esgotado && (
+                      <svg
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 h-full w-full"
+                        preserveAspectRatio="none"
+                        viewBox="0 0 100 100"
+                      >
+                        <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                        <line x1="100" y1="0" x2="0" y2="100" stroke="currentColor" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}
