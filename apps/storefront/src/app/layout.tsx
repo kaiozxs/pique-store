@@ -21,7 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="flex-1">
           <TransicaoDePagina>{children}</TransicaoDePagina>
         </main>
-        <OcultarEm prefixos={["/conta"]}>
+        <OcultarEm prefixos={["/conta", "/verifique"]}>
           <Footer />
         </OcultarEm>
         <CookiesPainel />
