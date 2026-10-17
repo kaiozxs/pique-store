@@ -1,17 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LeitorQR } from "./LeitorQR";
+import { ResultadoVerificacao } from "./ResultadoVerificacao";
 import { verifyPiece, type PieceVerification } from "@/lib/medusa";
 
-const STATUS_LABEL: Record<NonNullable<PieceVerification["status"]>, string> = {
-  nao_registrado: "Não registrado ainda",
-  registrado: "Registrado",
-  revogado: "Revogado",
-};
 
-export function VerifiqueForm() {
-  const [code, setCode] = useState("");
+export function VerifiqueForm({ codigoInicial }: { codigoInicial?: string }) {
+  const [code, setCode] = useState(codigoInicial ?? "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PieceVerification | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +28,12 @@ export function VerifiqueForm() {
       setLoading(false);
     }
   }
+
+  // Quem chega pelo QR da etiqueta já vem com o código no endereço.
+  useEffect(() => {
+    if (codigoInicial) verificar(codigoInicial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -85,31 +87,7 @@ export function VerifiqueForm() {
 
       {error && <p className="mt-4 text-sm text-accent">{error}</p>}
 
-      {result && (
-        <div className="mt-8 border border-white/15 p-6">
-          {!result.valid ? (
-            <p className="text-sm font-semibold text-accent">
-              {result.status === "revogado"
-                ? "Este código foi revogado e não é mais válido."
-                : "Código não encontrado. Confira se digitou corretamente."}
-            </p>
-          ) : (
-            <>
-              <p className="text-sm font-semibold text-accent">Peça autêntica ✓</p>
-              {result.product && (
-                <p className="mt-2 text-sm text-paper/70">
-                  {result.product.title} — {result.product.variant_title}
-                </p>
-              )}
-              {result.status && (
-                <p className="mt-2 text-xs uppercase tracking-widest text-paper/45">
-                  {STATUS_LABEL[result.status]}
-                </p>
-              )}
-            </>
-          )}
-        </div>
-      )}
+      {result && <ResultadoVerificacao key={result.code ?? String(result.valid)} result={result} />}
     </div>
   );
 }

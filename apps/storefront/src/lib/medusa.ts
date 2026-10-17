@@ -239,7 +239,16 @@ export async function getBookContent(): Promise<BookContent> {
 export type PieceVerification = {
   valid: boolean;
   status?: "nao_registrado" | "registrado" | "revogado";
-  product?: { title: string | null; variant_title: string; thumbnail: string | null } | null;
+  code?: string;
+  /** ID pessoal do dono (PQ-XXXXXXXX), nunca nome ou e-mail. */
+  owner_id?: string | null;
+  purchased_at?: string | null;
+  product?: {
+    title: string | null;
+    handle?: string | null;
+    variant_title: string;
+    thumbnail: string | null;
+  } | null;
 };
 
 export async function verifyPiece(code: string): Promise<PieceVerification> {

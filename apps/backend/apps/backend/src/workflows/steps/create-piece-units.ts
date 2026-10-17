@@ -6,6 +6,9 @@ import VerificationModuleService from "../../modules/verification/service"
 type Input = {
   product_variant_id: string
   quantity: number
+  // Quando vem de uma compra, a peça já nasce no nome de quem comprou.
+  customer_id?: string | null
+  order_id?: string | null
 }
 
 // Código público, não sequencial: 12 caracteres em maiúsculo, sem 0/O/1/I
@@ -30,6 +33,10 @@ export const createPieceUnitsStep = createStep(
     const records = Array.from({ length: input.quantity }, () => ({
       product_variant_id: input.product_variant_id,
       unique_code: generateUniqueCode(),
+      ...(input.customer_id
+        ? { status: "registrado" as const, current_owner_customer_id: input.customer_id }
+        : {}),
+      ...(input.order_id ? { order_id: input.order_id } : {}),
     }))
 
     const created = await verificationService.createPieceUnits(records)

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getOrder, formatMoney } from "@/lib/orders";
 import { RastreioForm } from "./RastreioForm";
@@ -13,6 +14,13 @@ export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-2xl uppercase tracking-tight text-ink">Pedido #{order.display_id}</h1>
+        <div className="flex items-center gap-2">
+        <Link
+          href={`/pedidos/${order.id}/etiquetas`}
+          className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+        >
+          Etiquetas (QR)
+        </Link>
         <button
           type="button"
           disabled
@@ -21,6 +29,7 @@ export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[
         >
           Emitir NF
         </button>
+        </div>
       </div>
 
       <div className="mb-6 grid grid-cols-3 gap-4">

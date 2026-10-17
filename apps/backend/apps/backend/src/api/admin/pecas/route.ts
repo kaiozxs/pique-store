@@ -14,6 +14,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   if (typeof req.query.status === "string") {
     filters.status = req.query.status
   }
+  if (typeof req.query.order_id === "string") {
+    filters.order_id = req.query.order_id
+  }
 
   const [pieceUnits, count] = await verificationService.listAndCountPieceUnits(filters, {
     order: { created_at: "DESC" },

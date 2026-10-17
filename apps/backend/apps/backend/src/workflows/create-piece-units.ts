@@ -4,6 +4,8 @@ import { createPieceUnitsStep } from "./steps/create-piece-units"
 type Input = {
   product_variant_id: string
   quantity: number
+  customer_id?: string | null
+  order_id?: string | null
 }
 
 const createPieceUnitsWorkflow = createWorkflow(
