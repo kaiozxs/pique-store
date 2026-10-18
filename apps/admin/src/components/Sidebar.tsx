@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: "/dicas", label: "Dicas" },
   { href: "/faq", label: "FAQ" },
   { href: "/pecas", label: "Verifique seu PIQUE" },
+  { href: "/vincular-etiquetas", label: "Vincular etiquetas" },
   { href: "/acessos", label: "Acessos" },
 ];
 

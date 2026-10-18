@@ -14,6 +14,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   if (typeof req.query.status === "string") {
     filters.status = req.query.status
   }
+  if (typeof req.query.unique_code === "string") {
+    filters.unique_code = req.query.unique_code.trim().toUpperCase()
+  }
   if (typeof req.query.order_id === "string") {
     filters.order_id = req.query.order_id
   }
