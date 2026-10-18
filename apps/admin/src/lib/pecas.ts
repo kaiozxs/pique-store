@@ -9,6 +9,7 @@ export type PieceUnit = {
   product_variant_id: string;
   status: PieceStatus;
   current_owner_customer_id: string | null;
+  order_id?: string | null;
   created_at: string;
 };
 

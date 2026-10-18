@@ -4,6 +4,9 @@ import { z } from "@medusajs/framework/zod"
 export const CreatePieceUnitsSchema = z.object({
   product_variant_id: z.string().min(1),
   quantity: z.number().int().min(1).max(500),
+  // Peças de uma venda já nascem no nome de quem comprou.
+  customer_id: z.string().min(1).optional(),
+  order_id: z.string().min(1).optional(),
 })
 
 export type CreatePieceUnitsSchema = z.infer<typeof CreatePieceUnitsSchema>

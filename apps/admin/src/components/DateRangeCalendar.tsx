@@ -23,7 +23,15 @@ function buildMonthGrid(viewMonth: Date): (Date | null)[] {
   return cells;
 }
 
-export function DateRangeCalendar({ initialStart, initialEnd }: { initialStart?: string; initialEnd?: string }) {
+export function DateRangeCalendar({
+  initialStart,
+  initialEnd,
+  basePath = "/",
+}: {
+  initialStart?: string;
+  initialEnd?: string;
+  basePath?: string;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [viewMonth, setViewMonth] = useState(() => {
@@ -53,7 +61,7 @@ export function DateRangeCalendar({ initialStart, initialEnd }: { initialStart?:
   function handleApply() {
     if (!rangeStart) return;
     const end = rangeEnd ?? rangeStart;
-    router.push(`/?start=${toDateKey(rangeStart)}&end=${toDateKey(end)}`);
+    router.push(`${basePath}?start=${toDateKey(rangeStart)}&end=${toDateKey(end)}`);
     setOpen(false);
   }
 

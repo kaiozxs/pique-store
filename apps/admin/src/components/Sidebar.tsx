@@ -8,6 +8,7 @@ import { podeAcessar, type Papel } from "@/lib/papel";
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard" },
   { href: "/pedidos", label: "Pedidos" },
+  { href: "/vendas", label: "Vendas e etiquetas" },
   { href: "/book", label: "Book" },
   { href: "/drop-semana", label: "Drop da Semana" },
   { href: "/home-config", label: "Home Configurável" },
