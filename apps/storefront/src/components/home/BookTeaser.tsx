@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getBookContent } from "@/lib/medusa";
+import { getBookContent } from "@/lib/catalogo";
 
 export async function BookTeaser() {
   const book = await getBookContent();

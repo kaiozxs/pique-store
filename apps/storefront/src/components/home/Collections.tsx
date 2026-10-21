@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { NavCategory } from "@/lib/medusa";
+import type { NavCategory } from "@/lib/produto";
 import { Reveal } from "@/components/motion/Reveal";
-import { listNavCategories, listProducts } from "@/lib/medusa";
+import { listNavCategories, listProducts } from "@/lib/catalogo";
 
 function CollectionTile({ category, thumbnail }: { category: NavCategory; thumbnail?: string }) {
   const badge = (
@@ -70,7 +70,7 @@ function CollectionTile({ category, thumbnail }: { category: NavCategory; thumbn
 export async function Collections() {
   const dados = await Promise.all([listNavCategories(), listProducts()]).catch(() => null);
   if (!dados) return null;
-  const [categories, { products }] = dados;
+  const [categories, products] = dados;
 
   const thumbnailByCategory = new Map<string, string>();
   for (const product of products) {

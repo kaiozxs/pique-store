@@ -2,7 +2,7 @@ import { Hero } from "@/components/home/Hero";
 import { Collections } from "@/components/home/Collections";
 import { DropDaSemana } from "@/components/home/DropDaSemana";
 import { BookTeaser } from "@/components/home/BookTeaser";
-import { getHomeSections, type HomeSectionType } from "@/lib/medusa";
+import { getHomeSections, type HomeSectionType } from "@/lib/catalogo";
 
 export default async function Home() {
   const sections = await getHomeSections();

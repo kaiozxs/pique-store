@@ -45,7 +45,9 @@ export async function listOrders(
 // ───────── Compra ─────────
 
 /**
- * Transforma a sacola em pedido e RESERVA o estoque, numa transação só.
+ * Transforma a sacola em pedido e RESERVA o estoque, numa transação só. A sacola
+ * continua aberta até o pagamento ser aprovado (recusa não faz a pessoa perder
+ * o que montou).
  *
  * Reservar antes de cobrar é o que impede o pior caso: o cliente pagar uma
  * peça que acabou. Duas pessoas comprando a última unidade ao mesmo tempo: a
@@ -59,6 +61,21 @@ export async function placeOrder(sql: Sql, input: { cartId: string; customerId: 
 
     const cart = await getCart(tx, input.cartId);
     if (!cart || cart.items.length === 0) throw new ErroDeRegra("Sua sacola está vazia.", "carrinho");
+
+    // Tentativa anterior desta mesma sacola: se já tem pagamento em andamento,
+    // espera (cobrar de novo seria duplicar); se não, cai e devolve o estoque.
+    const anteriores = await tx<{ id: string; em_andamento: number }>`
+      select o.id, (select count(*)::int from payments p where p.order_id = o.id
+                      and p.status in ('in_process', 'pending', 'authorized', 'approved')) as em_andamento
+      from orders o where o.cart_id = ${input.cartId} and o.status = 'pending' and o.payment_status = 'awaiting'
+      for update`;
+    if (anteriores.some((a) => a.em_andamento > 0)) {
+      throw new ErroDeRegra("Já existe um pagamento em análise para esta sacola. Aguarde a confirmação.", "pagamento_em_analise");
+    }
+    for (const a of anteriores) {
+      await tx`update orders set status = 'canceled', payment_status = 'canceled', updated_at = now() where id = ${a.id}`;
+      await liberarReservas(tx, a.id);
+    }
     if (!cart.email) throw new ErroDeRegra("Informe seu e-mail.", "dados");
     if (!cart.shipping_address) throw new ErroDeRegra("Informe o endereço de entrega.", "dados");
     if (!cart.document) throw new ErroDeRegra("Informe CPF e data de nascimento.", "dados");
@@ -90,9 +107,9 @@ export async function placeOrder(sql: Sql, input: { cartId: string; customerId: 
 
     const dono = input.customerId ?? cart.customer_id;
     const [pedido] = await tx<{ id: string }>`
-      insert into orders (customer_id, email, shipping_address, document, subtotal, shipping_total, discount_total, total,
-                          currency_code, coupon_code, shipping_option_name)
-      values (${dono}, ${cart.email}, ${JSON.stringify(cart.shipping_address)}::jsonb, ${JSON.stringify(cart.document)}::jsonb,
+      insert into orders (customer_id, cart_id, email, shipping_address, document, subtotal, shipping_total, discount_total,
+                          total, currency_code, coupon_code, shipping_option_name)
+      values (${dono}, ${input.cartId}, ${cart.email}, ${JSON.stringify(cart.shipping_address)}::jsonb, ${JSON.stringify(cart.document)}::jsonb,
               ${cart.subtotal}, ${cart.shipping_total}, ${cart.discount_total}, ${cart.total}, ${cart.currency_code},
               ${cart.coupon?.code ?? null}, ${cart.shipping_option.name})
       returning id`;
@@ -103,8 +120,6 @@ export async function placeOrder(sql: Sql, input: { cartId: string; customerId: 
         values (${pedido!.id}, ${item.variant_id}, ${item.product_title}, ${item.variant_title}, ${item.thumbnail},
                 ${item.quantity}, ${item.unit_price}, ${item.total}, ${reservado.get(item.variant_id) ?? 0})`;
     }
-    await tx`update carts set completed_at = now() where id = ${input.cartId}`;
-
     return (await getOrder(tx, pedido!.id))!;
   });
 }
@@ -208,6 +223,8 @@ export async function applyPaymentResult(
         }
         await tx`update orders set status = 'completed', payment_status = 'captured', paid_at = now(), updated_at = now()
                  where id = ${pedido.id}`;
+        await tx`update carts set completed_at = now()
+                 where id = (select cart_id from orders where id = ${pedido.id}) and completed_at is null`;
         await createPiecesForOrder(tx, pedido.id);
         break;
       }
@@ -231,6 +248,25 @@ export async function applyPaymentResult(
         break; // pending, in_process, authorized: segue aguardando
     }
     return (await getOrder(tx, pedido.id))!;
+  });
+}
+
+/**
+ * Cai um pedido que nunca chegou a cobrar (por exemplo, o Mercado Pago não
+ * respondeu) e devolve o estoque. Só vale se ainda não há pagamento em
+ * andamento: nunca derruba um pedido que pode estar sendo cobrado.
+ */
+export async function cancelOrderWithoutPayment(sql: Sql, orderId: string): Promise<void> {
+  await sql.begin(async (tx) => {
+    const [o] = await tx<{ id: string }>`
+      select id from orders
+      where id = ${orderId} and status = 'pending' and payment_status = 'awaiting'
+        and not exists (select 1 from payments p where p.order_id = orders.id
+                          and p.status in ('in_process', 'pending', 'authorized', 'approved'))
+      for update`;
+    if (!o) return;
+    await tx`update orders set status = 'canceled', payment_status = 'canceled', updated_at = now() where id = ${o.id}`;
+    await liberarReservas(tx, o.id);
   });
 }
 
@@ -264,7 +300,7 @@ export async function setTracking(sql: Sql, orderId: string, codigo: string): Pr
 export async function setFulfillmentStatus(
   sql: Sql,
   orderId: string,
-  status: "not_fulfilled" | "shipped" | "delivered"
+  status: "not_fulfilled" | "fulfilled" | "shipped" | "delivered"
 ): Promise<void> {
   await sql`update orders set fulfillment_status = ${status}, updated_at = now() where id = ${orderId}`;
 }

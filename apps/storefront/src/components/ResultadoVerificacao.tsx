@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { PieceVerification } from "@/lib/medusa";
+import type { PieceVerification } from "@/lib/produto";
 import { sizeLabel } from "@/lib/tamanhos";
 import { CopiarId } from "@/components/conta/CopiarId";
 

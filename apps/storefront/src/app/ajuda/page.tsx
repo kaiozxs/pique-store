@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getFaqCategories } from "@/lib/medusa";
+import { getFaqCategories } from "@/lib/catalogo";
 
 export const metadata: Metadata = { title: "Ajuda — PIQUE" };
 

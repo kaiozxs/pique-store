@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listTips } from "@/lib/medusa";
+import { listTips } from "@/lib/catalogo";
 import { Reveal } from "@/components/motion/Reveal";
 
 export async function DicasDestaque() {

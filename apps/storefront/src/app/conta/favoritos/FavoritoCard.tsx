@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
+import type { Product } from "@/lib/produto";
 import { ProductCard } from "@/components/ProductCard";
 import { toggleFavoriteAction } from "../actions";
 
@@ -13,19 +13,13 @@ import { toggleFavoriteAction } from "../actions";
  * coração de novo — caminho longo pra uma ação que a pessoa quer fazer
  * justamente enquanto olha a lista.
  */
-export function FavoritoCard({
-  product,
-  region,
-}: {
-  product: MedusaProduct;
-  region: MedusaRegion;
-}) {
+export function FavoritoCard({ product }: { product: Product }) {
   const router = useRouter();
   const [removendo, startRemover] = useTransition();
 
   return (
     <div className={removendo ? "pointer-events-none opacity-40" : undefined}>
-      <ProductCard product={product} region={region} />
+      <ProductCard product={product} />
       <button
         type="button"
         disabled={removendo}

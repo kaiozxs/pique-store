@@ -1,21 +1,24 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies, headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import {
   addCustomerAddress,
   listFavorites,
+  login,
+  logout,
+  registerAndLogin,
+  removeCustomerAddress,
   setDefaultCustomerAddress,
   toggleFavorite,
   updateCustomerAddress,
   updateCustomerPhoto,
   updateCustomerProfile,
-  completeGoogleLogin,
-  login,
-  logout,
-  registerAndLogin,
-  removeCustomerAddress,
 } from "@/lib/customer";
+import { ErroDeRegra } from "@pique/db";
+import { urlDoGoogle } from "@/lib/auth";
+import { COOKIE_DESTINO, destinoSeguro } from "@/lib/destino-login";
 import type { ShippingAddressInput } from "@/lib/checkout";
 
 // Validado de novo aqui (além do client, em AuthForms) porque um form pode
@@ -67,15 +70,28 @@ export async function registerAction(
   return { ok: true };
 }
 
-export async function completeGoogleLoginAction(query: {
-  code: string;
-  state: string;
-}): Promise<{ error?: string; ok?: true }> {
-  const result = await completeGoogleLogin(query);
-  if (!result.ok) return { error: result.error };
+/**
+ * Começa o login com o Google: devolve o endereço da tela do Google e guarda,
+ * num cookie curto, para onde voltar depois (a pessoa sai do site e volta pelo
+ * /auth/callback).
+ */
+export async function iniciarGoogleAction(retorno: string): Promise<{ url: string | null; error?: string }> {
+  const h = await headers();
+  const protocolo = h.get("x-forwarded-proto") ?? "http";
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const origem = process.env.NEXT_PUBLIC_SITE_URL ?? `${protocolo}://${host}`;
 
-  revalidatePath("/", "layout");
-  return { ok: true };
+  const url = await urlDoGoogle(origem);
+  if (!url) return { url: null, error: "O login com o Google não está disponível agora." };
+
+  (await cookies()).set(COOKIE_DESTINO, destinoSeguro(retorno), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 10,
+  });
+  return { url };
 }
 
 export async function logoutAction() {
@@ -84,33 +100,55 @@ export async function logoutAction() {
   redirect("/conta");
 }
 
-export async function addAddressAction(input: ShippingAddressInput) {
-  await addCustomerAddress(input);
-  revalidatePath("/conta");
+type Resultado = { ok: true } | { ok: false; error: string };
+
+function falha(e: unknown, padrao: string): { ok: false; error: string } {
+  return { ok: false, error: e instanceof ErroDeRegra ? e.message : padrao };
 }
 
-export async function removeAddressAction(addressId: string) {
-  await removeCustomerAddress(addressId);
-  revalidatePath("/conta");
+export async function addAddressAction(input: ShippingAddressInput): Promise<Resultado> {
+  try {
+    await addCustomerAddress(input);
+    revalidatePath("/conta");
+    return { ok: true };
+  } catch (e) {
+    return falha(e, "Não foi possível salvar o endereço.");
+  }
 }
 
-export async function updateAddressAction(addressId: string, input: ShippingAddressInput) {
-  await updateCustomerAddress(addressId, input);
-  revalidatePath("/conta/enderecos");
-  revalidatePath("/conta");
+export async function removeAddressAction(addressId: string, novoPadraoId?: string): Promise<Resultado> {
+  try {
+    await removeCustomerAddress(addressId, novoPadraoId);
+    revalidatePath("/conta");
+    return { ok: true };
+  } catch (e) {
+    return falha(e, "Não foi possível excluir o endereço.");
+  }
 }
 
-export async function setDefaultAddressAction(addressId: string) {
-  await setDefaultCustomerAddress(addressId);
-  revalidatePath("/conta/enderecos");
-  revalidatePath("/conta");
+export async function updateAddressAction(addressId: string, input: ShippingAddressInput): Promise<Resultado> {
+  try {
+    await updateCustomerAddress(addressId, input);
+    revalidatePath("/conta/enderecos");
+    revalidatePath("/conta");
+    return { ok: true };
+  } catch (e) {
+    return falha(e, "Não foi possível salvar o endereço.");
+  }
 }
 
-export async function updateProfileAction(input: {
-  first_name?: string;
-  last_name?: string;
-  phone?: string;
-}) {
+export async function setDefaultAddressAction(addressId: string): Promise<Resultado> {
+  try {
+    await setDefaultCustomerAddress(addressId);
+    revalidatePath("/conta/enderecos");
+    revalidatePath("/conta");
+    return { ok: true };
+  } catch (e) {
+    return falha(e, "Não foi possível definir o endereço padrão.");
+  }
+}
+
+export async function updateProfileAction(input: { first_name?: string; last_name?: string; phone?: string }) {
   await updateCustomerProfile(input);
   revalidatePath("/conta");
 }

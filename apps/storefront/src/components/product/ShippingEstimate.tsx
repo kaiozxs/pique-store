@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { formatMoney } from "@/lib/medusa";
+import { formatMoney } from "@/lib/produto";
 import { getShippingOptionsAction } from "@/lib/checkout-actions";
 
 type Address = { city: string; uf: string };
@@ -45,7 +45,7 @@ export function ShippingEstimate({ currencyCode }: { currencyCode: string }) {
       // ainda (ninguém adicionou nada), mostra só o aviso genérico.
       try {
         const shippingOptions = await getShippingOptionsAction();
-        setOptions(shippingOptions.map((o) => ({ id: o.id, name: o.name ?? "", amount: o.amount ?? 0 })));
+        setOptions(shippingOptions.map((o) => ({ id: o.id, name: o.name ?? "", amount: o.price })));
       } catch {
         setOptions(null);
       }

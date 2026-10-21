@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import type { MedusaCustomer } from "@/lib/customer";
+import type { Cliente } from "@/lib/customer";
 import { updateProfileAction } from "./actions";
 
 const inputClass =
@@ -16,7 +16,7 @@ const inputClass =
  * depende do envio de e-mail, que a loja ainda não tem. Deixar o campo aberto
  * aqui seria trocar o login sem nenhuma verificação.
  */
-export function DadosPessoais({ customer }: { customer: MedusaCustomer }) {
+export function DadosPessoais({ customer }: { customer: Cliente }) {
   const router = useRouter();
   const [editando, setEditando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { LeitorQR } from "./LeitorQR";
 import { ResultadoVerificacao } from "./ResultadoVerificacao";
-import { verifyPiece, type PieceVerification } from "@/lib/medusa";
+import type { PieceVerification } from "@/lib/produto";
+import { verificarPecaAction } from "@/app/verifique/actions";
 
 
 export function VerifiqueForm({ codigoInicial }: { codigoInicial?: string }) {
@@ -20,7 +21,7 @@ export function VerifiqueForm({ codigoInicial }: { codigoInicial?: string }) {
     setError(null);
     setResult(null);
     try {
-      const data = await verifyPiece(valor.trim());
+      const data = await verificarPecaAction(valor.trim());
       setResult(data);
     } catch {
       setError("Não foi possível verificar agora. Tente novamente em instantes.");

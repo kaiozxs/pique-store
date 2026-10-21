@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProductByHandle } from "@/lib/medusa";
+import { getProductByHandle } from "@/lib/catalogo";
 import { getCurrentCustomer, listFavorites } from "@/lib/customer";
 import { ProductDetail } from "@/components/product/ProductDetail";
 
@@ -11,13 +11,13 @@ import { ProductDetail } from "@/components/product/ProductDetail";
 
 export async function generateMetadata(props: PageProps<"/produtos/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
-  const { product } = await getProductByHandle(slug);
+  const product = await getProductByHandle(slug);
   return { title: product ? `${product.title} — PIQUE` : "Produto — PIQUE" };
 }
 
 export default async function ProdutoPage(props: PageProps<"/produtos/[slug]">) {
   const { slug } = await props.params;
-  const [{ product, region }, customer, favoritos] = await Promise.all([
+  const [product, customer, favoritos] = await Promise.all([
     getProductByHandle(slug),
     getCurrentCustomer(),
     listFavorites(),
@@ -31,7 +31,6 @@ export default async function ProdutoPage(props: PageProps<"/produtos/[slug]">) 
     <div className="bg-ink text-paper">
       <ProductDetail
         product={product}
-        region={region}
         logado={Boolean(customer)}
         favoritoInicial={favoritos.includes(product.handle)}
       />

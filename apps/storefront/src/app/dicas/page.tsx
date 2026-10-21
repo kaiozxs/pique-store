@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { listTips } from "@/lib/medusa";
+import { listTips } from "@/lib/catalogo";
 
 export const metadata: Metadata = { title: "Dicas — PIQUE" };
 

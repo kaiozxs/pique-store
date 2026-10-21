@@ -169,6 +169,9 @@ create table orders (
   -- Número que o cliente vê (#1, #2…).
   display_id bigint generated always as identity unique,
   customer_id uuid references customers (id) on delete set null,
+  -- A sacola só é encerrada quando o pagamento é aprovado: se o cartão for
+  -- recusado, ela continua aberta para a pessoa tentar de novo.
+  cart_id uuid references carts (id) on delete set null,
   email text not null,
   shipping_address jsonb not null,
   document jsonb,
@@ -182,7 +185,7 @@ create table orders (
   -- Mesmos nomes que o Medusa usava, para a tela de status não mudar.
   status text not null default 'pending' check (status in ('pending', 'completed', 'canceled')),
   payment_status text not null default 'awaiting' check (payment_status in ('awaiting', 'captured', 'canceled', 'refunded')),
-  fulfillment_status text not null default 'not_fulfilled' check (fulfillment_status in ('not_fulfilled', 'shipped', 'delivered', 'canceled')),
+  fulfillment_status text not null default 'not_fulfilled' check (fulfillment_status in ('not_fulfilled', 'fulfilled', 'shipped', 'delivered', 'canceled')),
   tracking_code text,
   -- Garante que o estoque reservado volta uma única vez se o pedido cair.
   stock_released boolean not null default false,
@@ -192,6 +195,7 @@ create table orders (
   paid_at timestamptz
 );
 create index orders_customer_idx on orders (customer_id, created_at desc);
+create index orders_cart_idx on orders (cart_id);
 create index orders_created_idx on orders (created_at desc);
 
 create table order_items (

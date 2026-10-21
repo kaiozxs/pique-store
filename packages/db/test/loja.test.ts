@@ -12,7 +12,7 @@ import {
   addItem, applyCoupon, assignToCustomer, createCart, findOpenCartForCustomer, getCart, listShippingOptions,
   removeItem, setCheckoutInfo, setItemQuantity, setShippingOption,
 } from "../src/cart.ts";
-import { applyPaymentResult, cancelStalePendingOrders, getOrder, placeOrder, salesMetrics, setTracking } from "../src/orders.ts";
+import { applyPaymentResult, cancelOrderWithoutPayment, cancelStalePendingOrders, getOrder, placeOrder, salesMetrics, setTracking } from "../src/orders.ts";
 import {
   createPieces, linkLabel, listMyPieces, registerPiece, requestTransfer, resolveTransfer, verifyPiece,
 } from "../src/pieces.ts";
@@ -185,8 +185,40 @@ test("pedido: exige os dados e reserva o estoque", async () => {
   assert.equal(pedido.total, v.price * 2 + frete!.price);
   assert.equal(pedido.items[0]!.quantity, 2);
   assert.equal(await estoqueDe(sql, v.id), 3, "estoque reservado");
-  assert.equal(await getCart(sql, cartId), null, "sacola concluída some");
+  assert.ok(await getCart(sql, cartId), "a sacola segue aberta até o pagamento ser aprovado");
+  await applyPaymentResult(sql, { orderId: pedido.id, providerPaymentId: "ok-1", status: "approved", amount: pedido.total });
+  assert.equal(await getCart(sql, cartId), null, "sacola encerrada com a aprovação");
   await assert.rejects(() => placeOrder(sql, { cartId, customerId: null }), /não encontrada|finalizada/);
+});
+
+test("cartão recusado: a sacola continua e dá para tentar de novo", async () => {
+  const sql = await loja();
+  const v = await umaVariante(sql, 5);
+  const cartId = await sacolaPronta(sql, v.id, 2);
+  const p1 = await placeOrder(sql, { cartId, customerId: null });
+  await applyPaymentResult(sql, { orderId: p1.id, providerPaymentId: "rec-1", status: "rejected", amount: p1.total });
+  assert.equal(await estoqueDe(sql, v.id), 5);
+  assert.ok(await getCart(sql, cartId), "sacola intacta");
+
+  const p2 = await placeOrder(sql, { cartId, customerId: null });
+  assert.notEqual(p2.id, p1.id);
+  assert.equal(await estoqueDe(sql, v.id), 3);
+  await applyPaymentResult(sql, { orderId: p2.id, providerPaymentId: "rec-2", status: "approved", amount: p2.total });
+  assert.equal((await getOrder(sql, p2.id))!.payment_status, "captured");
+});
+
+test("tentar de novo sem ter pago cancela a tentativa anterior; com pagamento em análise, espera", async () => {
+  const sql = await loja();
+  const v = await umaVariante(sql, 5);
+  const cartId = await sacolaPronta(sql, v.id, 2);
+  const p1 = await placeOrder(sql, { cartId, customerId: null });
+  const p2 = await placeOrder(sql, { cartId, customerId: null }); // p1 nunca chegou a cobrar
+  assert.equal((await getOrder(sql, p1.id))!.status, "canceled");
+  assert.equal(await estoqueDe(sql, v.id), 3, "só a tentativa nova reserva");
+
+  await applyPaymentResult(sql, { orderId: p2.id, providerPaymentId: "ana-1", status: "in_process", amount: p2.total });
+  await assert.rejects(() => placeOrder(sql, { cartId, customerId: null }), /em análise/);
+  assert.equal(await estoqueDe(sql, v.id), 3, "nada mudou");
 });
 
 test("última unidade: duas compras ao mesmo tempo, só uma passa", async () => {
@@ -485,4 +517,19 @@ test("acesso ao painel: só dono concede, o último dono não sai", async () => 
   await assert.rejects(() => revokePanelAccess(sql, dono, dono), /último dono/);
   await revokePanelAccess(sql, dono, lojista);
   assert.equal(await getPanelRole(sql, lojista), null);
+});
+
+test("pedido que nunca cobrou cai e devolve o estoque; com pagamento em andamento, não", async () => {
+  const sql = await loja();
+  const v = await umaVariante(sql, 5);
+  const semCobranca = await placeOrder(sql, { cartId: await sacolaPronta(sql, v.id, 2), customerId: null });
+  await cancelOrderWithoutPayment(sql, semCobranca.id);
+  assert.equal((await getOrder(sql, semCobranca.id))!.status, "canceled");
+  assert.equal(await estoqueDe(sql, v.id), 5);
+
+  const cobrando = await placeOrder(sql, { cartId: await sacolaPronta(sql, v.id, 1), customerId: null });
+  await applyPaymentResult(sql, { orderId: cobrando.id, providerPaymentId: "andamento-1", status: "in_process", amount: cobrando.total });
+  await cancelOrderWithoutPayment(sql, cobrando.id);
+  assert.equal((await getOrder(sql, cobrando.id))!.status, "pending", "pagamento em análise não é derrubado");
+  assert.equal(await estoqueDe(sql, v.id), 4);
 });

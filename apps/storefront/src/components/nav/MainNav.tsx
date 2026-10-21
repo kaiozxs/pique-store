@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
-import type { NavCategory } from "@/lib/medusa";
+import type { NavCategory } from "@/lib/produto";
 
 const UTILITY_LINKS = [
   { href: "/book", label: "WAB" },

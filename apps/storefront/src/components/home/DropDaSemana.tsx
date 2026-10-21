@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCuratedDrop } from "@/lib/medusa";
+import { getCuratedDrop } from "@/lib/catalogo";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/motion/Reveal";
 import { Vitrine } from "@/components/home/Vitrine";
@@ -8,7 +8,7 @@ export async function DropDaSemana() {
   // Se o backend não responder, a seção some — a página inteira não cai.
   const drop = await getCuratedDrop().catch(() => null);
   if (!drop) return null;
-  const { title, products, region } = drop;
+  const { title, products } = drop;
 
   // Seção é curada pelo painel admin — sem produtos publicados, não mostramos
   // conteúdo de preenchimento nenhum.
@@ -50,7 +50,7 @@ export async function DropDaSemana() {
               key={product.id}
               className="w-[78vw] shrink-0 snap-start sm:w-[300px] lg:w-[302px]"
             >
-              <ProductCard product={product} region={region} />
+              <ProductCard product={product} />
             </div>
           ))}
         </Vitrine>

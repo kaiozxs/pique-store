@@ -133,7 +133,7 @@ export type Order = {
   shipping_option_name: string | null;
   status: "pending" | "completed" | "canceled";
   payment_status: "awaiting" | "captured" | "canceled" | "refunded";
-  fulfillment_status: "not_fulfilled" | "shipped" | "delivered" | "canceled";
+  fulfillment_status: "not_fulfilled" | "fulfilled" | "shipped" | "delivered" | "canceled";
   tracking_code: string | null;
   metadata: Record<string, unknown>;
   created_at: string;

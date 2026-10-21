@@ -16,7 +16,9 @@ declare global {
 export function connect(url: string): Sql {
   const sql = postgres(url, {
     prepare: false,
-    max: 3,
+    // No Supabase, poucas conexões por função bastam (o pooler cuida do resto).
+    // O banco local de desenvolvimento só aguenta uma: DATABASE_POOL_MAX=1.
+    max: Number(process.env.DATABASE_POOL_MAX ?? 3),
     idle_timeout: 20,
     connect_timeout: 10,
     onnotice: () => {},

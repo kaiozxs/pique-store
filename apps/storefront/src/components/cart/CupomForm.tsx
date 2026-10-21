@@ -53,7 +53,7 @@ export function CupomForm({ aplicados }: { aplicados: string[] }) {
               <button
                 type="button"
                 aria-label={`Remover cupom ${c}`}
-                onClick={() => iniciar(() => removePromoAction(c))}
+                onClick={() => iniciar(() => removePromoAction())}
                 className="text-paper/60 hover:text-paper"
               >
                 ×

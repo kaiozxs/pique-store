@@ -16,7 +16,7 @@ import { seedCatalog, type SeedCatalog } from "../src/seed.ts";
 
 const RAIZ = join(import.meta.dirname, "..");
 const PORTA = Number(process.env.DEV_DB_PORT ?? 5433);
-const IMAGENS = process.env.IMAGES_BASE_URL ?? "http://localhost:3000/produtos";
+const IMAGENS = process.env.IMAGES_BASE_URL ?? "/produtos";
 
 const pg = await PGlite.create({ dataDir: join(RAIZ, ".dev-db"), parsers: PARSERS });
 const sql = embrulhar(pg);

@@ -1,4 +1,4 @@
-import type { MedusaCustomerOrder } from "@/lib/customer";
+import type { Order } from "@pique/db";
 
 /**
  * Traduz o estado bruto do pedido para uma das quatro etapas que o cliente vê.
@@ -30,7 +30,7 @@ export const ETAPAS: { etapa: EtapaPedido; titulo: string }[] = [
   { etapa: 4, titulo: "Transporte" },
 ];
 
-export function statusDoPedido(order: MedusaCustomerOrder): StatusPedido {
+export function statusDoPedido(order: Pick<Order, "status" | "payment_status" | "fulfillment_status">): StatusPedido {
   const pagamento = order.payment_status ?? "";
   const entrega = order.fulfillment_status ?? "";
 
@@ -43,7 +43,7 @@ export function statusDoPedido(order: MedusaCustomerOrder): StatusPedido {
     };
   }
 
-  if (pagamento === "requires_action" || pagamento === "not_paid" || pagamento === "awaiting") {
+  if (pagamento === "awaiting") {
     return {
       etapa: 1,
       rotulo: "Aguardando pagamento",
@@ -61,7 +61,7 @@ export function statusDoPedido(order: MedusaCustomerOrder): StatusPedido {
     };
   }
 
-  if (entrega === "shipped" || entrega === "partially_shipped") {
+  if (entrega === "shipped") {
     return {
       etapa: 4,
       rotulo: "Em movimento",
@@ -70,7 +70,7 @@ export function statusDoPedido(order: MedusaCustomerOrder): StatusPedido {
     };
   }
 
-  if (entrega === "fulfilled" || entrega === "partially_fulfilled") {
+  if (entrega === "fulfilled") {
     return {
       etapa: 3,
       rotulo: "Em preparação",

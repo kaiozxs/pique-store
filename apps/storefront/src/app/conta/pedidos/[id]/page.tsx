@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentCustomer, getCustomerOrder } from "@/lib/customer";
-import { formatMoney } from "@/lib/medusa";
+import { formatMoney } from "@/lib/produto";
 import { statusDoPedido } from "@/lib/order-status";
 import { variantTitleLabel } from "@/lib/tamanhos";
 import { LinhaDoTempo } from "@/components/pedido/LinhaDoTempo";
@@ -34,24 +34,16 @@ export default async function PedidoPage(props: PageProps<"/conta/pedidos/[id]">
   const endereco = order.shipping_address;
 
   // Rastreio: enquanto a integração com os Correios não existe, o código é
-  // digitado no painel e fica guardado no próprio pedido. A API de loja do
-  // Medusa não devolve as etiquetas da remessa, então essa é a fonte. Aceita
-  // mais de um código separado por vírgula (pedido que vai em duas caixas).
-  const rastreios = String(
-    (order.metadata as Record<string, unknown> | null)?.tracking_numbers ??
-      (order.metadata as Record<string, unknown> | null)?.tracking_number ??
-      ""
-  )
+  // digitado no painel e fica guardado no pedido. Aceita mais de um código
+  // separado por vírgula (pedido que vai em duas caixas).
+  const rastreios = (order.tracking_code ?? "")
     .split(",")
     .map((codigo) => codigo.trim())
     .filter(Boolean);
 
-  const pagamentos = (order.payment_collections ?? []).flatMap((c) => c.payments ?? []);
   // Só afirma o meio quando dá pra reconhecer: "registrado no pedido" não
   // informa nada a quem comprou.
-  const meioDePagamento = pagamentos.some((p) => p.provider_id?.includes("mercadopago"))
-    ? "Cartão · Mercado Pago"
-    : null;
+  const meioDePagamento = order.payment_status === "captured" ? "Cartão · Mercado Pago" : null;
 
   return (
     <div className="bg-ink text-paper">
@@ -117,7 +109,7 @@ export default async function PedidoPage(props: PageProps<"/conta/pedidos/[id]">
                   <div aria-hidden="true" className="h-20 w-16 shrink-0 bg-white/5" />
                 )}
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold">{item.product_title ?? item.title}</div>
+                  <div className="font-semibold">{item.product_title}</div>
                   {item.variant_title && (
                     <div className="mt-0.5 text-sm text-paper/55">
                       {variantTitleLabel(item.variant_title)}
@@ -126,7 +118,7 @@ export default async function PedidoPage(props: PageProps<"/conta/pedidos/[id]">
                   <div className="mt-1 text-sm text-paper/55">Quantidade: {item.quantity}</div>
                 </div>
                 <div className="shrink-0 text-sm font-semibold">
-                  {formatMoney(item.total ?? item.unit_price * item.quantity, moeda)}
+                  {formatMoney(item.total, moeda)}
                 </div>
               </div>
             ))}
@@ -134,10 +126,9 @@ export default async function PedidoPage(props: PageProps<"/conta/pedidos/[id]">
         </section>
 
         <section className="mt-10 flex flex-col gap-2.5">
-          {/* item_subtotal, não subtotal: no Medusa v2 o `subtotal` já vem com o
-              frete embutido, e somar os dois na tela fazia a conta não fechar. */}
-          <Linha rotulo="Subtotal" valor={formatMoney(order.item_subtotal ?? 0, moeda)} />
-          <Linha rotulo="Frete" valor={formatMoney(order.shipping_total ?? 0, moeda)} />
+          <Linha rotulo="Subtotal" valor={formatMoney(order.subtotal, moeda)} />
+          {order.discount_total > 0 && <Linha rotulo="Desconto" valor={`− ${formatMoney(order.discount_total, moeda)}`} />}
+          <Linha rotulo="Frete" valor={formatMoney(order.shipping_total, moeda)} />
           <div className="mt-2 border-t border-white/10 pt-3">
             <Linha rotulo="Total" valor={formatMoney(order.total, moeda)} forte />
           </div>

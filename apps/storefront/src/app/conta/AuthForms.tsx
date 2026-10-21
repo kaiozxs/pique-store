@@ -3,8 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { loginAction, registerAction } from "./actions";
-import { startGoogleLogin } from "@/lib/google-auth";
+import { iniciarGoogleAction, loginAction, registerAction } from "./actions";
 
 const inputClass =
   "border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent";
@@ -95,9 +94,11 @@ function GoogleButton({ postLoginRedirect }: { postLoginRedirect: string }) {
     setErro(null);
     setIsPending(true);
     try {
-      await startGoogleLogin(postLoginRedirect);
+      const r = await iniciarGoogleAction(postLoginRedirect);
+      if (!r.url) throw new Error(r.error ?? "indisponível");
       // Deu certo: o navegador está saindo desta página. O estado continua
       // travado de propósito, pra não piscar "entrar" durante a saída.
+      window.location.href = r.url;
     } catch (e) {
       setIsPending(false);
       setErro(
@@ -245,7 +246,10 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
 export function AuthForms({
   onSuccess,
   postLoginRedirect = "/conta",
+  erroInicial,
 }: {
+  /** Mensagem a mostrar de cara (ex.: o Google cancelou ou falhou na volta). */
+  erroInicial?: string;
   // Sem onSuccess (uso padrão em /conta): recarrega a própria página, que já
   // troca sozinha pra tela de conta logada. Com onSuccess (uso dentro do
   // checkout): quem chamou decide o que fazer, sem sair da página.
@@ -287,6 +291,7 @@ export function AuthForms({
           </button>
         ))}
       </div>
+      {erroInicial && <p role="alert" className="mb-4 text-sm font-semibold text-red-400">{erroInicial}</p>}
       {tab === "login" ? <LoginForm onSuccess={handleSuccess} /> : <RegisterForm onSuccess={handleSuccess} />}
 
       <div className="my-6 flex items-center gap-3 text-[11px] font-semibold tracking-[0.1em] text-paper/40">

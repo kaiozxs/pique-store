@@ -36,7 +36,7 @@ export type BookContent = {
   status: "em_construcao" | "revelado" | "oculto";
   title: string | null;
   body: string | null;
-  media: { url: string; type: "image" | "video" }[] | null;
+  media: { items: { url: string; type: "image" | "video" }[] } | null;
 };
 
 export async function getBookContent(sql: Sql): Promise<BookContent> {

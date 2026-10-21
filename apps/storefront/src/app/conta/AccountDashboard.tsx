@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fotoDoCliente, idPessoal, type MedusaCustomer } from "@/lib/customer";
+import { fotoDoCliente, idPessoal, type Cliente } from "@/lib/customer";
 import { ContaShell } from "@/components/conta/ContaShell";
 import { DadosPessoais } from "./DadosPessoais";
 import { PerfilIdentidade } from "./PerfilIdentidade";
@@ -30,7 +30,7 @@ function Bloco({
  * próprias. O perfil mostra só o que é do perfil: identificação, foto, dados
  * e segurança.
  */
-export function AccountDashboard({ customer }: { customer: MedusaCustomer }) {
+export function AccountDashboard({ customer }: { customer: Cliente }) {
   const nome = [customer.first_name, customer.last_name].filter(Boolean).join(" ") || customer.email;
 
   return (
