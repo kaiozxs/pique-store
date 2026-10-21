@@ -11,8 +11,7 @@ import { ImprimirBotao } from "./ImprimirBotao";
 export default async function EtiquetasPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [order, todas] = await Promise.all([getOrder(id), listPiecesByOrder(id)]);
-  // Filtra de novo aqui: o backend antigo ignora o filtro por pedido.
-  const pecas = todas.filter((p) => p.order_id === id);
+  const pecas = todas;
   if (!order) notFound();
 
   const porVariante = new Map(

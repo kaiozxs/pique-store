@@ -5,12 +5,13 @@ import { formatMoney } from "@/lib/orders";
 import { idPessoal, listVendas, nomeDoCliente } from "@/lib/vendas";
 import { DateRangeCalendar } from "@/components/DateRangeCalendar";
 
+// Dia de hoje no fuso de São Paulo (o servidor pode estar em UTC).
 function hoje(): string {
-  return new Date().toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
 }
 function diasAtras(n: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
+  const d = new Date(`${hoje()}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - n);
   return d.toISOString().slice(0, 10);
 }
 function dataBR(key: string): string {

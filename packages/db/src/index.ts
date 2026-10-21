@@ -3,6 +3,7 @@ export { ErroDeRegra, type Sql, type Row } from "./sql.ts";
 export * from "./types.ts";
 export { idPessoal, round2, FORMATO_CODIGO, normalizarCodigo, gerarCodigoDePeca } from "./util.ts";
 export * from "./catalog.ts";
+export * from "./catalog-admin.ts";
 export * from "./content.ts";
 export * from "./customers.ts";
 export * from "./cart.ts";

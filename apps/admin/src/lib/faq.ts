@@ -1,6 +1,6 @@
 import "server-only";
-import { sdk } from "./sdk";
-import { authHeaders } from "./session";
+import { db, deleteFaq, listFaqAdmin, saveFaq } from "@pique/db";
+import { exigirUsuario } from "./auth";
 
 export type FaqItem = {
   id: string;
@@ -20,25 +20,21 @@ export type FaqItemInput = {
 };
 
 export async function listFaqItems(): Promise<FaqItem[]> {
-  const headers = await authHeaders();
-  const { faq_items } = await sdk.client.fetch<{ faq_items: FaqItem[] }>("/admin/faq", {
-    headers,
-    cache: "no-store",
-  });
-  return faq_items;
+  await exigirUsuario();
+  return listFaqAdmin(db());
 }
 
 export async function createFaqItem(input: FaqItemInput): Promise<void> {
-  const headers = await authHeaders();
-  await sdk.client.fetch("/admin/faq", { method: "POST", body: input, headers });
+  await exigirUsuario();
+  await saveFaq(db(), { ...input, position: input.position ?? 0 });
 }
 
 export async function updateFaqItem(id: string, input: FaqItemInput): Promise<void> {
-  const headers = await authHeaders();
-  await sdk.client.fetch(`/admin/faq/${id}`, { method: "POST", body: input, headers });
+  await exigirUsuario();
+  await saveFaq(db(), { ...input, position: input.position ?? 0, id });
 }
 
 export async function deleteFaqItem(id: string): Promise<void> {
-  const headers = await authHeaders();
-  await sdk.client.fetch(`/admin/faq/${id}`, { method: "DELETE", headers });
+  await exigirUsuario();
+  await deleteFaq(db(), id);
 }

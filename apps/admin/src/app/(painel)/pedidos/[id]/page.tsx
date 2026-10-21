@@ -3,6 +3,21 @@ import { notFound } from "next/navigation";
 import { getOrder, formatMoney } from "@/lib/orders";
 import { RastreioForm } from "./RastreioForm";
 
+const PAGAMENTO_LABEL: Record<string, string> = {
+  awaiting: "Aguardando",
+  captured: "Pago",
+  canceled: "Cancelado",
+  refunded: "Reembolsado",
+};
+
+const ENVIO_LABEL: Record<string, string> = {
+  not_fulfilled: "Não enviado",
+  fulfilled: "Separado",
+  shipped: "A caminho",
+  delivered: "Entregue",
+  canceled: "Cancelado",
+};
+
 export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[id]">) {
   const { id } = await params;
   const order = await getOrder(id);
@@ -39,11 +54,11 @@ export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[
         </div>
         <div className="rounded-lg border border-border bg-surface p-4">
           <div className="text-xs font-semibold uppercase tracking-wide text-muted">Pagamento</div>
-          <div className="mt-1 text-sm text-ink">{order.payment_status}</div>
+          <div className="mt-1 text-sm text-ink">{PAGAMENTO_LABEL[order.payment_status] ?? order.payment_status}</div>
         </div>
         <div className="rounded-lg border border-border bg-surface p-4">
           <div className="text-xs font-semibold uppercase tracking-wide text-muted">Envio</div>
-          <div className="mt-1 text-sm text-ink">{order.fulfillment_status}</div>
+          <div className="mt-1 text-sm text-ink">{ENVIO_LABEL[order.fulfillment_status] ?? order.fulfillment_status}</div>
         </div>
       </div>
 
@@ -56,7 +71,7 @@ export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[
         </p>
         <RastreioForm
           orderId={order.id}
-          inicial={String((order.metadata as Record<string, unknown> | null)?.tracking_numbers ?? "")}
+          inicial={order.tracking_code ?? ""}
         />
       </div>
 
@@ -85,6 +100,24 @@ export default async function PedidoDetailPage({ params }: PageProps<"/pedidos/[
           </tbody>
           <tfoot>
             <tr className="border-t border-border">
+              <td colSpan={2} className="px-4 pt-3 text-right text-muted">Subtotal</td>
+              <td className="px-4 pt-3 text-right text-muted">{formatMoney(order.subtotal, order.currency_code)}</td>
+            </tr>
+            {order.discount_total > 0 && (
+              <tr>
+                <td colSpan={2} className="px-4 pt-1 text-right text-muted">
+                  Desconto{order.coupon_code ? ` (${order.coupon_code})` : ""}
+                </td>
+                <td className="px-4 pt-1 text-right text-muted">− {formatMoney(order.discount_total, order.currency_code)}</td>
+              </tr>
+            )}
+            <tr>
+              <td colSpan={2} className="px-4 pt-1 text-right text-muted">
+                Frete{order.shipping_option_name ? ` (${order.shipping_option_name})` : ""}
+              </td>
+              <td className="px-4 pt-1 text-right text-muted">{formatMoney(order.shipping_total, order.currency_code)}</td>
+            </tr>
+            <tr>
               <td colSpan={2} className="px-4 py-3 text-right font-semibold text-ink">
                 Total do pedido
               </td>

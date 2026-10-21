@@ -28,14 +28,15 @@ export async function getOrder(sql: Sql, id: string, opts: { customerId?: string
 /** Dia no fuso de São Paulo, como o painel mostra (`from`/`to` inclusivos, "YYYY-MM-DD"). */
 export async function listOrders(
   sql: Sql,
-  filtros: { customerId?: string; from?: string; to?: string; limit?: number; offset?: number } = {}
+  filtros: { customerId?: string; from?: string; to?: string; paymentStatus?: Order["payment_status"]; limit?: number; offset?: number } = {}
 ): Promise<{ orders: Order[]; count: number }> {
-  const params = [filtros.customerId ?? null, filtros.from ?? null, filtros.to ?? null];
+  const params = [filtros.customerId ?? null, filtros.from ?? null, filtros.to ?? null, filtros.paymentStatus ?? null];
   const onde = `where ($1::uuid is null or o.customer_id = $1)
     and ($2::date is null or (o.created_at at time zone 'America/Sao_Paulo')::date >= $2::date)
-    and ($3::date is null or (o.created_at at time zone 'America/Sao_Paulo')::date <= $3::date)`;
+    and ($3::date is null or (o.created_at at time zone 'America/Sao_Paulo')::date <= $3::date)
+    and ($4::text is null or o.payment_status = $4)`;
   const orders = await sql.unsafe<Order>(
-    `${SELECT_PEDIDO} ${onde} order by o.created_at desc limit $4 offset $5`,
+    `${SELECT_PEDIDO} ${onde} order by o.created_at desc limit $5 offset $6`,
     [...params, filtros.limit ?? 50, filtros.offset ?? 0]
   );
   const [{ n }] = await sql.unsafe<{ n: number }>(`select count(*)::int as n from orders o ${onde}`, params) as [{ n: number }];

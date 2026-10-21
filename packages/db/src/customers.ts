@@ -166,3 +166,14 @@ export async function revokePanelAccess(sql: Sql, byCustomerId: string, targetCu
     await tx`delete from panel_access where customer_id = ${targetCustomerId}`;
   });
 }
+
+/** Nome completo de vários clientes de uma vez (painel: vendas e etiquetas). Quem não tem nome cadastrado fica de fora. */
+export async function listCustomerNames(sql: Sql, ids: string[]): Promise<Map<string, string>> {
+  const unicos = [...new Set(ids)];
+  if (unicos.length === 0) return new Map();
+  // Os ids vêm do próprio banco (uuid), então montar o literal de array é seguro.
+  const rows = await sql<{ id: string; nome: string | null }>`
+    select id, nullif(trim(coalesce(first_name, '') || ' ' || coalesce(last_name, '')), '') as nome
+    from customers where id = any(${`{${unicos.join(",")}}`}::uuid[])`;
+  return new Map(rows.flatMap((r) => (r.nome ? [[r.id, r.nome] as [string, string]] : [])));
+}

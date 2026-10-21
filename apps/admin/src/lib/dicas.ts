@@ -1,6 +1,6 @@
 import "server-only";
-import { sdk } from "./sdk";
-import { authHeaders } from "./session";
+import { db, deleteTip, listTipsAdmin, saveTip } from "@pique/db";
+import { exigirUsuario } from "./auth";
 
 export type TipStatus = "draft" | "published";
 export type TipPost = {
@@ -24,25 +24,21 @@ export type TipPostInput = {
 };
 
 export async function listTipPosts(): Promise<TipPost[]> {
-  const headers = await authHeaders();
-  const { tip_posts } = await sdk.client.fetch<{ tip_posts: TipPost[]; count: number }>("/admin/dicas", {
-    headers,
-    cache: "no-store",
-  });
-  return tip_posts;
+  await exigirUsuario();
+  return listTipsAdmin(db());
 }
 
 export async function createTipPost(input: TipPostInput): Promise<void> {
-  const headers = await authHeaders();
-  await sdk.client.fetch("/admin/dicas", { method: "POST", body: input, headers });
+  await exigirUsuario();
+  await saveTip(db(), input);
 }
 
 export async function updateTipPost(id: string, input: TipPostInput): Promise<void> {
-  const headers = await authHeaders();
-  await sdk.client.fetch(`/admin/dicas/${id}`, { method: "POST", body: input, headers });
+  await exigirUsuario();
+  await saveTip(db(), { ...input, id });
 }
 
 export async function deleteTipPost(id: string): Promise<void> {
-  const headers = await authHeaders();
-  await sdk.client.fetch(`/admin/dicas/${id}`, { method: "DELETE", headers });
+  await exigirUsuario();
+  await deleteTip(db(), id);
 }

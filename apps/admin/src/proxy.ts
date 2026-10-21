@@ -1,33 +1,59 @@
-import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE, SSO_COOKIE } from "./lib/constants";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/sso"];
+const ROTAS_PUBLICAS = ["/login"];
+// Mesmo cookie do login de desenvolvimento da loja (só existe fora de produção).
+const COOKIE_DEV = "piquestore_dev_session";
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
-  const hasOwnSession = Boolean(request.cookies.get(SESSION_COOKIE)?.value);
-  const hasSession = hasOwnSession || Boolean(request.cookies.get(SSO_COOKIE)?.value);
+/**
+ * Barra quem não tem sessão e mantém o login vivo (renova o token do Supabase
+ * a cada navegação, como a loja faz). Só confere a PRESENÇA da sessão aqui; o
+ * papel de verdade é validado no banco pelo layout do painel.
+ */
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl; // sem o /admin do basePath
+  const publica = ROTAS_PUBLICAS.some((p) => pathname.startsWith(p));
+  const cookiesDoSupabase = request.cookies.getAll().some((c) => c.name.startsWith("sb-"));
+  const temSessao = cookiesDoSupabase || Boolean(request.cookies.get(COOKIE_DEV)?.value);
 
-  if (!hasSession && !isPublic) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
+  if (!temSessao && !publica) {
+    const login = request.nextUrl.clone();
+    login.pathname = "/login";
+    login.search = "";
+    login.searchParams.set("next", pathname);
+    return NextResponse.redirect(login);
   }
 
-  // Só o login próprio redireciona daqui: a sessão vinda do site pode estar
-  // revogada, e mandar /login para / criaria um laço com o layout.
-  if (hasOwnSession && pathname === "/login") {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const chave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !chave || !cookiesDoSupabase) return NextResponse.next();
 
-  return NextResponse.next();
+  let resposta = NextResponse.next({ request });
+  const supabase = createServerClient(url, chave, {
+    // Mesmas opções de lib/auth/supabase.ts (aquele arquivo usa next/headers e não roda aqui).
+    cookieOptions: {
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      path: "/",
+    },
+    cookies: {
+      getAll: () => request.cookies.getAll(),
+      setAll: (lista) => {
+        for (const { name, value } of lista) request.cookies.set(name, value);
+        resposta = NextResponse.next({ request });
+        for (const { name, value, options } of lista) resposta.cookies.set(name, value, options);
+      },
+    },
+  });
+  await supabase.auth.getClaims();
+  return resposta;
 }
 
 export const config = {
   // Exclui também arquivos estáticos da pasta public/ (ex: logo.png) — sem
-  // isso, o próprio otimizador de imagem do Next (que busca o arquivo sem
-  // enviar o cookie de sessão) era redirecionado pro /login e a imagem
-  // quebrava com "not a valid image".
+  // isso, o otimizador de imagem do Next (que busca o arquivo sem o cookie de
+  // sessão) era mandado para /login e a imagem quebrava.
   matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico)$).*)"],
 };

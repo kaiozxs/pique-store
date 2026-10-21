@@ -115,7 +115,7 @@ export function PecasClient({
           <thead>
             <tr className="border-b border-border bg-bg text-left text-xs font-semibold uppercase tracking-wide text-muted">
               <th className="px-4 py-3">Código</th>
-              <th className="px-4 py-3">Variante</th>
+              <th className="px-4 py-3">Peça</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Titular</th>
               <th className="px-4 py-3"></th>
@@ -132,7 +132,7 @@ export function PecasClient({
             {pieces.map((piece) => (
               <tr key={piece.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3 font-mono text-ink">{piece.unique_code}</td>
-                <td className="px-4 py-3 font-mono text-xs text-muted">{piece.product_variant_id}</td>
+                <td className="px-4 py-3 text-ink">{piece.variant_label}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -147,7 +147,7 @@ export function PecasClient({
                   </span>
                 </td>
                 <td className="px-4 py-3 font-mono text-xs text-muted">
-                  {piece.current_owner_customer_id ?? "—"}
+                  {piece.owner_public_id ?? "—"}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button

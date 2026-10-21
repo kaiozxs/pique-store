@@ -1,8 +1,8 @@
 import "server-only";
 import QRCode from "qrcode";
-import { sdk } from "./sdk";
-import { authHeaders } from "./session";
-import type { PieceUnit } from "./pecas";
+import { db, listPiecesAdmin } from "@pique/db";
+import { exigirUsuario } from "./auth";
+import { paraUnidade, type PieceUnit } from "./pecas";
 
 // Endereço público da loja: o QR leva direto à verificação já preenchida,
 // então qualquer câmera de celular abre o resultado sem digitar nada.
@@ -13,13 +13,8 @@ export function linkDeVerificacao(codigo: string): string {
 }
 
 export async function listPiecesByOrder(orderId: string): Promise<PieceUnit[]> {
-  const headers = await authHeaders();
-  const { piece_units } = await sdk.client.fetch<{ piece_units: PieceUnit[] }>("/admin/pecas", {
-    headers,
-    query: { order_id: orderId },
-    cache: "no-store",
-  });
-  return piece_units;
+  await exigirUsuario();
+  return (await listPiecesAdmin(db(), { orderId })).map(paraUnidade);
 }
 
 /** QR em SVG (vetorial: imprime nítido em qualquer tamanho de etiqueta). */
