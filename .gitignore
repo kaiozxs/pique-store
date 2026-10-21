@@ -29,3 +29,6 @@ npm-debug.log*
 *.pem
 *.key
 *.pfx
+
+# Banco local de desenvolvimento
+.dev-db/
