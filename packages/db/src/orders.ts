@@ -271,13 +271,16 @@ export async function cancelOrderWithoutPayment(sql: Sql, orderId: string): Prom
   });
 }
 
-/** Pedidos que ficaram aguardando pagamento além do prazo: caem e devolvem o estoque. */
+/** Pedidos que ficaram aguardando pagamento além do prazo: caem e devolvem o estoque. Os que têm pagamento em análise ficam. */
 export async function cancelStalePendingOrders(sql: Sql, maxMinutos = 60): Promise<number> {
   return sql.begin(async (tx) => {
     const velhos = await tx<{ id: string }>`
       select id from orders
       where status = 'pending' and payment_status = 'awaiting'
         and created_at < now() - (${maxMinutos} * interval '1 minute')
+        -- Pagamento em análise pode ser aprovado depois: esse pedido espera o aviso do Mercado Pago.
+        and not exists (select 1 from payments p where p.order_id = orders.id
+                        and p.status in ('in_process', 'pending', 'authorized', 'approved'))
       for update skip locked`;
     for (const o of velhos) {
       await tx`update orders set status = 'canceled', payment_status = 'canceled', updated_at = now() where id = ${o.id}`;

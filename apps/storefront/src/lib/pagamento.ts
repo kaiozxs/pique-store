@@ -3,6 +3,7 @@ import { MercadoPagoConfig, Payment } from "mercadopago";
 import {
   applyPaymentResult,
   cancelOrderWithoutPayment,
+  cancelStalePendingOrders,
   db,
   ensureCustomer,
   ErroDeRegra,
@@ -104,6 +105,9 @@ export async function pagar(dados: DadosDoBrick): Promise<ResultadoPagamento> {
   if (!cartId) return { ok: false, error: "Sua sacola está vazia." };
 
   await ensureCustomer(db(), { id: usuario.id, email: usuario.email });
+
+  // Devolve ao estoque o que pedidos abandonados seguravam, antes de reservar de novo.
+  await cancelStalePendingOrders(db(), 60).catch((e) => console.error("[pagamento] limpeza de pedidos parados falhou:", e));
 
   let pedido: Order;
   try {

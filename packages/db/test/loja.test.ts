@@ -397,6 +397,17 @@ test("pedidos parados além do prazo caem e devolvem o estoque", async () => {
   assert.equal(await cancelStalePendingOrders(sql, 60), 0, "rodar de novo não repete");
 });
 
+test("a limpeza em lote não derruba pedido com pagamento em análise", async () => {
+  const sql = await loja();
+  const v = await umaVariante(sql, 5);
+  const emAnalise = await placeOrder(sql, { cartId: await sacolaPronta(sql, v.id, 2), customerId: null });
+  await applyPaymentResult(sql, { orderId: emAnalise.id, providerPaymentId: "lote-1", status: "in_process", amount: emAnalise.total });
+  await sql`update orders set created_at = now() - interval '3 hours' where id = ${emAnalise.id}`;
+  assert.equal(await cancelStalePendingOrders(sql, 60), 0);
+  assert.equal((await getOrder(sql, emAnalise.id))!.status, "pending");
+  assert.equal(await estoqueDe(sql, v.id), 3, "o estoque continua reservado");
+});
+
 test("faturamento conta só pedido pago", async () => {
   const sql = await loja();
   const v = await umaVariante(sql, 9);
