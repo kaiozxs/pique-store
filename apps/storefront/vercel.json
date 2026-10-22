@@ -1,3 +1,4 @@
 {
+  "installCommand": "npm install --omit=dev --prefix ../../packages/db && npm install",
   "crons": [{ "path": "/api/cron/pedidos-abandonados", "schedule": "0 7 * * *" }]
 }
