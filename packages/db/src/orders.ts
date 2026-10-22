@@ -91,6 +91,11 @@ export async function placeOrder(sql: Sql, input: { cartId: string; customerId: 
     // Ordem fixa por variação: duas compras com as mesmas peças nunca travam uma à outra.
     const reservado = new Map<string, number>();
     for (const item of [...cart.items].sort((a, b) => a.variant_id.localeCompare(b.variant_id))) {
+      // Peça "em breve" (ou fora da loja) não vende, nem sob encomenda — mesmo que já estivesse na sacola.
+      const [vendavel] = await tx`
+        select 1 from variants v join products p on p.id = v.product_id
+        where v.id = ${item.variant_id} and p.status = 'published' and not p.is_presale`;
+      if (!vendavel) throw new ErroDeRegra(`"${item.product_title}" ainda não está à venda.`, "indisponivel");
       if (item.allow_backorder) {
         reservado.set(item.variant_id, 0);
         continue;

@@ -72,7 +72,8 @@ export async function getVariant(sql: Sql, variantId: string) {
     active: boolean;
     published: boolean;
   }>`
-    select v.id, v.product_id, v.stock, v.allow_backorder, v.price, v.active, (p.status = 'published') as published
+    -- "published" aqui significa "pode ser comprada": publicada e não marcada como "em breve".
+    select v.id, v.product_id, v.stock, v.allow_backorder, v.price, v.active, (p.status = 'published' and not p.is_presale) as published
     from variants v join products p on p.id = v.product_id where v.id = ${variantId}`;
   return v ?? null;
 }

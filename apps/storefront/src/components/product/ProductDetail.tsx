@@ -85,6 +85,8 @@ export function ProductDetail({
   const [activeImage, setActiveImage] = useState(0);
   const image = gallery[activeImage] ?? gallery[0];
   const presale = getPresaleInfo(product);
+  // "Em breve": sem preço e sem compra até o painel desmarcar.
+  const emBreve = Boolean(presale);
 
   function handleAddToCart() {
     if (!variante) return;
@@ -168,17 +170,21 @@ export function ProductDetail({
         <h1 className="font-display text-3xl tracking-wide sm:text-4xl">{product.title}</h1>
 
         <div className="mt-5 text-xl font-semibold">
-          {variante
-            ? formatMoney(variante.price)
-            : "[preço indisponível]"}
+          {emBreve ? (
+            <span className="tracking-[0.12em] text-paper/60">EM BREVE</span>
+          ) : variante ? (
+            formatMoney(variante.price)
+          ) : (
+            "[preço indisponível]"
+          )}
         </div>
 
         {presale && (
           <div className="mt-5 border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-paper/85">
-            <span className="font-bold text-accent">PRÉ-VENDA — </span>
-            {presale.message}
+            <span className="font-bold text-accent">EM BREVE — </span>
+            {presale.message || "Esta peça chega em breve."}
             {presale.estimatedShipDate && (
-              <> Prazo estimado de envio: {new Date(presale.estimatedShipDate).toLocaleDateString("pt-BR")}.</>
+              <> Previsão de lançamento: {new Date(presale.estimatedShipDate).toLocaleDateString("pt-BR", { timeZone: "UTC" })}.</>
             )}
           </div>
         )}
@@ -229,13 +235,13 @@ export function ProductDetail({
           </div>
         ))}
 
-        {!disponivel && (
+        {!disponivel && !emBreve && (
           <div className="mt-4 text-xs font-semibold tracking-[0.05em] text-paper/50">
             INDISPONÍVEL nesta combinação.
           </div>
         )}
 
-        {disponivel && (
+        {disponivel && !emBreve && (
           <div className="mt-9">
             <div className="flex items-center gap-3">
               <button
@@ -270,11 +276,11 @@ export function ProductDetail({
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <button
             type="button"
-            disabled={!disponivel || isPending}
+            disabled={!disponivel || isPending || emBreve}
             onClick={handleAddToCart}
             className="btn-preenche toque border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.12em] text-paper disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-transparent disabled:text-paper/40 disabled:hover:bg-transparent disabled:hover:text-paper/40"
           >
-            {!disponivel ? "INDISPONÍVEL" : isPending ? "ADICIONANDO..." : "ADICIONAR À SACOLA"}
+            {emBreve ? "EM BREVE" : !disponivel ? "INDISPONÍVEL" : isPending ? "ADICIONANDO..." : "ADICIONAR À SACOLA"}
           </button>
           {/* Favoritar só faz sentido com conta: é ela que guarda a lista.
               Sem login, o botão leva pra entrar em vez de fingir que salvou e
@@ -314,7 +320,7 @@ export function ProductDetail({
           <p className="mt-3 text-sm font-semibold text-red-400">Não foi possível adicionar à sacola.</p>
         )}
 
-        <ShippingEstimate currencyCode="brl" />
+        {!emBreve && <ShippingEstimate currencyCode="brl" />}
       </div>
     </div>
   );

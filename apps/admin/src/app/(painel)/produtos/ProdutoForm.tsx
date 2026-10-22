@@ -221,16 +221,16 @@ export function ProdutoForm({ categorias, produto }: { categorias: Categoria[]; 
         </div>
         <label className="flex items-center gap-2 text-sm text-ink">
           <input type="checkbox" checked={prevenda} onChange={(e) => setPrevenda(e.target.checked)} />
-          Peça em pré-venda
+          Em breve (a loja mostra “EM BREVE” no lugar do preço e a peça não pode ser comprada)
         </label>
         {prevenda && (
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5">
-              <span className={ROTULO}>Aviso na página do produto</span>
+              <span className={ROTULO}>Aviso na página do produto (opcional)</span>
               <input value={mensagemPrevenda} onChange={(e) => setMensagemPrevenda(e.target.value)} className={CAMPO} />
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className={ROTULO}>Previsão de envio</span>
+              <span className={ROTULO}>Previsão de lançamento (opcional)</span>
               <input type="date" value={dataEnvio} onChange={(e) => setDataEnvio(e.target.value)} className={CAMPO} />
             </label>
           </div>

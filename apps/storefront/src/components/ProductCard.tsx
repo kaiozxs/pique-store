@@ -27,10 +27,10 @@ export function ProductCard({ product }: { product: Product }) {
       >
         {presale && (
           <div className="absolute left-3.5 top-3.5 bg-accent px-2.5 py-1 text-[10px] font-bold tracking-[0.1em] text-paper">
-            PRÉ-VENDA
+            EM BREVE
           </div>
         )}
-        {!available && (
+        {!available && !presale && (
           <div className="absolute right-3.5 top-3.5 bg-paper/10 px-2.5 py-1 text-[10px] font-bold tracking-[0.1em] text-paper/70">
             INDISPONÍVEL
           </div>
@@ -61,7 +61,13 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="text-[15px] font-bold transition-colors group-hover:text-accent">{product.title}</div>
         </div>
         <div className="whitespace-nowrap text-sm font-semibold">
-          {price ? formatMoney(price.amount, price.currencyCode) : "[preço indisponível]"}
+          {presale ? (
+            <span className="tracking-[0.12em] text-paper/60">EM BREVE</span>
+          ) : price ? (
+            formatMoney(price.amount, price.currencyCode)
+          ) : (
+            "[preço indisponível]"
+          )}
         </div>
       </div>
     </Link>

@@ -397,6 +397,19 @@ test("pedidos parados além do prazo caem e devolvem o estoque", async () => {
   assert.equal(await cancelStalePendingOrders(sql, 60), 0, "rodar de novo não repete");
 });
 
+test("peça marcada como \"em breve\" não entra na sacola nem vira pedido", async () => {
+  const sql = await loja();
+  const v = await umaVariante(sql, 5);
+  const cartId = await sacolaPronta(sql, v.id, 1); // já estava na sacola antes de virar "em breve"
+  await sql`update products set is_presale = true where id = (select product_id from variants where id = ${v.id})`;
+  const outra = await createCart(sql);
+  await assert.rejects(() => addItem(sql, outra, v.id, 1), /não está disponível/);
+  await assert.rejects(() => placeOrder(sql, { cartId, customerId: null }), /ainda não está à venda/);
+  assert.equal(await estoqueDe(sql, v.id), 5, "nada foi reservado");
+  await sql`update products set is_presale = false where id = (select product_id from variants where id = ${v.id})`;
+  assert.ok(await placeOrder(sql, { cartId, customerId: null }), "voltando ao normal, a mesma sacola compra");
+});
+
 test("a limpeza em lote não derruba pedido com pagamento em análise", async () => {
   const sql = await loja();
   const v = await umaVariante(sql, 5);
