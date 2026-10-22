@@ -1,89 +1,36 @@
 import "server-only";
-import type { HttpTypes } from "@medusajs/types";
-import { sdk } from "./sdk";
-import { authHeaders } from "./session";
+import { createPiecesForOrder, db, idPessoal, listCustomerNames, listOrders, type Order } from "@pique/db";
+import { exigirDono } from "./auth";
 import { listPiecesByOrder } from "./etiquetas";
 import type { PieceUnit } from "./pecas";
 
-export type Venda = HttpTypes.AdminOrder;
+/** Pedido pago, com o nome de quem comprou (a conta, quando houver; senão o e-mail). */
+export type Venda = Order & { cliente_nome: string };
 
-/** Mesmo ID pessoal que o cliente vê na conta e que aparece na verificação. */
-export function idPessoal(customerId: string): string {
-  return `PQ-${customerId.replace(/^cus_/i, "").slice(-8).toUpperCase()}`;
-}
+export { idPessoal };
 
 export function nomeDoCliente(v: Venda): string {
-  const c = v.customer;
-  const nome = [c?.first_name, c?.last_name].filter(Boolean).join(" ");
-  return nome || v.email || "Cliente";
+  return v.cliente_nome || v.email || "Cliente";
 }
 
-/** Intervalo em dias inteiros (YYYY-MM-DD), incluindo o último dia. */
+/** Intervalo em dias inteiros (YYYY-MM-DD, fuso de São Paulo), incluindo o último dia. Só pedidos pagos. */
 export async function listVendas(inicio: string, fim: string): Promise<Venda[]> {
-  const headers = await authHeaders();
-  const ate = new Date(`${fim}T00:00:00`);
-  ate.setDate(ate.getDate() + 1);
-  const { orders } = await sdk.admin.order.list(
-    {
-      limit: 300,
-      order: "-created_at",
-      created_at: { $gte: `${inicio}T00:00:00`, $lt: ate.toISOString().slice(0, 10) + "T00:00:00" },
-      fields:
-        "id,display_id,created_at,email,total,currency_code,customer_id,*customer,items.variant_id,items.quantity,items.product_title,items.variant_title",
-    } as HttpTypes.AdminOrderFilters,
-    headers
+  await exigirDono();
+  const { orders } = await listOrders(db(), { from: inicio, to: fim, paymentStatus: "captured", limit: 300 });
+  const nomes = await listCustomerNames(
+    db(),
+    orders.flatMap((o) => (o.customer_id ? [o.customer_id] : []))
   );
-  return orders;
+  return orders.map((o) => ({ ...o, cliente_nome: (o.customer_id && nomes.get(o.customer_id)) || "" }));
 }
 
 /**
- * O backend no ar entende o filtro por pedido? Versões antigas ignoram o
- * filtro (devolvem todas as peças) e descartam dono/pedido ao criar — gerar
- * códigos com elas criaria peças soltas a cada clique. Pergunta por um pedido
- * que não existe: a versão nova responde vazio.
- */
-export async function backendAtualizado(): Promise<boolean> {
-  const headers = await authHeaders();
-  const { piece_units } = await sdk.client.fetch<{ piece_units: PieceUnit[] }>("/admin/pecas", {
-    headers,
-    query: { order_id: "order_inexistente_verificacao" },
-    cache: "no-store",
-  });
-  return piece_units.length === 0;
-}
-
-/**
- * Garante que cada unidade vendida tenha seu código. Normalmente o backend já
- * gera na hora da compra; aqui só completa o que faltar (pedidos antigos, ou
- * se a geração automática falhou). Nunca cria em dobro: compara a quantidade
- * vendida de cada variante com os códigos que o pedido já tem.
+ * Garante que cada pedido pago tenha seus códigos. Normalmente já nascem no
+ * pagamento aprovado; isto completa pedidos antigos. Nunca duplica: o banco só
+ * gera se o pedido ainda não tem nenhuma peça.
  */
 export async function garantirPecas(venda: Venda): Promise<PieceUnit[]> {
-  const headers = await authHeaders();
-  const existentes = (await listPiecesByOrder(venda.id)).filter((p) => p.order_id === venda.id);
-
-  const temPorVariante = new Map<string, number>();
-  for (const p of existentes) temPorVariante.set(p.product_variant_id, (temPorVariante.get(p.product_variant_id) ?? 0) + 1);
-
-  let criou = false;
-  for (const item of venda.items ?? []) {
-    if (!item.variant_id) continue;
-    const vendido = Number(item.quantity ?? 0);
-    const tem = temPorVariante.get(item.variant_id) ?? 0;
-    const falta = vendido - tem;
-    temPorVariante.set(item.variant_id, Math.max(0, tem - vendido));
-    if (falta <= 0) continue;
-    await sdk.client.fetch("/admin/pecas", {
-      method: "POST",
-      headers,
-      body: {
-        product_variant_id: item.variant_id,
-        quantity: falta,
-        ...(venda.customer_id ? { customer_id: venda.customer_id } : {}),
-        order_id: venda.id,
-      },
-    });
-    criou = true;
-  }
-  return criou ? (await listPiecesByOrder(venda.id)).filter((p) => p.order_id === venda.id) : existentes;
+  await exigirDono();
+  await db().begin((tx) => createPiecesForOrder(tx, venda.id));
+  return listPiecesByOrder(venda.id);
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTipBySlug } from "@/lib/medusa";
+import { getTipBySlug } from "@/lib/catalogo";
 
 export async function generateMetadata(props: PageProps<"/dicas/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;

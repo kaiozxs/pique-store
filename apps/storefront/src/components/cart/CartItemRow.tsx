@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useTransition } from "react";
-import { formatMoney } from "@/lib/medusa";
+import { formatMoney } from "@/lib/produto";
 import { removeCartItemAction, updateCartItemAction } from "@/lib/cart-actions";
 
 export function CartItemRow({
@@ -27,11 +27,15 @@ export function CartItemRow({
   const [isPending, startTransition] = useTransition();
 
   function updateQuantity(next: number) {
-    startTransition(() => updateCartItemAction(id, next));
+    startTransition(async () => {
+      await updateCartItemAction(id, next);
+    });
   }
 
   function remove() {
-    startTransition(() => removeCartItemAction(id));
+    startTransition(async () => {
+      await removeCartItemAction(id);
+    });
   }
 
   return (

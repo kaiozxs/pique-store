@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { listOrders, formatMoney } from "@/lib/orders";
 
-const STATUS_LABEL: Record<string, string> = {
-  pending: "Pendente",
-  completed: "Concluído",
+const PAGAMENTO_LABEL: Record<string, string> = {
+  awaiting: "Aguardando",
+  captured: "Pago",
   canceled: "Cancelado",
-  archived: "Arquivado",
-  requires_action: "Requer ação",
+  refunded: "Reembolsado",
 };
 
 const FULFILLMENT_LABEL: Record<string, string> = {
@@ -61,7 +60,7 @@ export default async function PedidosPage({ searchParams }: PageProps<"/pedidos"
                   {new Date(order.created_at).toLocaleDateString("pt-BR")}
                 </td>
                 <td className="px-4 py-3 text-muted">
-                  {STATUS_LABEL[order.payment_status] ?? order.payment_status}
+                  {PAGAMENTO_LABEL[order.payment_status] ?? order.payment_status}
                 </td>
                 <td className="px-4 py-3 text-muted">
                   {FULFILLMENT_LABEL[order.fulfillment_status] ?? order.fulfillment_status}

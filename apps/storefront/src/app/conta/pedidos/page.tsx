@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentCustomer, listCustomerOrders } from "@/lib/customer";
-import { formatMoney } from "@/lib/medusa";
+import { formatMoney } from "@/lib/produto";
 import { statusDoPedido } from "@/lib/order-status";
 import { ContaShell, ContaVazio } from "@/components/conta/ContaShell";
 

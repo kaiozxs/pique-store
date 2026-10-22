@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { cheapestPrice, listNavCategories, listProducts } from "@/lib/medusa";
+import { cheapestPrice } from "@/lib/produto";
+import { listNavCategories, listProducts } from "@/lib/catalogo";
 import { ProductCard } from "@/components/ProductCard";
 import { LembrarCatalogo } from "@/components/LembrarCatalogo";
 
@@ -39,12 +40,11 @@ export default async function DropsPage({
   const ordem = ORDENS.some((o) => o.valor === ordemEscolhida) ? ordemEscolhida! : "novos";
   const categories = await listNavCategories();
   const activeCategory = categoria ? categories.find((c) => c.handle === categoria) : undefined;
-  const listados = await listProducts({ categoryId: activeCategory?.id, q });
-  const { region } = listados;
+  const listados = await listProducts({ categoryHandle: activeCategory?.handle, q });
   const products =
     ordem === "novos"
-      ? listados.products
-      : [...listados.products].sort((a, b) => {
+      ? listados
+      : [...listados].sort((a, b) => {
           const pa = cheapestPrice(a)?.amount ?? Infinity;
           const pb = cheapestPrice(b)?.amount ?? Infinity;
           return ordem === "menor" ? pa - pb : pb - pa;
@@ -147,7 +147,7 @@ export default async function DropsPage({
         ) : (
           <div className="grid grid-cols-1 gap-7 pb-24 sm:grid-cols-2 lg:grid-cols-4">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} region={region} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}

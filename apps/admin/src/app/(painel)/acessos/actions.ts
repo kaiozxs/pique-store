@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
-import { concederAcesso, listAcessos, revogarAcesso } from "@/lib/acessos";
+import { ErroDeRegra } from "@pique/db";
+import { concederAcesso, revogarAcesso } from "@/lib/acessos";
 import type { Papel } from "@/lib/papel";
 
 // Cada ação confere o papel de novo: esconder o botão não protege nada, quem
@@ -22,10 +23,10 @@ export async function concederAcessoAction(
     await concederAcesso(email.trim(), papel);
     revalidatePath("/acessos");
     return { ok: true };
-  } catch {
+  } catch (e) {
     return {
       ok: false,
-      error: "Não deu certo. Confira o e-mail: a pessoa precisa ter conta na loja.",
+      error: e instanceof ErroDeRegra ? e.message : "Não deu certo. Confira o e-mail: a pessoa precisa ter conta na loja.",
     };
   }
 }
@@ -34,15 +35,12 @@ export async function revogarAcessoAction(id: string): Promise<{ ok: boolean; er
   const user = await getCurrentUser();
   if (user?.papel !== "dono") return { ok: false, error: "Só o dono gerencia acessos." };
 
-  // Nunca deixa o painel sem nenhum dono por acesso concedido pelo site: o
-  // último dono não pode ser removido.
-  const todos = await listAcessos();
-  const alvo = todos.find((a) => a.id === id);
-  if (alvo?.papel === "dono" && todos.filter((a) => a.papel === "dono").length <= 1) {
-    return { ok: false, error: "Esse é o último dono. Conceda o acesso a outra pessoa antes." };
+  // O banco recusa remover o último dono (o painel não pode ficar sem ninguém no comando).
+  try {
+    await revogarAcesso(id);
+  } catch (e) {
+    return { ok: false, error: e instanceof ErroDeRegra ? e.message : "Não foi possível remover o acesso." };
   }
-
-  await revogarAcesso(id);
   revalidatePath("/acessos");
   return { ok: true };
 }

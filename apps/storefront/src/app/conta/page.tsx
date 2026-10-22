@@ -8,7 +8,8 @@ import { AccountDashboard } from "./AccountDashboard";
 
 export const metadata: Metadata = { title: "Conta — PIQUE" };
 
-export default async function ContaPage() {
+export default async function ContaPage({ searchParams }: { searchParams: Promise<{ erro?: string }> }) {
+  const { erro } = await searchParams;
   const customer = await getCurrentCustomer();
 
   if (!customer) {
@@ -37,7 +38,7 @@ export default async function ContaPage() {
                   <p className="mb-8 mt-3 text-sm leading-relaxed text-paper/55">
                     Acompanhe pedidos, salve favoritos e registre suas peças PIQUE.
                   </p>
-                  <AuthForms />
+                  <AuthForms erroInicial={erro ? erro.slice(0, 200) : undefined} />
                 </div>
               </div>
               <div className="flex items-center justify-center gap-2 text-[11px] tracking-[0.12em] text-paper/40">

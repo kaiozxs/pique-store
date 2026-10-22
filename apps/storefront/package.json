@@ -9,10 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@medusajs/js-sdk": "^2.21.0",
-    "@medusajs/types": "^2.21.0",
     "@mercadopago/sdk-react": "^1.0.7",
+    "@pique/db": "file:../../packages/db",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "jsqr": "^1.4.0",
+    "mercadopago": "^3.6.1",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8"

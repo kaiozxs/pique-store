@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentCustomer, listFavorites } from "@/lib/customer";
-import { listProductsByHandles } from "@/lib/medusa";
+import { listProductsByHandles } from "@/lib/catalogo";
 import { FavoritoCard } from "./FavoritoCard";
 import { ContaShell, ContaVazio } from "@/components/conta/ContaShell";
 
@@ -12,7 +12,7 @@ export default async function FavoritosPage() {
   if (!customer) redirect("/conta");
 
   const handles = await listFavorites();
-  const { products, region } = await listProductsByHandles(handles);
+  const products = await listProductsByHandles(handles);
 
   return (
     <ContaShell titulo="Favoritos" descricao="As peças que você salvou.">
@@ -24,7 +24,7 @@ export default async function FavoritosPage() {
       ) : (
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-3">
           {products.map((product) => (
-            <FavoritoCard key={product.id} product={product} region={region} />
+            <FavoritoCard key={product.id} product={product} />
           ))}
         </div>
       )}

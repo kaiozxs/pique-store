@@ -1,0 +1,350 @@
+{
+  "categories": [
+    {
+      "handle": "shirts",
+      "name": "Camisetas",
+      "position": 0,
+      "active": true
+    },
+    {
+      "handle": "sweatshirts",
+      "name": "Moletons",
+      "position": 1,
+      "active": false
+    },
+    {
+      "handle": "pants",
+      "name": "Calças",
+      "position": 2,
+      "active": false
+    },
+    {
+      "handle": "merch",
+      "name": "Bonés",
+      "position": 3,
+      "active": false
+    }
+  ],
+  "products": [
+    {
+      "handle": "sweatshirt",
+      "title": "Camiseta PIQUE Preta",
+      "description": "Camiseta oversized 100% algodão com estampa exclusiva PIQUE no peito. Corte streetwear de alto padrão, caimento solto.",
+      "thumbnail": "1789436688990-preta-frente.png",
+      "status": "published",
+      "option_order": [
+        "Size"
+      ],
+      "is_presale": false,
+      "presale_message": null,
+      "estimated_ship_date": null,
+      "categories": [
+        "shirts"
+      ],
+      "images": [
+        {
+          "file": "1789436688990-preta-frente.png",
+          "position": 0
+        },
+        {
+          "file": "1789436688991-preta-01-frente.png",
+          "position": 1
+        },
+        {
+          "file": "1789436688992-preta-02-direita.png",
+          "position": 2
+        },
+        {
+          "file": "1789436688992-preta-03-costas.png",
+          "position": 3
+        },
+        {
+          "file": "1789436688993-preta-04-esquerda.png",
+          "position": 4
+        },
+        {
+          "file": "1789436688991-preta-05-frente-angulo.png",
+          "position": 5
+        },
+        {
+          "file": "1789436688992-preta-06-direita-angulo.png",
+          "position": 6
+        },
+        {
+          "file": "1789436688993-preta-07-costas-angulo.png",
+          "position": 7
+        },
+        {
+          "file": "1789436688992-preta-08-esquerda-angulo.png",
+          "position": 8
+        },
+        {
+          "file": "1789438790917-lifestyle-preta-01.png",
+          "position": 9
+        },
+        {
+          "file": "1789438790920-lifestyle-preta-02.png",
+          "position": 10
+        },
+        {
+          "file": "1789438790924-lifestyle-preta-03.png",
+          "position": 11
+        }
+      ],
+      "variants": [
+        {
+          "title": "S",
+          "sku": "SWEATSHIRT-S",
+          "options": {
+            "Size": "S"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 0
+        },
+        {
+          "title": "M",
+          "sku": "SWEATSHIRT-M",
+          "options": {
+            "Size": "M"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 10
+        },
+        {
+          "title": "L",
+          "sku": "SWEATSHIRT-L",
+          "options": {
+            "Size": "L"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 20
+        },
+        {
+          "title": "XL",
+          "sku": "SWEATSHIRT-XL",
+          "options": {
+            "Size": "XL"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 30
+        }
+      ]
+    },
+    {
+      "handle": "t-shirt",
+      "title": "Camiseta PIQUE Branca",
+      "description": "Camiseta oversized 100% algodão com estampa exclusiva PIQUE no peito. Corte streetwear de alto padrão, caimento solto.",
+      "thumbnail": "1789436689129-branca-frente.png",
+      "status": "published",
+      "option_order": [
+        "Color",
+        "Size"
+      ],
+      "is_presale": false,
+      "presale_message": null,
+      "estimated_ship_date": null,
+      "categories": [
+        "shirts"
+      ],
+      "images": [
+        {
+          "file": "1789436689129-branca-frente.png",
+          "position": 0
+        },
+        {
+          "file": "1789436689130-branca-01-frente.png",
+          "position": 1
+        },
+        {
+          "file": "1789436689130-branca-02-direita.png",
+          "position": 2
+        },
+        {
+          "file": "1789436689130-branca-03-costas.png",
+          "position": 3
+        },
+        {
+          "file": "1789436689130-branca-04-esquerda.png",
+          "position": 4
+        },
+        {
+          "file": "1789436689131-branca-05-estampa.png",
+          "position": 5
+        },
+        {
+          "file": "1789436689132-branca-06-tag.png",
+          "position": 6
+        },
+        {
+          "file": "1789436689131-branca-07-clip.png",
+          "position": 7
+        },
+        {
+          "file": "1789436689132-branca-08-tecido.png",
+          "position": 8
+        },
+        {
+          "file": "1789438791059-lifestyle-branca-01.png",
+          "position": 9
+        },
+        {
+          "file": "1789438791063-lifestyle-branca-02.png",
+          "position": 10
+        },
+        {
+          "file": "1789438791068-lifestyle-branca-03.png",
+          "position": 11
+        }
+      ],
+      "variants": [
+        {
+          "title": "S / Black",
+          "sku": "SHIRT-S-BLACK",
+          "options": {
+            "Size": "S",
+            "Color": "Black"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 0
+        },
+        {
+          "title": "S / White",
+          "sku": "SHIRT-S-WHITE",
+          "options": {
+            "Size": "S",
+            "Color": "White"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 1
+        },
+        {
+          "title": "M / Black",
+          "sku": "SHIRT-M-BLACK",
+          "options": {
+            "Size": "M",
+            "Color": "Black"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 10
+        },
+        {
+          "title": "M / White",
+          "sku": "SHIRT-M-WHITE",
+          "options": {
+            "Size": "M",
+            "Color": "White"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 11
+        },
+        {
+          "title": "L / Black",
+          "sku": "SHIRT-L-BLACK",
+          "options": {
+            "Size": "L",
+            "Color": "Black"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 20
+        },
+        {
+          "title": "L / White",
+          "sku": "SHIRT-L-WHITE",
+          "options": {
+            "Size": "L",
+            "Color": "White"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 21
+        },
+        {
+          "title": "XL / Black",
+          "sku": "SHIRT-XL-BLACK",
+          "options": {
+            "Size": "XL",
+            "Color": "Black"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 30
+        },
+        {
+          "title": "XL / White",
+          "sku": "SHIRT-XL-WHITE",
+          "options": {
+            "Size": "XL",
+            "Color": "White"
+          },
+          "price": 10.0,
+          "stock": 100,
+          "position": 31
+        }
+      ]
+    }
+  ],
+  "shipping_options": [
+    {
+      "name": "Frete padrão",
+      "price": 10.0,
+      "position": 0
+    },
+    {
+      "name": "Frete expresso",
+      "price": 10.0,
+      "position": 1
+    }
+  ],
+  "wab": {
+    "status": "em_construcao",
+    "title": null,
+    "body": null,
+    "media": null
+  },
+  "home_sections": [
+    {
+      "type": "hero",
+      "position": 0,
+      "visible": true,
+      "config": null
+    },
+    {
+      "type": "drop_destaque",
+      "position": 1,
+      "visible": true,
+      "config": null
+    },
+    {
+      "type": "wab_teaser",
+      "position": 2,
+      "visible": true,
+      "config": null
+    },
+    {
+      "type": "dicas_destaque",
+      "position": 3,
+      "visible": true,
+      "config": null
+    },
+    {
+      "type": "apresentacao",
+      "position": 4,
+      "visible": true,
+      "config": null
+    }
+  ],
+  "drop": {
+    "title": null,
+    "status": "draft",
+    "handles": []
+  }
+}

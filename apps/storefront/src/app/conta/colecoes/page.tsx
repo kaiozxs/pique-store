@@ -53,7 +53,7 @@ export default async function ColecoesPage() {
                     </div>
                   )}
                   <div className="mt-1.5 font-mono text-xs tracking-wide text-paper/45">
-                    {peca.unique_code}
+                    {peca.code}
                   </div>
                 </div>
 
@@ -66,7 +66,7 @@ export default async function ColecoesPage() {
                     {status.texto}
                   </span>
                   <Link
-                    href={`/verifique?codigo=${encodeURIComponent(peca.unique_code)}`}
+                    href={`/verifique?codigo=${encodeURIComponent(peca.code)}`}
                     className="text-[12px] font-semibold tracking-[0.06em] text-paper/55 transition-colors hover:text-accent"
                   >
                     VERIFICAR / TRANSFERIR

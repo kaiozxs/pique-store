@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { getCurrentUser } from "@/lib/auth";
 import { podeAcessar } from "@/lib/papel";
 import { linkDeVerificacao } from "@/lib/etiquetas";
-import { backendAtualizado, garantirPecas, idPessoal, listVendas, nomeDoCliente } from "@/lib/vendas";
+import { garantirPecas, idPessoal, listVendas, nomeDoCliente } from "@/lib/vendas";
 
 const DATA = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -32,13 +32,6 @@ export async function GET(request: Request) {
   const inicio = url.searchParams.get("start") ?? "";
   const fim = url.searchParams.get("end") ?? "";
   if (!DATA.test(inicio) || !DATA.test(fim)) return new Response("Período inválido.", { status: 400 });
-
-  if (!(await backendAtualizado())) {
-    return new Response(
-      "O servidor da loja ainda não foi atualizado para gerar códigos por venda. Publique a versão nova do backend (Railway) e tente de novo.",
-      { status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" } }
-    );
-  }
 
   const vendas = await listVendas(inicio, fim);
 

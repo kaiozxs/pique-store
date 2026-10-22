@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getBookContent } from "@/lib/medusa";
+import { getBookContent } from "@/lib/catalogo";
 
 export const metadata: Metadata = { title: "WAB — PIQUE" };
 

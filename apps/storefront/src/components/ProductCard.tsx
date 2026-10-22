@@ -1,12 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
-import { cheapestPrice, formatMoney, getPresaleInfo, isProductAvailable } from "@/lib/medusa";
+import type { Product } from "@/lib/produto";
+import { cheapestPrice, formatMoney, getPresaleInfo, isProductAvailable } from "@/lib/produto";
 
 const GARMENT_ICON_PATH =
   "M4 7.2 L8.2 4 L10 5.6 L14 5.6 L15.8 4 L20 7.2 L17.8 10.4 L16 9.3 L16 20 L8 20 L8 9.3 L6.2 10.4 Z";
 
-export function ProductCard({ product }: { product: MedusaProduct; region: MedusaRegion }) {
+export function ProductCard({ product }: { product: Product }) {
   const available = isProductAvailable(product);
   const price = cheapestPrice(product);
   const image = product.thumbnail ?? product.images?.[0]?.url;

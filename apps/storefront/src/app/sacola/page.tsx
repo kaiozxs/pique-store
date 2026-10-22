@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCart } from "@/lib/cart";
-import { formatMoney } from "@/lib/medusa";
+import { formatMoney } from "@/lib/produto";
 import { CupomForm } from "@/components/cart/CupomForm";
 import { CartItemRow } from "@/components/cart/CartItemRow";
 
@@ -39,19 +39,19 @@ export default async function SacolaPage() {
             <CartItemRow
               key={item.id}
               id={item.id}
-              title={item.product_title ?? item.title}
+              title={item.product_title}
               variantTitle={item.variant_title ?? null}
               thumbnail={item.thumbnail ?? null}
               quantity={item.quantity}
               unitPrice={item.unit_price}
-              total={item.total ?? item.unit_price * item.quantity}
+              total={item.total}
               currencyCode={currencyCode}
             />
           ))}
         </div>
 
         <div className="mt-8 flex flex-col items-end gap-2">
-          <CupomForm aplicados={(cart!.promotions ?? []).map((p) => p.code).filter((c): c is string => Boolean(c))} />
+          <CupomForm aplicados={cart!.coupon ? [cart!.coupon.code] : []} />
           {(cart!.discount_total ?? 0) > 0 && (
             <div className="flex w-full max-w-xs justify-between text-sm text-paper/70">
               <span>Desconto</span>
@@ -60,7 +60,7 @@ export default async function SacolaPage() {
           )}
           <div className="flex w-full max-w-xs justify-between text-sm text-paper/70">
             <span>Subtotal</span>
-            <span>{formatMoney(cart!.item_subtotal ?? cart!.subtotal, currencyCode)}</span>
+            <span>{formatMoney(cart!.subtotal, currencyCode)}</span>
           </div>
           <div className="flex w-full max-w-xs justify-between text-base font-bold text-paper">
             <span>Total</span>

@@ -2,22 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
-import type { HttpTypes } from "@medusajs/types";
-import { formatMoney } from "@/lib/medusa";
+import type { Order } from "@pique/db";
+import { formatMoney } from "@/lib/produto";
 import { cpfValido } from "@/lib/validacao";
-import type { MedusaCart } from "@/lib/cart";
+import type { Cart } from "@/lib/cart";
 import type { ShippingAddressInput, ShippingOption } from "@/lib/checkout";
-import {
-  completeCheckoutAction,
-  getShippingOptionsAction,
-  initiateMercadoPagoSessionAction,
-  saveAddressAction,
-  selectShippingOptionAction,
-} from "@/lib/checkout-actions";
+import { getShippingOptionsAction, saveAddressAction, selectShippingOptionAction } from "@/lib/checkout-actions";
 import { MercadoPagoPaymentBrick } from "@/components/checkout/MercadoPagoPaymentBrick";
 import { AuthForms } from "@/app/conta/AuthForms";
 
-type Step = "endereco" | "frete" | "login" | "pagamento" | "revisao" | "confirmado";
+type Step = "endereco" | "frete" | "login" | "pagamento" | "confirmado";
 
 const EMPTY_ADDRESS: ShippingAddressInput = {
   first_name: "",
@@ -37,7 +31,7 @@ export function CheckoutClient({
   hasAccount,
   initialStep = "endereco",
 }: {
-  initialCart: MedusaCart | null;
+  initialCart: Cart | null;
   countries: { code: string; label: string }[];
   hasAccount: boolean;
   initialStep?: "endereco" | "pagamento";
@@ -57,12 +51,12 @@ export function CheckoutClient({
   const [birthDate, setBirthDate] = useState("");
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
-  const [order, setOrder] = useState<HttpTypes.StoreOrder | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
+  const [emAnalise, setEmAnalise] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cepLoading, setCepLoading] = useState(false);
   const [cepErro, setCepErro] = useState<string | null>(null);
   const [cpfErro, setCpfErro] = useState<string | null>(null);
-  const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Preenche endereço/cidade/estado automaticamente a partir do CEP (ViaCEP —
@@ -126,26 +120,17 @@ export function CheckoutClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
-  useEffect(() => {
-    if (step !== "pagamento") return;
-    startTransition(async () => {
-      const amount = await initiateMercadoPagoSessionAction();
-      setPaymentAmount(amount);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
-
   function handleAddressSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     startTransition(async () => {
-      try {
-        const updated = await saveAddressAction(email, address, { cpf, birth_date: birthDate });
-        setCart(updated);
-        setStep("frete");
-      } catch {
-        setError("Não foi possível salvar o endereço. Confira os campos.");
+      const r = await saveAddressAction(email, address, { cpf, birth_date: birthDate });
+      if (!r.ok) {
+        setError(r.error);
+        return;
       }
+      setCart(r.cart);
+      setStep("frete");
     });
   }
 
@@ -153,40 +138,37 @@ export function CheckoutClient({
     if (!selectedOptionId) return;
     setError(null);
     startTransition(async () => {
-      try {
-        const updated = await selectShippingOptionAction(selectedOptionId);
-        setCart(updated);
-        // Antes de pagar, precisa ter conta — sem isso não tem como emitir
-        // nota, avisar sobre o pedido nem o cliente acompanhar depois em
-        // "meus pedidos".
-        setStep(loggedIn ? "pagamento" : "login");
-      } catch {
-        setError("Não foi possível selecionar o frete.");
+      const r = await selectShippingOptionAction(selectedOptionId);
+      if (!r.ok) {
+        setError(r.error);
+        return;
       }
+      setCart(r.cart);
+      // Antes de pagar, precisa ter conta — sem isso não tem como emitir
+      // nota, avisar sobre o pedido nem o cliente acompanhar depois em
+      // "meus pedidos".
+      setStep(loggedIn ? "pagamento" : "login");
     });
   }
 
-  function handleComplete() {
-    setError(null);
-    startTransition(async () => {
-      const result = await completeCheckoutAction();
-      if (result.ok) {
-        setOrder(result.order);
-        setStep("confirmado");
-      } else {
-        setError(result.error);
-      }
-    });
+  function handlePaid(pedido: Order, status: "aprovado" | "em_analise") {
+    setOrder(pedido);
+    setEmAnalise(status === "em_analise");
+    setStep("confirmado");
   }
 
   if (step === "confirmado" && order) {
     return (
       <div className="bg-ink text-paper">
         <div className="mx-auto max-w-2xl px-6 py-24 text-center sm:px-8">
-          <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-accent">PEDIDO CONFIRMADO</div>
-          <h1 className="font-display text-3xl tracking-wide sm:text-5xl">OBRIGADO, {(order.email ?? "").split("@")[0].toUpperCase()}</h1>
+          <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-accent">
+            {emAnalise ? "PAGAMENTO EM ANÁLISE" : "PEDIDO CONFIRMADO"}
+          </div>
+          <h1 className="font-display text-3xl tracking-wide sm:text-5xl">OBRIGADO, {(address.first_name.trim() || (order.email ?? "").split("@")[0]).toUpperCase()}</h1>
           <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-paper/60">
-            Pedido #{order.display_id} confirmado. Total de {formatMoney(order.total, order.currency_code)}.
+            {emAnalise
+              ? `Pedido #${order.display_id} recebido. Assim que o pagamento for confirmado, a gente começa a preparar. Total de ${formatMoney(order.total, order.currency_code)}.`
+              : `Pedido #${order.display_id} confirmado. Total de ${formatMoney(order.total, order.currency_code)}.`}
           </p>
           <Link
             href="/"
@@ -226,7 +208,6 @@ export function CheckoutClient({
           <span className={step === "endereco" ? "text-accent" : ""}>1. ENDEREÇO</span>
           <span className={step === "frete" ? "text-accent" : ""}>2. FRETE</span>
           <span className={step === "login" || step === "pagamento" ? "text-accent" : ""}>3. PAGAMENTO</span>
-          <span className={step === "revisao" ? "text-accent" : ""}>4. REVISÃO</span>
         </div>
 
         {error && <p className="mb-6 text-sm font-semibold text-red-400">{error}</p>}
@@ -266,7 +247,7 @@ export function CheckoutClient({
             />
             <input
               placeholder="Complemento (opcional)"
-              value={address.address_2}
+              value={address.address_2 ?? ""}
               onChange={(e) => setAddress({ ...address, address_2: e.target.value })}
               className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
             />
@@ -280,7 +261,7 @@ export function CheckoutClient({
               />
               <input
                 placeholder="Estado/Província"
-                value={address.province}
+                value={address.province ?? ""}
                 onChange={(e) => setAddress({ ...address, province: e.target.value })}
                 className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
               />
@@ -315,7 +296,7 @@ export function CheckoutClient({
               <input
                 required
                 placeholder="Telefone"
-                value={address.phone}
+                value={address.phone ?? ""}
                 onChange={(e) => setAddress({ ...address, phone: e.target.value })}
                 className="border border-white/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-accent"
               />
@@ -381,7 +362,7 @@ export function CheckoutClient({
                   />
                   {option.name}
                 </span>
-                <span>{formatMoney(option.amount ?? 0, currencyCode)}</span>
+                <span>{formatMoney(option.price, currencyCode)}</span>
               </label>
             ))}
             <button
@@ -412,54 +393,39 @@ export function CheckoutClient({
         )}
 
         {step === "pagamento" && (
-          <div className="flex flex-col gap-4">
-            {paymentAmount === null ? (
-              <p className="text-sm text-paper/60">Carregando pagamento...</p>
-            ) : (
-              <MercadoPagoPaymentBrick
-                amount={paymentAmount}
-                email={email}
-                onSuccess={() => setStep("revisao")}
-              />
-            )}
-          </div>
-        )}
-
-        {step === "revisao" && (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             <div>
-              {(cart.items ?? []).map((item) => (
+              <div className="mb-2 text-[12px] font-bold tracking-[0.14em] text-paper/60">SEU PEDIDO</div>
+              {cart.items.map((item) => (
                 <div key={item.id} className="flex justify-between border-b border-white/10 py-3 text-sm">
                   <span>
-                    {item.product_title ?? item.title} {item.variant_title ? `— ${item.variant_title}` : ""} ×{" "}
-                    {item.quantity}
+                    {item.product_title} {item.variant_title ? `— ${item.variant_title}` : ""} × {item.quantity}
                   </span>
-                  <span>{formatMoney(item.total ?? item.unit_price * item.quantity, currencyCode)}</span>
+                  <span>{formatMoney(item.total, currencyCode)}</span>
                 </div>
               ))}
+              <div className="mt-4 flex flex-col gap-1 text-sm text-paper/70">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>{formatMoney(cart.subtotal, currencyCode)}</span>
+                </div>
+                {cart.discount_total > 0 && (
+                  <div className="flex justify-between">
+                    <span>Desconto{cart.coupon ? ` (${cart.coupon.code})` : ""}</span>
+                    <span>− {formatMoney(cart.discount_total, currencyCode)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span>Frete{cart.shipping_option ? ` (${cart.shipping_option.name})` : ""}</span>
+                  <span>{formatMoney(cart.shipping_total, currencyCode)}</span>
+                </div>
+                <div className="flex justify-between text-base font-bold text-paper">
+                  <span>Total</span>
+                  <span>{formatMoney(cart.total, currencyCode)}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col gap-1 text-sm text-paper/70">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>{formatMoney(cart.item_subtotal ?? cart.subtotal, currencyCode)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Frete</span>
-                <span>{formatMoney(cart.shipping_total ?? 0, currencyCode)}</span>
-              </div>
-              <div className="flex justify-between text-base font-bold text-paper">
-                <span>Total</span>
-                <span>{formatMoney(cart.total, currencyCode)}</span>
-              </div>
-            </div>
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={handleComplete}
-              className="btn-preenche w-fit border border-accent px-8 py-4 text-[13px] font-bold tracking-[0.14em] disabled:opacity-60"
-            >
-              {isPending ? "PROCESSANDO..." : "FINALIZAR PEDIDO"}
-            </button>
+            <MercadoPagoPaymentBrick amount={cart.total} email={email} onPaid={handlePaid} />
           </div>
         )}
       </div>

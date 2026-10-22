@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 import { loadEnvConfig } from "@next/env";
 
 // next.config.ts roda fora do pipeline normal do Next, então `process.env`
@@ -9,20 +10,18 @@ loadEnvConfig(process.cwd());
 
 // Domínios de terceiros que o storefront realmente precisa liberar: o Brick
 // do Mercado Pago (script + iframes seguros de cartão) e o ViaCEP (consulta
-// de CEP direto do navegador). O backend Medusa entra à parte logo abaixo —
-// o login com Google (lib/google-auth.ts) chama ele direto do navegador, sem
-// passar por Server Action, então precisa estar liberado explicitamente
-// (imagens continuam via `next/image`, que busca do lado do servidor).
+// de CEP direto do navegador). O login e o banco são sempre chamados pelo
+// servidor, então não entram aqui.
 const MERCADOPAGO_DOMAINS = "https://*.mercadopago.com https://*.mercadolibre.com https://http2.mlstatic.com";
-const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000";
 
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' ${MERCADOPAGO_DOMAINS}`,
+  // O modo de desenvolvimento do Next usa eval (recarga a quente, pilhas de erro). Em produção não existe.
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"} ${MERCADOPAGO_DOMAINS}`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https:`,
   "font-src 'self' data:",
-  `connect-src 'self' ${BACKEND_URL} https://viacep.com.br https://accounts.google.com ${MERCADOPAGO_DOMAINS}`,
+  `connect-src 'self' https://viacep.com.br ${MERCADOPAGO_DOMAINS}`,
   `frame-src 'self' ${MERCADOPAGO_DOMAINS}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
@@ -39,22 +38,32 @@ const SECURITY_HEADERS = [
   { key: "Content-Security-Policy", value: CONTENT_SECURITY_POLICY },
 ];
 
+// Fotos dos produtos: ficam no Supabase Storage (bucket público "produtos").
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_HOST = SUPABASE_URL ? new URL(SUPABASE_URL).hostname : null;
+
+// O painel é outro aplicativo, servido sob /admin deste mesmo endereço (assim os
+// dois compartilham o login). Só ativa quando ADMIN_APP_URL está definida.
+const ADMIN_APP_URL = process.env.ADMIN_APP_URL?.replace(/\/$/, "");
+
 const nextConfig: NextConfig = {
+  // O pacote de dados fica fora desta pasta, em ../../packages/db, e é TypeScript.
+  transpilePackages: ["@pique/db"],
+  turbopack: { root: path.resolve(process.cwd(), "..", "..") },
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
+  async rewrites() {
+    if (!ADMIN_APP_URL) return [];
+    return [
+      { source: "/admin", destination: `${ADMIN_APP_URL}/admin` },
+      { source: "/admin/:path*", destination: `${ADMIN_APP_URL}/admin/:path*` },
+    ];
+  },
   images: {
-    remotePatterns: [
-      // Imagens de exemplo dos produtos demo do Medusa (seed inicial).
-      { protocol: "https", hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com" },
-      // Mídia enviada pelo próprio backend Medusa em desenvolvimento.
-      { protocol: "http", hostname: "localhost", port: "9000" },
-      // Mídia enviada pelo backend Medusa em produção (Railway).
-      { protocol: "https", hostname: "pique-store-production.up.railway.app" },
-    ],
-    // O Next 16 bloqueia por padrão otimizar imagem vinda de IP privado/loopback
-    // (proteção contra SSRF) — precisa liberar explicitamente pro backend local.
-    dangerouslyAllowLocalIP: true,
+    remotePatterns: SUPABASE_HOST
+      ? [{ protocol: "https", hostname: SUPABASE_HOST, pathname: "/storage/v1/object/public/**" }]
+      : [],
   },
 };
 

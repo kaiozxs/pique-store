@@ -1,118 +1,63 @@
 import "server-only";
-import type { HttpTypes } from "@medusajs/types";
-import { sdk } from "./sdk";
-import { getOrCreateCart, type MedusaCart } from "./cart";
-import { clearCartId } from "./cart-session";
+import {
+  db,
+  ErroDeRegra,
+  getCart as lerCarrinho,
+  listShippingOptions as lerFretes,
+  setCheckoutInfo,
+  setShippingOption,
+  type AddressInput,
+  type Cart,
+  type ShippingOption,
+} from "@pique/db";
+import { getCartId } from "./cart-session";
+import { cepCompleto, cpfValido, nascimentoValido } from "./validacao";
 
-export type ShippingAddressInput = {
-  first_name: string;
-  last_name: string;
-  address_1: string;
-  address_2?: string;
-  city: string;
-  province?: string;
-  postal_code: string;
-  country_code: string;
-  phone?: string;
-};
-
-export type ShippingOption = HttpTypes.StoreCartShippingOption;
-
-const SYSTEM_PAYMENT_PROVIDER_ID = "pp_system_default";
-const MERCADOPAGO_PROVIDER_ID = "pp_mercadopago";
-
+export type ShippingAddressInput = AddressInput;
+export type { ShippingOption };
 export type CheckoutDocumentInput = { cpf: string; birth_date: string };
 
+async function sacolaAtual(): Promise<string> {
+  const id = await getCartId();
+  if (!id) throw new ErroDeRegra("Sua sacola está vazia.", "carrinho");
+  return id;
+}
+
+async function recarregar(cartId: string): Promise<Cart> {
+  const cart = await lerCarrinho(db(), cartId);
+  if (!cart) throw new ErroDeRegra("Sua sacola está vazia.", "carrinho");
+  return cart;
+}
+
+/**
+ * Valida de novo no servidor o que o formulário já conferiu: um envio direto,
+ * sem passar pelo JavaScript da página, não pode furar as regras.
+ */
 export async function setCheckoutAddress(
   email: string,
   address: ShippingAddressInput,
   document: CheckoutDocumentInput
-): Promise<MedusaCart> {
-  const cart = await getOrCreateCart();
-  const { cart: updated } = await sdk.store.cart.update(cart.id, {
-    email,
-    shipping_address: address,
-    billing_address: address,
-    // CPF/data de nascimento não são campos nativos do endereço do Medusa —
-    // guardados no metadata do carrinho (preservando o que já existir nele)
-    // pra não sumir com outras chaves que alguma outra parte do sistema
-    // tenha guardado ali.
-    metadata: { ...cart.metadata, cpf: document.cpf, birth_date: document.birth_date },
-  });
-  return updated;
+): Promise<Cart> {
+  if (!address.first_name?.trim() || !address.last_name?.trim()) throw new ErroDeRegra("Informe nome e sobrenome.");
+  if (!address.address_1?.trim() || !address.city?.trim()) throw new ErroDeRegra("Informe o endereço completo.");
+  if (!address.phone?.trim()) throw new ErroDeRegra("Informe o telefone.");
+  if ((address.country_code ?? "br").toLowerCase() === "br" && !cepCompleto(address.postal_code)) {
+    throw new ErroDeRegra("CEP inválido: são 8 números.");
+  }
+  if (!cpfValido(document.cpf)) throw new ErroDeRegra("Esse CPF não é válido. Confira os números.");
+  if (!nascimentoValido(document.birth_date)) throw new ErroDeRegra("Data de nascimento inválida.");
+
+  const cartId = await sacolaAtual();
+  await setCheckoutInfo(db(), cartId, { email, address: { ...address, country_code: (address.country_code || "br").toLowerCase() }, document });
+  return recarregar(cartId);
 }
 
 export async function listShippingOptions(): Promise<ShippingOption[]> {
-  const cart = await getOrCreateCart();
-  const { shipping_options } = await sdk.store.fulfillment.listCartOptions({ cart_id: cart.id });
-  return shipping_options;
+  return lerFretes(db());
 }
 
-export async function selectShippingOption(optionId: string): Promise<MedusaCart> {
-  const cart = await getOrCreateCart();
-  const { cart: updated } = await sdk.store.cart.addShippingMethod(cart.id, { option_id: optionId });
-  return updated;
-}
-
-// Garante que existe uma sessão de pagamento do Mercado Pago pro carrinho
-// atual — chamado quando o comprador chega no passo de pagamento. Não cria
-// duas se já tiver uma (o SDK do Medusa não tem um endpoint de "atualizar
-// sessão", só de criar — criar de novo pra um provider que já tem sessão
-// ativa criaria uma segunda à toa).
-export async function ensureMercadoPagoSession(): Promise<MedusaCart> {
-  const cart = await getOrCreateCart();
-  const existing = cart.payment_collection?.payment_sessions?.find(
-    (s) => s.provider_id === MERCADOPAGO_PROVIDER_ID
-  );
-  if (existing) return cart;
-
-  const { payment_collection } = await sdk.store.payment.initiatePaymentSession(cart, {
-    provider_id: MERCADOPAGO_PROVIDER_ID,
-  });
-  return { ...cart, payment_collection };
-}
-
-export type MercadoPagoBrickData = {
-  token: string;
-  payment_method_id: string;
-  installments?: number;
-  issuer_id?: string | number;
-  payer_email?: string;
-};
-
-// Manda os dados que o Brick devolveu (token de cartão de uso único, etc)
-// pra rota própria do backend, que grava na sessão de pagamento — é o que
-// o provider usa depois, quando o carrinho é finalizado, pra cobrar de
-// verdade no Mercado Pago.
-export async function submitMercadoPagoPaymentData(data: MercadoPagoBrickData): Promise<void> {
-  const cart = await getOrCreateCart();
-  await sdk.client.fetch("/store/checkout/mercadopago", {
-    method: "POST",
-    body: { cart_id: cart.id, ...data },
-  });
-}
-
-export type CompleteCheckoutResult =
-  | { ok: true; order: HttpTypes.StoreOrder }
-  | { ok: false; error: string };
-
-export async function completeCheckout(): Promise<CompleteCheckoutResult> {
-  const cart = await getOrCreateCart();
-
-  try {
-    if (!cart.payment_collection?.payment_sessions?.length) {
-      // Nenhum passo de pagamento rodou (não deveria acontecer no fluxo
-      // normal) — cai pro provider "fake" só pra não travar o checkout.
-      await sdk.store.payment.initiatePaymentSession(cart, { provider_id: SYSTEM_PAYMENT_PROVIDER_ID });
-    }
-
-    const result = await sdk.store.cart.complete(cart.id);
-    if (result.type === "order") {
-      await clearCartId();
-      return { ok: true, order: result.order };
-    }
-    return { ok: false, error: result.error?.message ?? "Não foi possível concluir o pedido." };
-  } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : "Não foi possível concluir o pedido." };
-  }
+export async function selectShippingOption(optionId: string): Promise<Cart> {
+  const cartId = await sacolaAtual();
+  await setShippingOption(db(), cartId, optionId);
+  return recarregar(cartId);
 }

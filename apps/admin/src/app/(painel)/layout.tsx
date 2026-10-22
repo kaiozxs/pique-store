@@ -17,7 +17,7 @@ export default async function PainelLayout({ children }: { children: ReactNode }
       <div className="print:hidden">
         <Sidebar papel={user.papel} />
       </div>
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <header className="print:hidden flex items-center justify-between border-b border-border bg-surface px-6 py-3">
           <div className="text-sm text-muted">{user?.email ?? ""}</div>
           <form action={logoutAction}>

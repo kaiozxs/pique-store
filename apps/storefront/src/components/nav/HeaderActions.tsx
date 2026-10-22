@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { formatMoney } from "@/lib/medusa";
+import { formatMoney } from "@/lib/produto";
 import { SECOES_DA_CONTA } from "@/components/conta/ContaNav";
 import { logoutAction } from "@/app/conta/actions";
 

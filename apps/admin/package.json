@@ -9,8 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@medusajs/js-sdk": "^2.21.0",
-    "@medusajs/types": "^2.21.0",
+    "@pique/db": "file:../../packages/db",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "@types/qrcode": "^1.5.5",
     "jsqr": "^1.4.0",
     "jszip": "^3.10.1",

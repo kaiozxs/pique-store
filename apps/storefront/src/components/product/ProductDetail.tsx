@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import type { MedusaProduct, MedusaRegion } from "@/lib/medusa";
-import { findVariant, formatMoney, getPresaleInfo, isVariantAvailable } from "@/lib/medusa";
+import type { Product } from "@/lib/produto";
+import { findVariant, formatMoney, getPresaleInfo, isVariantAvailable, maxQuantidade, opcoesDoProduto } from "@/lib/produto";
 import { isSizeOption, SIZE_ORDER, sizeLabel } from "@/lib/tamanhos";
 import { toggleFavoriteAction } from "@/app/conta/actions";
 import { addToCartAction } from "@/lib/cart-actions";
@@ -37,19 +37,18 @@ function optionValueLabel(optionTitle: string, value: string): string {
 
 export function ProductDetail({
   product,
-  region,
   logado = false,
   favoritoInicial = false,
 }: {
-  product: MedusaProduct;
-  region: MedusaRegion;
+  product: Product;
   logado?: boolean;
   favoritoInicial?: boolean;
 }) {
+  const opcoes = useMemo(() => opcoesDoProduto(product), [product]);
   const [selected, setSelected] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
-    for (const option of product.options ?? []) {
-      const firstValue = option.values?.[0];
+    for (const option of opcoesDoProduto(product)) {
+      const firstValue = option.values[0];
       if (firstValue) initial[option.title] = firstValue.value;
     }
     return initial;
@@ -69,19 +68,15 @@ export function ProductDetail({
   // só havia 1 — produto fantasma, que a loja depois teria que cancelar.
   // Quando a variante não controla estoque (ou aceita encomenda), o teto é
   // só um limite são de pedido.
-  const maxQuantidade = useMemo(() => {
-    if (!variante) return 1;
-    if (variante.allow_backorder || !variante.manage_inventory) return 10;
-    return Math.max(1, variante.inventory_quantity ?? 1);
-  }, [variante]);
+  const teto = useMemo(() => maxQuantidade(variante), [variante]);
 
   // Trocar de tamanho pode cair numa variante com menos estoque que a
   // quantidade já escolhida.
   useEffect(() => {
-    setQuantidade((q) => Math.min(q, maxQuantidade));
-  }, [maxQuantidade]);
+    setQuantidade((q) => Math.min(q, teto));
+  }, [teto]);
 
-  const noTeto = quantidade >= maxQuantidade;
+  const noTeto = quantidade >= teto;
   const gallery = useMemo(() => {
     const urls = (product.images ?? []).map((img) => img.url).filter(Boolean) as string[];
     if (urls.length > 0) return urls;
@@ -173,8 +168,8 @@ export function ProductDetail({
         <h1 className="font-display text-3xl tracking-wide sm:text-4xl">{product.title}</h1>
 
         <div className="mt-5 text-xl font-semibold">
-          {variante?.calculated_price?.calculated_amount != null && variante.calculated_price.currency_code
-            ? formatMoney(variante.calculated_price.calculated_amount, variante.calculated_price.currency_code)
+          {variante
+            ? formatMoney(variante.price)
             : "[preço indisponível]"}
         </div>
 
@@ -192,13 +187,13 @@ export function ProductDetail({
           <p className="mt-7 text-sm leading-relaxed text-paper/70">{product.description}</p>
         )}
 
-        {(product.options ?? []).map((option) => (
+        {opcoes.map((option) => (
           <div key={option.title} className="mt-8">
             <div className="mb-2 text-xs font-bold tracking-[0.1em] text-paper/60">
               {option.title.toUpperCase()}
             </div>
             <div className="flex flex-wrap gap-2">
-              {sortOptionValues(option.title, option.values ?? []).map((v) => {
+              {sortOptionValues(option.title, option.values).map((v) => {
                 // Esgotado = a combinação com as outras escolhas atuais não
                 // existe ou está sem estoque. Continua clicável (a pessoa pode
                 // querer ver), mas leva um X pra avisar antes do clique.
@@ -257,7 +252,7 @@ export function ProductDetail({
                 type="button"
                 aria-label="Aumentar quantidade"
                 disabled={noTeto}
-                onClick={() => setQuantidade((q) => Math.min(maxQuantidade, q + 1))}
+                onClick={() => setQuantidade((q) => Math.min(teto, q + 1))}
                 className="toque-leve h-11 w-11 border border-white/25 text-lg transition-colors hover:border-white/50 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-paper/30 disabled:hover:border-white/10"
               >
                 +
@@ -319,7 +314,7 @@ export function ProductDetail({
           <p className="mt-3 text-sm font-semibold text-red-400">Não foi possível adicionar à sacola.</p>
         )}
 
-        <ShippingEstimate currencyCode={region.currency_code} />
+        <ShippingEstimate currencyCode="brl" />
       </div>
     </div>
   );

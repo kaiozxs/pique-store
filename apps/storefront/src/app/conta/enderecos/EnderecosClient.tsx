@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import type { MedusaCustomer } from "@/lib/customer";
+import type { Cliente } from "@/lib/customer";
 import type { ShippingAddressInput } from "@/lib/checkout";
 import {
   addAddressAction,
@@ -26,9 +26,9 @@ const VAZIO: ShippingAddressInput = {
 const inputClass =
   "border border-white/20 bg-transparent px-3 py-2.5 text-sm outline-none transition-colors focus:border-accent";
 
-type Endereco = NonNullable<MedusaCustomer["addresses"]>[number];
+type Endereco = NonNullable<Cliente["addresses"]>[number];
 
-export function EnderecosClient({ customer }: { customer: MedusaCustomer }) {
+export function EnderecosClient({ customer }: { customer: Cliente }) {
   const router = useRouter();
   const enderecos = customer.addresses ?? [];
 
@@ -102,8 +102,7 @@ export function EnderecosClient({ customer }: { customer: MedusaCustomer }) {
   // entender por quê. Quando há outros endereços, o próximo assume.
   function remover(id: string, herdeiroId?: string) {
     startTransition(async () => {
-      if (herdeiroId) await setDefaultAddressAction(herdeiroId);
-      await removeAddressAction(id);
+      await removeAddressAction(id, herdeiroId);
       setConfirmandoRemover(null);
       setHerdeiro("");
       router.refresh();
@@ -131,7 +130,7 @@ export function EnderecosClient({ customer }: { customer: MedusaCustomer }) {
                 <span className="font-semibold text-paper">
                   {e.first_name} {e.last_name}
                 </span>
-                {e.is_default_shipping && (
+                {e.is_default && (
                   <span className="border border-accent px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-accent">
                     PADRÃO
                   </span>
@@ -151,7 +150,7 @@ export function EnderecosClient({ customer }: { customer: MedusaCustomer }) {
             </div>
 
             <div className="flex shrink-0 flex-wrap gap-4 text-[12px] font-semibold tracking-[0.06em]">
-              {!e.is_default_shipping && (
+              {!e.is_default && (
                 <button
                   type="button"
                   disabled={isPending}
@@ -184,7 +183,7 @@ export function EnderecosClient({ customer }: { customer: MedusaCustomer }) {
               apagar no primeiro clique. */}
           {confirmandoRemover === e.id && (() => {
             const outros = enderecos.filter((o) => o.id !== e.id);
-            const precisaEscolher = e.is_default_shipping && outros.length > 0;
+            const precisaEscolher = e.is_default && outros.length > 0;
 
             return (
               <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
