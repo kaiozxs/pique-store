@@ -19,7 +19,8 @@
     "fumaca": "tsx scripts/fumaca.ts"
   },
   "dependencies": {
-    "postgres": "^3.4.5"
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.10",
