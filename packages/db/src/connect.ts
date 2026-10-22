@@ -43,12 +43,35 @@ export function connect(url: string): Sql {
   return sql as unknown as Sql;
 }
 
+/**
+ * Vigia: consulta que passa de 5s sem resposta é registrada no log (só o começo do
+ * texto, nunca os valores). Sem isso, uma conexão presa aparece só como "timeout"
+ * genérico da plataforma, sem dizer qual consulta ficou pendurada.
+ */
+function vigiar<T>(texto: string, rodar: () => Promise<T>): Promise<T> {
+  const inicio = Date.now();
+  const aviso = setTimeout(() => console.error(`[db] consulta pendente há 5s: ${texto.replace(/\s+/g, " ").slice(0, 120)}`), 5000);
+  return rodar().finally(() => {
+    clearTimeout(aviso);
+    const ms = Date.now() - inicio;
+    if (ms > 2000) console.warn(`[db] consulta lenta (${ms}ms): ${texto.replace(/\s+/g, " ").slice(0, 120)}`);
+  });
+}
+
+function comVigia(sql: Sql): Sql {
+  const vigiado = ((strings: TemplateStringsArray, ...values: unknown[]) =>
+    vigiar(strings.join("?"), () => sql(strings, ...values))) as Sql;
+  vigiado.begin = (fn) => vigiar("begin", () => sql.begin(fn));
+  vigiado.unsafe = (texto, params) => vigiar(texto, () => sql.unsafe(texto, params));
+  return vigiado;
+}
+
 /** Uma conexão por processo (evita abrir outra a cada recarga no desenvolvimento). */
 export function db(): Sql {
   if (!globalThis.__piqueSql) {
     const url = process.env.DATABASE_URL;
     if (!url) throw new Error("DATABASE_URL não está definida.");
-    globalThis.__piqueSql = connect(url);
+    globalThis.__piqueSql = comVigia(connect(url));
   }
   return globalThis.__piqueSql;
 }
