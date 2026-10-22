@@ -1,7 +1,8 @@
 import { db, listCategories, listProducts } from "@pique/db";
 import { getCart } from "@/lib/cart";
 import { getCurrentCustomer } from "@/lib/customer";
-import { listNavCategories, listProducts as listarVitrine } from "@/lib/catalogo";
+import { getCuratedDrop, getHomeSections, getProductByHandle, listNavCategories, listProducts as listarVitrine } from "@/lib/catalogo";
+import { listFavorites } from "@/lib/customer";
 
 // Diagnóstico rápido: testa, uma por uma e com limite de 8s cada, as consultas que
 // a loja faz. Nunca devolve a senha nem a URL completa — só o servidor e os erros.
@@ -38,6 +39,11 @@ export async function GET() {
     await medir("produtos", () => listProducts(db())),
     await medir("concorrente: 6 consultas ao mesmo tempo", () => Promise.all(Array.from({ length: 6 }, () => listProducts(db())))),
     await medir("cabecalho (sacola + conta + categorias)", () => Promise.all([getCart(), getCurrentCustomer(), listNavCategories()])),
+    await medir("home: secoes", () => getHomeSections()),
+    await medir("home: drop em destaque", () => getCuratedDrop()),
+    await medir("produto sweatshirt", () => getProductByHandle("sweatshirt")),
+    await medir("produto t-shirt", () => getProductByHandle("t-shirt")),
+    await medir("favoritos (visitante)", () => listFavorites()),
     await medir("vitrine (como a pagina /drops)", async () => {
       await listNavCategories();
       return listarVitrine({});
