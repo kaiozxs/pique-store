@@ -1,8 +1,7 @@
-import { db } from "@pique/db";
+import { db, listCategories, listProducts } from "@pique/db";
 
-// Diagnóstico rápido: responde se a loja consegue falar com o banco, em no máximo
-// 8 segundos, sem esperar a conexão pendurar. Nunca devolve a senha nem a URL
-// completa — só o servidor e a mensagem de erro.
+// Diagnóstico rápido: testa, uma por uma e com limite de 8s cada, as consultas que
+// a loja faz. Nunca devolve a senha nem a URL completa — só o servidor e os erros.
 export const dynamic = "force-dynamic";
 
 function servidor(): string {
@@ -14,19 +13,26 @@ function servidor(): string {
   }
 }
 
-export async function GET() {
+async function medir(nome: string, fn: () => Promise<unknown>) {
   const inicio = Date.now();
   try {
-    await Promise.race([
-      db()`select 1`,
-      new Promise((_, rejeita) => setTimeout(() => rejeita(new Error("sem resposta do banco em 8s")), 8000)),
+    const r = await Promise.race([
+      fn(),
+      new Promise((_, rejeita) => setTimeout(() => rejeita(new Error("sem resposta em 8s")), 8000)),
     ]);
-    return Response.json({ ok: true, ms: Date.now() - inicio, servidor: servidor() });
+    return { nome, ok: true, ms: Date.now() - inicio, linhas: Array.isArray(r) ? r.length : null };
   } catch (e) {
     const erro = e as Error & { code?: string };
-    return Response.json(
-      { ok: false, ms: Date.now() - inicio, servidor: servidor(), codigo: erro.code ?? null, erro: erro.message },
-      { status: 503 }
-    );
+    return { nome, ok: false, ms: Date.now() - inicio, codigo: erro.code ?? null, erro: erro.message };
   }
+}
+
+export async function GET() {
+  const testes = [
+    await medir("select 1 (template)", () => db()`select 1`),
+    await medir("select com parametro (unsafe)", () => db().unsafe("select $1::text as x", ["a"])),
+    await medir("categorias", () => listCategories(db())),
+    await medir("produtos", () => listProducts(db())),
+  ];
+  return Response.json({ ok: testes.every((t) => t.ok), servidor: servidor(), testes }, { status: testes.every((t) => t.ok) ? 200 : 503 });
 }
