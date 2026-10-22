@@ -33,5 +33,6 @@ npm-debug.log*
 # Banco local de desenvolvimento
 .dev-db/
 
-# Fotos de produto: vivem no Supabase Storage; cópia local só para desenvolvimento
-apps/storefront/public/produtos/
+# Fotos de produto: as do catálogo inicial ficam no repositório (public/produtos);
+# só as enviadas pelo painel em desenvolvimento ficam de fora.
+apps/storefront/public/produtos/uploads/
