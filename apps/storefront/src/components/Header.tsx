@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import Image from "next/image";
 import { getCart } from "@/lib/cart";
 import { getCurrentCustomer } from "@/lib/customer";
@@ -7,6 +8,8 @@ import { MainNav } from "@/components/nav/MainNav";
 import { HeaderActions, type MiniCart } from "@/components/nav/HeaderActions";
 
 export async function Header() {
+  // Sacola, conta e categorias mudam por pessoa/momento: nada disso pode ser montado no build.
+  await connection();
   const [cart, customer, categories] = await Promise.all([
     getCart(),
     getCurrentCustomer(),
