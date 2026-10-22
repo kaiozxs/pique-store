@@ -1,4 +1,7 @@
 import { db, listCategories, listProducts } from "@pique/db";
+import { getCart } from "@/lib/cart";
+import { getCurrentCustomer } from "@/lib/customer";
+import { listNavCategories, listProducts as listarVitrine } from "@/lib/catalogo";
 
 // Diagnóstico rápido: testa, uma por uma e com limite de 8s cada, as consultas que
 // a loja faz. Nunca devolve a senha nem a URL completa — só o servidor e os erros.
@@ -33,6 +36,12 @@ export async function GET() {
     await medir("select com parametro (unsafe)", () => db().unsafe("select $1::text as x", ["a"])),
     await medir("categorias", () => listCategories(db())),
     await medir("produtos", () => listProducts(db())),
+    await medir("concorrente: 6 consultas ao mesmo tempo", () => Promise.all(Array.from({ length: 6 }, () => listProducts(db())))),
+    await medir("cabecalho (sacola + conta + categorias)", () => Promise.all([getCart(), getCurrentCustomer(), listNavCategories()])),
+    await medir("vitrine (como a pagina /drops)", async () => {
+      await listNavCategories();
+      return listarVitrine({});
+    }),
   ];
   return Response.json({ ok: testes.every((t) => t.ok), servidor: servidor(), testes }, { status: testes.every((t) => t.ok) ? 200 : 503 });
 }
