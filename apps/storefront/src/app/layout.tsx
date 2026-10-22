@@ -12,6 +12,9 @@ export const metadata: Metadata = {
     "PIQUE é streetwear de alto padrão: elegância minimalista e vanguarda das ruas. O padrão é incomparável.",
 };
 
+// A loja lê o banco a cada visita (vitrine, sacola, conta): nenhuma página é montada no build.
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
