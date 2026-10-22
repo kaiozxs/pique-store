@@ -6,6 +6,16 @@ declare global {
   var __piqueSql: Sql | undefined;
 }
 
+function usaSsl(url: string): boolean {
+  if (process.env.DATABASE_SSL === "disable") return false;
+  try {
+    const host = new URL(url).hostname;
+    return !["localhost", "127.0.0.1", "::1", "[::1]"].includes(host);
+  } catch {
+    return true;
+  }
+}
+
 /**
  * Conexão com o banco. Use a URL do *pooler* do Supabase (porta 6543): funções
  * serverless abrem muitas conexões curtas, e o pooler existe para isso.
@@ -15,6 +25,9 @@ declare global {
  */
 export function connect(url: string): Sql {
   const sql = postgres(url, {
+    // Supabase só fala criptografado. Banco na própria máquina (desenvolvimento e
+    // testes) não tem SSL; DATABASE_SSL=disable força desligar em outros casos.
+    ssl: usaSsl(url) ? "require" : false,
     prepare: false,
     // No Supabase, poucas conexões por função bastam (o pooler cuida do resto).
     // O banco local de desenvolvimento só aguenta uma: DATABASE_POOL_MAX=1.
