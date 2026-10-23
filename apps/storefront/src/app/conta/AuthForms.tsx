@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { Recaptcha } from "@/components/Recaptcha";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { iniciarGoogleAction, loginAction, registerAction } from "./actions";
@@ -180,6 +181,15 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [clientError, setClientError] = useState<string | null>(null);
+  // "Não sou um robô": só existe quando as chaves do reCAPTCHA estão configuradas.
+  const usaCaptcha = Boolean(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
+  const [captcha, setCaptcha] = useState<string | null>(null);
+  const [resetarCaptcha, setResetarCaptcha] = useState(0);
+
+  // O desafio só vale uma vez: se o servidor recusou o cadastro, pede um novo.
+  useEffect(() => {
+    if (state?.error && usaCaptcha) setResetarCaptcha((n) => n + 1);
+  }, [state, usaCaptcha]);
 
   useEffect(() => {
     if (state?.ok) onSuccess();
@@ -195,6 +205,11 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
     if (password !== confirmPassword) {
       e.preventDefault();
       setClientError("As senhas não coincidem.");
+      return;
+    }
+    if (usaCaptcha && !captcha) {
+      e.preventDefault();
+      setClientError("Marque a caixa “Não sou um robô” para continuar.");
       return;
     }
     setClientError(null);
@@ -240,6 +255,18 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
         </p>
       )}
       {iguais && !divergiu && <p className="-mt-1 text-xs font-semibold text-green-400">As senhas coincidem.</p>}
+      {usaCaptcha && (
+        <>
+          <input type="hidden" name="captcha" value={captcha ?? ""} />
+          <Recaptcha
+            onToken={(t) => {
+              setCaptcha(t);
+              if (t) setClientError(null);
+            }}
+            resetar={resetarCaptcha}
+          />
+        </>
+      )}
       {error && <p className="text-sm font-semibold text-red-400">{error}</p>}
       <button
         type="submit"

@@ -19,6 +19,7 @@ import {
 import { ErroDeRegra } from "@pique/db";
 import { urlDoGoogle } from "@/lib/auth";
 import { COOKIE_DESTINO, destinoSeguro } from "@/lib/destino-login";
+import { recaptchaValido } from "@/lib/recaptcha";
 import type { ShippingAddressInput } from "@/lib/checkout";
 
 // Validado de novo aqui (além do client, em AuthForms) porque um form pode
@@ -61,6 +62,10 @@ export async function registerAction(
   }
   if (password !== passwordConfirmation) {
     return { error: "As senhas não coincidem." };
+  }
+  // O navegador já exige marcar a caixa, mas quem manda o POST direto passa por aqui.
+  if (!(await recaptchaValido(String(formData.get("captcha") ?? "")))) {
+    return { error: "Não conseguimos confirmar que você não é um robô. Marque a caixa de novo." };
   }
 
   const result = await registerAndLogin({ email, password, first_name: firstName, last_name: lastName });

@@ -13,16 +13,18 @@ loadEnvConfig(process.cwd());
 // de CEP direto do navegador). O login e o banco são sempre chamados pelo
 // servidor, então não entram aqui.
 const MERCADOPAGO_DOMAINS = "https://*.mercadopago.com https://*.mercadolibre.com https://http2.mlstatic.com";
+// reCAPTCHA (caixa "Não sou um robô" do cadastro): script, desafio em iframe e a verificação.
+const RECAPTCHA_DOMAINS = "https://www.google.com https://www.gstatic.com";
 
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   // O modo de desenvolvimento do Next usa eval (recarga a quente, pilhas de erro). Em produção não existe.
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"} ${MERCADOPAGO_DOMAINS}`,
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"} ${MERCADOPAGO_DOMAINS} ${RECAPTCHA_DOMAINS}`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https:`,
   "font-src 'self' data:",
-  `connect-src 'self' https://viacep.com.br ${MERCADOPAGO_DOMAINS}`,
-  `frame-src 'self' ${MERCADOPAGO_DOMAINS}`,
+  `connect-src 'self' https://viacep.com.br ${MERCADOPAGO_DOMAINS} https://www.google.com`,
+  `frame-src 'self' ${MERCADOPAGO_DOMAINS} https://www.google.com`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
