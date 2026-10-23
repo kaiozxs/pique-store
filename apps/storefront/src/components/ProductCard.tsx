@@ -11,6 +11,8 @@ export function ProductCard({ product }: { product: Product }) {
   const price = cheapestPrice(product);
   const image = product.thumbnail ?? product.images?.[0]?.url;
   const presale = getPresaleInfo(product);
+  // Foto com modelo vestindo a peça (nome do arquivo tem "lifestyle"): aparece ao passar o mouse.
+  const modelo = (product.images ?? []).map((i) => i.url).find((u) => /lifestyle/i.test(u));
 
 
   return (
@@ -40,13 +42,26 @@ export function ProductCard({ product }: { product: Product }) {
           // preencher cortava justamente as mangas. Assim a peça aparece
           // inteira, e o respiro interno afasta ela das bordas em vez de
           // encostar no corte.
-          <Image
-            src={image}
-            alt={product.title}
-            fill
-            className="object-contain"
-            sizes="(min-width: 1024px) 25vw, 50vw"
-          />
+          <>
+            <Image
+              src={image}
+              alt={product.title}
+              fill
+              className={`object-contain ${modelo ? "transition-opacity duration-500 ease-out group-hover:opacity-0" : ""}`}
+              sizes="(min-width: 1024px) 25vw, 50vw"
+            />
+            {modelo && (
+              // Cobre o card inteiro (cover, do topo): mostra rosto e camiseta da modelo.
+              <Image
+                src={modelo}
+                alt=""
+                aria-hidden="true"
+                fill
+                className="object-cover object-top opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+                sizes="(min-width: 1024px) 25vw, 50vw"
+              />
+            )}
+          </>
         ) : (
           <>
             <svg width="52" height="52" viewBox="0 0 24 24" aria-hidden="true" className="text-paper/35">
