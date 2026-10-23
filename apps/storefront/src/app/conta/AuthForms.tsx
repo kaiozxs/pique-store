@@ -236,7 +236,7 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
       />
       {divergiu && (
         <p role="alert" className="-mt-1 text-xs font-semibold text-red-400">
-          Essa senha está diferente da primeira. Confira o que você digitou.
+          Você está digitando a senha errada: ela é diferente da primeira. Confira antes de criar a conta.
         </p>
       )}
       {iguais && !divergiu && <p className="-mt-1 text-xs font-semibold text-green-400">As senhas coincidem.</p>}
