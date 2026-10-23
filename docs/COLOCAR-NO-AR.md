@@ -99,9 +99,9 @@ o pagamento "simulados" só funcionam no seu PC e **nunca** em produção.
 
 ## O que mudou / o que sobrou
 
-- **Fora:** Medusa (backend, Railway) não é mais usado. A pasta `apps/backend` ficou no
-  repositório só como referência; pode apagar quando se sentir seguro (e cancelar o
-  Railway).
+- **Fora:** Medusa (backend, Railway) não é mais usado. A pasta `apps/backend` foi removida
+  do repositório (continua no histórico do Git, se um dia precisar). Dá para cancelar o
+  Railway.
 - **Cupons:** não há tela de cupom ainda — crie por SQL (tabela `coupons`: `code`,
   `kind` = `percent`|`fixed`, `amount`). Exemplo: `insert into coupons (code, kind, amount) values ('PIQUE10','percent',10);`
 - **Pedidos abandonados:** o estoque que eles seguravam volta sozinho (a cada nova
