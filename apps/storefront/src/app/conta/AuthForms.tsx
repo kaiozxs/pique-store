@@ -201,6 +201,9 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
   }
 
   const error = clientError ?? state?.error;
+  // Aviso ao vivo: no instante em que a confirmação foge do começo da primeira senha.
+  const divergiu = confirmPassword.length > 0 && !password.startsWith(confirmPassword);
+  const iguais = confirmPassword.length > 0 && confirmPassword === password;
 
   return (
     <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -229,8 +232,14 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           setConfirmPassword(v);
           setClientError(null);
         }}
-        hasError={!!clientError}
+        hasError={!!clientError || divergiu}
       />
+      {divergiu && (
+        <p role="alert" className="-mt-1 text-xs font-semibold text-red-400">
+          Essa senha está diferente da primeira. Confira o que você digitou.
+        </p>
+      )}
+      {iguais && !divergiu && <p className="-mt-1 text-xs font-semibold text-green-400">As senhas coincidem.</p>}
       {error && <p className="text-sm font-semibold text-red-400">{error}</p>}
       <button
         type="submit"
