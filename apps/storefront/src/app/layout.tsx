@@ -6,10 +6,18 @@ import { OcultarEm } from "@/components/OcultarEm";
 import { CookiesPainel } from "@/components/CookiesPainel";
 import { TransicaoDePagina } from "@/components/TransicaoDePagina";
 
+const TITULO = "PIQUE — Streetwear de Alto Padrão";
+const DESCRICAO =
+  "PIQUE é streetwear de alto padrão: elegância minimalista e vanguarda das ruas. O padrão é incomparável.";
+
 export const metadata: Metadata = {
-  title: "PIQUE — Streetwear de Alto Padrão",
-  description:
-    "PIQUE é streetwear de alto padrão: elegância minimalista e vanguarda das ruas. O padrão é incomparável.",
+  // Base dos endereços absolutos da prévia de compartilhamento (WhatsApp, Instagram, etc.).
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.piquecompany.com"),
+  title: TITULO,
+  description: DESCRICAO,
+  // A imagem vem de app/opengraph-image.png e app/twitter-image.png (logo da PIQUE).
+  openGraph: { title: TITULO, description: DESCRICAO, siteName: "PIQUE", locale: "pt_BR", type: "website" },
+  twitter: { card: "summary_large_image", title: TITULO, description: DESCRICAO },
 };
 
 // A loja lê o banco a cada visita (vitrine, sacola, conta): nenhuma página é montada no build.
