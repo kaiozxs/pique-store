@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ancora } from "@/lib/ancora";
 import { PAGINAS, type BlocoInstitucional, type SecaoInstitucional } from "@/content/institucional";
 
 const SUPPORT_EMAIL = "piquecompanysuporte@gmail.com";
@@ -77,7 +78,8 @@ function Bloco({ bloco }: { bloco: BlocoInstitucional }) {
 
 function Secao({ secao }: { secao: SecaoInstitucional }) {
   return (
-    <section className="flex flex-col gap-4">
+    // id para a central de atendimento linkar direto na seção (ex.: /institucional/cancelamentos#pedido-ainda-nao-pago)
+    <section id={ancora(secao.titulo)} className="flex scroll-mt-28 flex-col gap-4">
       <h2 className="font-display text-xl tracking-wide text-paper sm:text-2xl">{secao.titulo}</h2>
       {secao.blocos.map((bloco, i) => (
         <Bloco key={i} bloco={bloco} />
