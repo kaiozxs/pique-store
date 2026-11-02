@@ -98,7 +98,7 @@ export function ProductDetail({
   }
 
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-16 sm:px-8 lg:grid-cols-2 lg:gap-20">
+    <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-8 sm:px-8 sm:py-16 lg:grid-cols-2 lg:gap-20">
       <div className="flex flex-col gap-4">
         {/* Mesmo tratamento do card da vitrine: tracejado só quando falta a
             foto, e a peça aparece inteira em vez de preencher cortando. */}

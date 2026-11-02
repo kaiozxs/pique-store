@@ -35,7 +35,7 @@ export async function Header() {
   return (
     <header className="bg-ink text-paper">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-7 py-5 sm:px-8">
-        <Link href="/" className="ml-3 flex items-center">
+        <Link href="/" className="flex items-center md:ml-3">
           <Image src="/logo.png" alt="PIQUE" width={46} height={35} style={{ height: "auto" }} priority />
         </Link>
 

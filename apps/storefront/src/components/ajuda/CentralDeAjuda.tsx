@@ -129,7 +129,7 @@ export function CentralDeAjuda({ faq }: { faq: Faq[] }) {
                 type="search"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Busque por uma dúvida ou tema"
+                placeholder="Busque sua dúvida"
                 autoComplete="off"
                 className="min-w-0 flex-1 bg-transparent px-5 py-4 text-sm outline-none placeholder:text-paper/45"
               />
