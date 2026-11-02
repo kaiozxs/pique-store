@@ -65,7 +65,63 @@ export const PAGINAS: Record<string, PaginaInstitucional> = {
   },
   "guia-de-tamanhos": {
     title: "Guia de tamanhos",
-    intro: "Tabela de medidas de cada peça pra você escolher entre P, M, G e GG sem errar.",
+    intro: "Tabela de medidas da camiseta pra você escolher entre PP, P, M, G e GG sem errar.",
+    secoes: [
+      {
+        titulo: "Medidas da peça",
+        blocos: [
+          {
+            tipo: "tabela",
+            colunas: ["Tamanho", "Comprimento", "Tórax", "Manga", "Gola"],
+            linhas: [
+              ["PP", "72 cm", "55 cm", "24 cm", "3,5 cm"],
+              ["P", "74 cm", "57 cm", "25 cm", "3,5 cm"],
+              ["M", "76 cm", "59 cm", "26 cm", "3,5 cm"],
+              ["G", "78 cm", "61 cm", "27 cm", "3,5 cm"],
+              ["GG", "80 cm", "63 cm", "28 cm", "3,5 cm"],
+            ],
+          },
+          p(
+            "As medidas são da camiseta, tiradas com a peça aberta sobre uma superfície plana. Pode haver pequena variação de até 1 cm, normal no processo de costura."
+          ),
+        ],
+      },
+      {
+        titulo: "Como escolher o seu tamanho",
+        blocos: [
+          ul([
+            "Pegue uma camiseta sua que veste bem e compare: estenda sobre uma mesa e meça o comprimento (do ombro até a barra) e o tórax (de uma axila à outra, em linha reta).",
+            "Os valores da tabela são da peça, não do corpo. Se você prefere um caimento mais largo, escolha o tamanho acima.",
+            "Ficou na dúvida entre dois tamanhos? Fala com a gente antes de comprar, o atendimento ajuda a escolher.",
+          ]),
+        ],
+      },
+      {
+        titulo: "Composição",
+        blocos: [
+          {
+            tipo: "tabela",
+            colunas: ["Parte", "Material"],
+            linhas: [
+              ["Corpo", "100% algodão"],
+              ["Gola", "95% algodão / 5% elastano"],
+            ],
+          },
+          p("Fabricado no Brasil."),
+        ],
+      },
+      {
+        titulo: "Cuidados com a peça",
+        blocos: [
+          ul([
+            "Lavar à máquina com água a até 30 °C.",
+            "Não usar alvejante.",
+            "Não secar em máquina de secar.",
+            "Passar a ferro em temperatura baixa.",
+          ]),
+        ],
+      },
+    ],
   },
 
   "trocas-e-devolucoes": {
