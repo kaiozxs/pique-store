@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { listTips } from "@/lib/catalogo";
 
-export const metadata: Metadata = { title: "Dicas — PIQUE" };
+export const metadata: Metadata = { title: "QG — PIQUE" };
 
 export default async function DicasPage() {
   const tips = await listTips();
@@ -10,8 +10,14 @@ export default async function DicasPage() {
   return (
     <div className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-6 py-20 sm:px-8">
-        <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">CONTEÚDO</div>
-        <h1 className="mb-14 font-display text-3xl tracking-wide sm:text-5xl">DICAS</h1>
+        <div className="mb-4 text-[13px] font-semibold tracking-[0.28em] text-paper/55">DICAS</div>
+        <h1 className="mb-6 font-display text-3xl tracking-wide sm:text-5xl">QG</h1>
+        <p className="mb-14 text-sm text-paper/55">
+          Precisa de ajuda com pedido, troca ou entrega?{" "}
+          <Link href="/ajuda" className="font-bold text-paper underline underline-offset-4 hover:text-accent">
+            Fale com o atendimento
+          </Link>
+        </p>
 
         {tips.length === 0 ? (
           <div className="pb-24 text-sm text-paper/55">Nenhuma dica publicada ainda.</div>

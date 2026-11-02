@@ -8,8 +8,8 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] 
   {
     title: "ATENDIMENTO",
     links: [
-      { label: "Ajuda", href: "/ajuda" },
-      { label: "Perguntas frequentes", href: "/ajuda" },
+      { label: "Central de ajuda", href: "/ajuda" },
+      { label: "Dicas (QG)", href: "/dicas" },
       { label: "Guia de tamanhos", href: "/institucional/guia-de-tamanhos" },
       { label: "Trocas e devoluções", href: "/institucional/trocas-e-devolucoes" },
       { label: "Acompanhar meu pedido", href: "/institucional/pedidos-e-acompanhamento" },
