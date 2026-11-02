@@ -7,7 +7,7 @@ import type { NavCategory } from "@/lib/produto";
 
 const UTILITY_LINKS = [
   { href: "/book", label: "WAB" },
-  { href: "/ajuda", label: "ATENDIMENTO" },
+  { href: "/ajuda", label: "QG" },
 ];
 
 const CLOSE_DELAY_MS = 150;

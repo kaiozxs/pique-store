@@ -3,8 +3,8 @@ import { getFaqCategories } from "@/lib/catalogo";
 import { CentralDeAjuda } from "@/components/ajuda/CentralDeAjuda";
 
 export const metadata: Metadata = {
-  title: "Atendimento — PIQUE",
-  description: "Central de atendimento da PIQUE: pedidos, entregas, trocas, cancelamentos e contato.",
+  title: "QG — PIQUE",
+  description: "QG da PIQUE, a central de atendimento: pedidos, entregas, trocas, cancelamentos e contato.",
 };
 
 export default async function AjudaPage() {

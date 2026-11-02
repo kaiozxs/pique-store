@@ -106,7 +106,7 @@ export function CentralDeAjuda({ faq }: { faq: Faq[] }) {
 
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:px-8 lg:py-24">
           <div className="max-w-2xl">
-            <div className="mb-5 text-[13px] font-semibold tracking-[0.28em] text-accent">ATENDIMENTO</div>
+            <div className="mb-5 text-[13px] font-semibold tracking-[0.28em] text-accent">QG · ATENDIMENTO</div>
             <h1 className="font-display text-4xl leading-[1.05] tracking-wide sm:text-6xl">
               COMO PODEMOS
               <br />
